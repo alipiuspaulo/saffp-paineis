@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Projeto de Interesse de Terceiros (PIT)</title>
 <link rel="stylesheet" href="https://js.arcgis.com/4.30/esri/themes/light/main.css">
-<link rel="stylesheet" href="../assets/painel.css?v=20261114k">
+<link rel="stylesheet" href="../assets/painel.css?v=20261114l">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/5.5.0/echarts.min.js"></script>
 <script src="https://js.arcgis.com/4.30/"></script>
 </head>
@@ -39,7 +39,10 @@ window.PAINEL={
   oid:'FID',
   normFields:['Status','Concession','Classifica','Tipo_de_Pr','UF','Terceiro','Município'],
   regionFromUF:'UF',
-  derive:r=>{ const m=/(\d{4})$/.exec(String(r.Data_de_en||'').trim()); r.ANO=m?m[1]:'Não informado'; r.LOCAL=[r['Município'],r.UF].filter(x=>x&&x!=='Não informado').join('/'); },
+  derive:r=>{
+    // registros do formulário gravam Município em campo sem acento
+    if(r['Município']==='Não informado'&&r.Municipio) r['Município']=String(r.Municipio).trim();
+    const m=/(\d{4})$/.exec(String(r.Data_de_en||'').trim()); r.ANO=m?m[1]:'Não informado'; r.LOCAL=[r['Município'],r.UF].filter(x=>x&&x!=='Não informado').join('/'); },
   filters:[
     {field:'REGIAO',label:'Região',type:'chips',allLabel:'Brasil',order:['Norte','Nordeste','Centro-Oeste','Sudeste','Sul']},
     {field:'UF',label:'UF',type:'select',allLabel:'Todas'},
@@ -75,6 +78,6 @@ window.PAINEL={
     {f:'Data_de_en',label:'Entrada',sortGet:r=>dmy(r.Data_de_en)}]}
 };
 </script>
-<script src="../assets/painel.js?v=20261114k"></script>
+<script src="../assets/painel.js?v=20261114l"></script>
 </body>
 </html>
