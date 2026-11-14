@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Acidentes Ferroviários</title>
 <link rel="stylesheet" href="https://js.arcgis.com/4.30/esri/themes/light/main.css">
-<link rel="stylesheet" href="../assets/painel.css?v=20261114f">
+<link rel="stylesheet" href="../assets/painel.css?v=20261114g">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/5.5.0/echarts.min.js"></script>
 <script src="https://js.arcgis.com/4.30/"></script>
 </head>
@@ -20,6 +20,9 @@ const GRAVE={'Sim':'#C2410C','Não':'#1C5FAD'};
 const ICON_GRAVE='<g transform="rotate(-32 12 13)"><rect x="7" y="4.5" width="10" height="11" rx="2.6"/><path d="M7 10h10"/><circle cx="9.6" cy="12.8" r=".9" fill="#fff"/><circle cx="14.4" cy="12.8" r=".9" fill="#fff"/></g><path d="M3 21h18"/><path d="M19 3.2 20.6 1.6M20.4 6.4h2.2M16.4 2.2 16 .4"/>';
 const ICON_NAO='<rect x="7" y="2.8" width="10" height="11.6" rx="2.6"/><path d="M7 8.8h10"/><circle cx="9.6" cy="11.6" r=".9" fill="#fff"/><circle cx="14.4" cy="11.6" r=".9" fill="#fff"/><path d="M9.2 14.4 7.4 19.2M14.8 14.4l1.8 4.8M6 21.2h12M8 17.6h8"/>';
 const FERROVIAS={EFC:'Estrada de Ferro Carajás',EFVM:'Estrada de Ferro Vitória a Minas',FCA:'Ferrovia Centro-Atlântica',FNSTN:'Ferrovia Norte-Sul Tramo Norte',FTC:'Ferrovia Tereza Cristina',FTL:'Ferrovia Transnordestina Logística',MRS:'MRS Logística',RMC:'Rumo Malha Central',RMN:'Rumo Malha Norte',RMO:'Rumo Malha Oeste',RMP:'Rumo Malha Paulista',RMS:'Rumo Malha Sul',EFPO:'Estrada de Ferro Paraná Oeste (Ferroeste)'};
+const GRUPO={RMS:'Rumo',RMP:'Rumo',RMN:'Rumo',RMO:'Rumo',RMC:'Rumo',FCA:'VLI',FNSTN:'VLI',EFC:'Vale',EFVM:'Vale',MRS:'MRS',FTL:'Transnordestina',FTC:'FTC',EFPO:'Ferroeste'};
+const GRUPO_COR={Rumo:'#1C5FAD',VLI:'#1E9E5A',Vale:'#7B3FA0',MRS:'#0A91A8',Transnordestina:'#E0A800',FTC:'#A3214F',Ferroeste:'#6A7486'};
+const FERROVIA_COR=Object.fromEntries(Object.entries(GRUPO).map(([k,g])=>[k,GRUPO_COR[g]]));
 const MALHA={title:'Malha ferroviária federal',url:'https://services.arcgis.com/4CZwpdWHGNPLU7QQ/arcgis/rest/services/Ferrovias_Concedidas_(2021)/FeatureServer/0',minScale:0,
   definitionExpression:"TIP_SITUAC IN ('Em Operação','Em Obra')",
   renderer:{type:'unique-value',field:'TIP_SITUAC',defaultSymbol:{type:'simple-line',color:[232,236,242,.9],width:1.4},
@@ -30,7 +33,8 @@ window.PAINEL={
   subtitle:'Ocorrências comunicadas pelas concessionárias ferroviárias',
   home:'https://experience.arcgis.com/experience/26c68a6e20144b5199923c22b1722c3e',
   theme:{primary:'#B4372B',dark:'#6E1F1A',soft:'#F8E1DD',header:'#7A1F1A',
-    headerBg:'linear-gradient(90deg,#0A2A5E 0%,#1C5FAD 52%,#F2B705 100%)',headerBorder:'#0A2A5E',headerLight:true,button:'#F2B705',buttonText:'#14213D',buttonHover:'#FFC933'},
+    headerBg:'linear-gradient(90deg,#0A2A5E 0%,#1C5FAD 52%,#F2B705 100%)',headerBorder:'#0A2A5E',headerLight:true,button:'#F2B705',buttonText:'#14213D',buttonHover:'#FFC933',
+    kpiAccents:[{c:'#1C5FAD',bg:'#DCE7F5',fg:'#0A2A5E'},{c:'#F2B705',bg:'#FDF1C7',fg:'#7A5A00'}]},
   sourceName:'Acidentes Ferroviários',
   layer:'https://services.arcgis.com/4CZwpdWHGNPLU7QQ/arcgis/rest/services/Acidentes_Ferrovi%C3%A1rios/FeatureServer/0',
   oid:'FID',
@@ -53,10 +57,11 @@ window.PAINEL={
   ],
   charts:[
     {slot:'left',type:'donut',title:'Gravidade',field:'Grave',colors:GRAVE,labels:{'Sim':'Grave','Não':'Não grave'},centerLabel:'acidentes'},
-    {slot:'left',type:'vbar',title:'Acidentes por ano',field:'ANO',sort:'label',height:220},
-    {slot:'right',type:'hbar',title:'Acidentes por ferrovia',field:'Ferrovia',top:14,height:250,labelWidth:70,names:FERROVIAS},
-    {slot:'right',type:'hbar',title:'Natureza do acidente',field:'Natureza',top:8,height:240,labelWidth:200},
-    {slot:'bottom',type:'hbar',title:'Causa direta',field:'Causa_Dire',top:8,height:300,labelWidth:190}
+    {slot:'left',type:'vbar',title:'Acidentes por ano',field:'ANO',sort:'label',height:220,palette:'seq'},
+    {slot:'right',type:'hbar',title:'Acidentes por ferrovia',field:'Ferrovia',top:14,height:250,labelWidth:70,names:FERROVIAS,groups:GRUPO,colors:FERROVIA_COR,
+      legendItems:Object.entries(GRUPO_COR).map(([label,color])=>({label,color}))},
+    {slot:'right',type:'hbar',title:'Natureza do acidente',field:'Natureza',top:7,height:220,labelWidth:200,palette:'cat'},
+    {slot:'bottom',type:'hbar',title:'Causa direta',field:'Causa_Dire',top:7,height:300,labelWidth:190,palette:'cat'}
   ],
   map:{title:'Mapa das ocorrências',colorBy:'Grave',colors:GRAVE,labels:{'Sim':'Grave','Não':'Não grave'},legendTitle:'Gravidade',size:6,
     icons:{'Sim':{glyph:ICON_GRAVE,size:22},'Não':{glyph:ICON_NAO,size:16}},layerTitle:'Acidentes ferroviários',heatmap:true,extraLayers:[MALHA],
@@ -72,6 +77,6 @@ window.PAINEL={
     {f:'FER',label:'Feridos',num:true},{f:'OBI',label:'Óbitos',num:true}]}
 };
 </script>
-<script src="../assets/painel.js?v=20261114f"></script>
+<script src="../assets/painel.js?v=20261114g"></script>
 </body>
 </html>

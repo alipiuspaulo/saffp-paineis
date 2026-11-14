@@ -56,6 +56,7 @@ const cardChart=c=>`<div class="card" id="${c._id}_card" style="display:flex;fle
   <div class="card-h"><h2>${esc(c.title)}</h2><span class="sp"></span><span class="hint">${esc(c.hint||'clique para filtrar')}</span></div>
   ${c.type==='yn'?`<div class="yn" id="${c._id}"></div>`:`<div id="${c._id}" class="chart" style="height:${c.height||(c.type==='donut'?200:300)}px"></div>`}
   ${c.type==='donut'?`<div class="legend" id="${c._id}_lg"></div>`:''}
+  ${c.legendItems?`<div class="blegend">${c.legendItems.map(x=>`<span><i style="background:${x.color}"></i>${esc(x.label)}</span>`).join('')}</div>`:''}
   ${c.type==='hbar'?`<button class="more" id="${c._id}_more" hidden></button>`:''}
 </div>`;
 const app=document.getElementById('app');
@@ -192,9 +193,10 @@ document.getElementById('fClear').onclick=()=>{ Object.keys(S).forEach(k=>S[k]=n
 /* ---------- cartões ---------- */
 function fmtVal(v,k){ if(typeof v==='string') return esc(v); return nf(v,k.dec||0)+(k.unit?`<small>${esc(k.unit)}</small>`:''); }
 function renderKPIs(f){
-  document.getElementById('kpis').innerHTML=(C.kpis||[]).map(k=>{
+  document.getElementById('kpis').innerHTML=(C.kpis||[]).map((k,i)=>{
     const v=k.value(f,D), s=k.sub?k.sub.value(f,D):null;
-    const style=k.sub&&k.sub.color?`style="--kc:${k.sub.color};--kt:${k.sub.textColor||k.sub.color}"`:'';
+    const ac=C.theme.kpiAccents?C.theme.kpiAccents[i%C.theme.kpiAccents.length]:null;
+    const style=`style="${k.sub&&k.sub.color?`--kc:${k.sub.color};--kt:${k.sub.textColor||k.sub.color};`:''}${ac?`--ka:${ac.c};--kab:${ac.bg};--kaf:${ac.fg};`:''}"`;
     return `<div class="card kpi" ${style}><div class="ic">${icon(k.icon)}</div><div class="lb">${esc(k.label)}</div>
       <div class="vl">${fmtVal(v,k)}${k.note?`<small style="font-size:12px;color:var(--muted);font-weight:500"> ${esc(k.note(f,D))}</small>`:''}</div>
       ${k.sub?`<div class="ft"><span class="k">${esc(k.sub.label)}</span><b>${fmtVal(s,k.sub)}</b></div>`:''}</div>`;
@@ -204,8 +206,17 @@ function renderKPIs(f){
 /* ---------- gráficos ---------- */
 const EC={};
 const catColor=(field,v,fixed)=>{ if(fixed&&fixed[v]) return fixed[v]; if(v===NI) return '#C9D2DE'; const i=(ORDER[field]||[]).indexOf(v); return i>=0&&i<PALETTE.length?PALETTE[i]:OTHER; };
+/* cor das barras: fixa por categoria (colors), paleta categórica (palette:'cat'), rampa sequencial (palette:'seq') ou cor do tema */
+const SEQ=['#BFD6EF','#0A2A5E'];
+function mix(a,b,t){ const h=x=>[1,3,5].map(i=>parseInt(x.slice(i,i+2),16)); const A=h(a),B=h(b); return '#'+A.map((v,i)=>Math.round(v+(B[i]-v)*t).toString(16).padStart(2,'0')).join(''); }
+function barColor(c,v,list){
+  if(c.colors) return catColor(c.field,v,c.colors);
+  if(c.palette==='cat') return catColor(c.field,v);
+  if(c.palette==='seq'){ const ks=list.map(x=>x[0]).sort(natural); const i=ks.indexOf(v); return mix(SEQ[0],SEQ[1],ks.length>1?i/(ks.length-1):1); }
+  return S[c.field]===v?C.theme.dark:C.theme.primary;
+}
 function ec(id,c){ if(!EC[id]){ EC[id]=echarts.init(document.getElementById(id)); if(c) EC[id].on('click',p=>{ if(p.componentType==='series'&&p.name!=null&&p.name!=='') set(c.field,p.name); }); } return EC[id]; }
-const fullName=(c,v)=>c.names&&c.names[v]?`${esc(v)} · ${esc(c.names[v])}`:esc(v);
+const fullName=(c,v)=>(c.names&&c.names[v]?`${esc(v)} · ${esc(c.names[v])}`:esc(v))+(c.groups&&c.groups[v]?`<br><span style="color:#6A7486">Grupo: ${esc(c.groups[v])}</span>`:'');
 function renderChart(c){
   const base=rows(c.field);
   if(c.type==='yn') return renderYN(c);
@@ -235,7 +246,7 @@ function renderChart(c){
       tooltip:{trigger:'item',formatter:p=>`<b>${fullName(c,p.name)}</b><br>${nf(p.value)} acidentes · ${tot?nf(p.value/tot*100,1):0}%<br><span style="color:#6A7486">clique para filtrar</span>`},
       xAxis:{type:'value',splitLine:{lineStyle:{color:'#EDF0F4'}},axisLabel:{color:'#6A7486',fontSize:11}},
       yAxis:{type:'category',data:list.map(x=>x[0]),axisTick:{show:false},axisLine:{lineStyle:{color:'#DDE3EB'}},axisLabel:{color:'#14213D',fontSize:12,width:c.labelWidth||170,overflow:'truncate'}},
-      series:[{type:'bar',barMaxWidth:16,data:list.map(([v,n])=>({value:n,itemStyle:{color:c.colors?catColor(c.field,v,c.colors):(S[c.field]===v?C.theme.dark:C.theme.primary),opacity:S[c.field]==null||S[c.field]===v?1:.3,borderRadius:[0,4,4,0]}})),
+      series:[{type:'bar',barMaxWidth:16,data:list.map(([v,n])=>({value:n,itemStyle:{color:barColor(c,v,list),opacity:S[c.field]==null||S[c.field]===v?1:.3,borderRadius:[0,4,4,0]}})),
         label:{show:true,position:'right',color:'#4A5568',fontSize:11,formatter:p=>nf(p.value)}}]},true);
     const more=document.getElementById(c._id+'_more');
     more.hidden=total<=N; more.textContent=c._all?`Mostrar apenas os ${N} maiores`:`+ ${rest.length} categorias (${nf(rest.reduce((s,x)=>s+x[1],0))} registros) · ver todas →`;
@@ -248,7 +259,7 @@ function renderChart(c){
     tooltip:{trigger:'item',formatter:p=>`<b>${esc(p.name)}</b><br>${nf(p.value)}`},
     xAxis:{type:'category',data:list.map(x=>x[0]),axisTick:{show:false},axisLine:{lineStyle:{color:'#DDE3EB'}},axisLabel:{color:'#14213D',fontSize:12,interval:0,rotate:list.length>8?30:0,width:90,overflow:'truncate'}},
     yAxis:{type:'value',splitLine:{lineStyle:{color:'#EDF0F4'}},axisLabel:{color:'#6A7486',fontSize:11}},
-    series:[{type:'bar',barMaxWidth:30,data:list.map(([v,n])=>({value:n,itemStyle:{color:c.colors?catColor(c.field,v,c.colors):(S[c.field]===v?C.theme.dark:C.theme.primary),opacity:S[c.field]==null||S[c.field]===v?1:.3,borderRadius:[4,4,0,0]}})),
+    series:[{type:'bar',barMaxWidth:30,data:list.map(([v,n])=>({value:n,itemStyle:{color:barColor(c,v,list),opacity:S[c.field]==null||S[c.field]===v?1:.3,borderRadius:[4,4,0,0]}})),
       label:{show:true,position:'top',color:'#4A5568',fontSize:11,formatter:p=>nf(p.value)}}]},true);
 }
 function renderYN(c){
@@ -566,6 +577,7 @@ function render(){
   if(TLC) initTabs();
   render();
   await initMap(); lastKey=null; renderMap(rows());
+  if(TLC&&/historico/.test(location.hash)) showTab('tl'); // link direto para a aba
 })();
 window.addEventListener('resize',()=>{ Object.values(EC).forEach(c=>c.resize()); if(TL.chart) TL.chart.resize(); });
 })();
