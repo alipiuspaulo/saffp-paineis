@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Projeto de Interesse de Terceiros (PIT)</title>
 <link rel="stylesheet" href="https://js.arcgis.com/4.30/esri/themes/light/main.css">
-<link rel="stylesheet" href="../assets/painel.css?v=20261114j">
+<link rel="stylesheet" href="../assets/painel.css?v=20261114k">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/5.5.0/echarts.min.js"></script>
 <script src="https://js.arcgis.com/4.30/"></script>
 </head>
@@ -13,6 +13,20 @@
 <div id="app"></div>
 <script>
 const dmy=s=>{const m=/^(\d{2})\/(\d{2})\/(\d{4})/.exec(String(s||''));return m?+(m[3]+m[2]+m[1]):0;};
+/* camadas do mapa do painel antigo: Ferrovias Federais (2021) e Limites Municipais */
+const SVC='https://services.arcgis.com/4CZwpdWHGNPLU7QQ/arcgis/rest/services/';
+const fedLine=(c,w,st)=>({type:'simple-line',color:c,width:w,style:st||'solid',cap:'round'});
+const PIT_LAYERS=[
+  {url:SVC+'BR_Municipios/FeatureServer/0',title:'Limites municipais',visible:false,renderer:{type:'simple',symbol:{type:'simple-fill',color:[0,0,0,0],outline:{color:[255,255,255,.35],width:.4}}}},
+  {url:SVC+'Ferrovias_Concedidas_(2021)/FeatureServer/0',title:'Ferrovias federais (2021) – situação',minScale:0,
+    popupEnabled:true,popupTemplate:{title:'{LABEL}',content:[{type:'fields',fieldInfos:[{fieldName:'SIGLA_COIN',label:'Ferrovia'},{fieldName:'SIGLA',label:'Sigla (EF)'},{fieldName:'TIP_SITUAC',label:'Situação'},{fieldName:'BITOLA',label:'Bitola'}]}]},
+    renderer:{type:'unique-value',field:'TIP_SITUAC',defaultSymbol:fedLine([138,148,166,.9],1.4),uniqueValueInfos:[
+      {value:'Em Operação',label:'Em operação',symbol:fedLine([242,255,0,1],2.2)},
+      {value:'Em Obra',label:'Em obra',symbol:fedLine([224,168,0,1],2,'dash')},
+      {value:'Planejada',label:'Planejada',symbol:fedLine([126,176,213,.95],1.6,'dash')},
+      {value:'Estudo',label:'Estudo',symbol:fedLine([255,181,90,.95],1.4,'short-dot')},
+      {value:'Desativada',label:'Desativada',symbol:fedLine([178,186,200,.8],1.2,'short-dash')}]}}
+];
 const STATUS_COR={'Concluído':'#1E9E5A','Autorizado':'#1C5FAD','Atualizado':'#E0A800','Arquivado':'#7B3FA0'};
 window.PAINEL={
   unitLabel:'processos',
@@ -48,15 +62,19 @@ window.PAINEL={
     {slot:'right',type:'hbar',title:'Tipo de projeto',field:'Tipo_de_Pr',top:14,height:520,labelWidth:180},
     {slot:'bottom',type:'vbar',title:'Processos por concessionária',field:'Concession',height:330}
   ],
-  map:{title:'Mapa dos processos',colorBy:'Status',colors:STATUS_COR,legendTitle:'Situação',size:9,
+  map:{title:'Mapa dos processos',colorBy:'Status',colors:STATUS_COR,legendTitle:'Situação',size:9,layerTitle:'Processos PIT',heatmap:true,extraLayers:PIT_LAYERS,
     popupTitle:r=>`PIT ${r.ID||''} — ${r.Classifica}`,
     popup:r=>`<b>Concessionária:</b> ${r.Concession}<br><b>Terceiro:</b> ${r.Terceiro}<br><b>Tipo:</b> ${r.Tipo_de_Pr}<br><b>Local:</b> ${r.LOCAL||'—'}<br><b>Situação:</b> ${r.Status}<br><b>Processo SEI:</b> ${r.Processo_N||'—'}<br><b>Entrada:</b> ${r.Data_de_en||'—'}`},
+  timelapse:{tabTitle:'Histórico e alertas',noun:'processo',nounPl:'processos',dateField:'Data_de_en',createdField:'CreationDate',alertDays:7,alertList:10,fit:true,
+    mapTitle:'Linha do tempo dos processos',chartTitle:'Processos por mês de entrada',layerTitle:'Processos no tempo',note:'filtros do topo aplicados',
+    alertTitle:r=>`PIT ${r.ID||''} — ${r.Classifica!=='Não informado'?r.Classifica:'processo'}`,
+    alertSub:r=>`${r.Concession!=='Não informado'?r.Concession:'concessionária não informada'} · ${r.LOCAL||'local não informado'} · entrada em ${r.Data_de_en||'data não informada'}`},
   table:{title:'Processos',sort:{f:'Data_de_en',dir:-1},columns:[
     {f:'ID',label:'ID'},{f:'Processo_N',label:'Processo SEI'},{f:'Concession',label:'Concessionária'},{f:'Terceiro',label:'Terceiro'},
     {f:'Classifica',label:'Classificação'},{f:'LOCAL',label:'Município/UF'},{f:'Status',label:'Situação',color:'Status'},
     {f:'Data_de_en',label:'Entrada',sortGet:r=>dmy(r.Data_de_en)}]}
 };
 </script>
-<script src="../assets/painel.js?v=20261114j"></script>
+<script src="../assets/painel.js?v=20261114k"></script>
 </body>
 </html>
