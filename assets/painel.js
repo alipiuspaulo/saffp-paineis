@@ -65,7 +65,7 @@ app.innerHTML=`
   <div><h1>${esc(C.title)}</h1><div class="sub">${esc(C.subtitle||'')}</div></div>
   <span class="sp"></span>
   ${C.home?`<a class="pill" href="${C.home}" target="_blank" rel="noopener">⌂ Página inicial SAFF-P</a>`:''}
-  <span class="pill">Dados ao vivo · ArcGIS Online</span>
+  <span class="pill">Dados em Tempo Real</span>
 </div></header>
 ${C.timelapse?`<div class="tabs" role="tablist" aria-label="Seções do painel">
   <button class="tab on" role="tab" aria-selected="true" data-t="ov">${icon('doc')}Visão geral</button>
