@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Fiscalização FICO</title>
+<link rel="stylesheet" href="https://js.arcgis.com/4.30/esri/themes/light/main.css">
+<link rel="stylesheet" href="../assets/painel.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/5.5.0/echarts.min.js"></script>
+<script src="https://js.arcgis.com/4.30/"></script>
+</head>
+<body>
+<div id="app"></div>
+<script>
+const dataBR=ms=>ms?new Date(ms).toLocaleDateString('pt-BR',{timeZone:'America/Sao_Paulo'}):'—';
+const pct=(n,t)=>t?Math.round(n/t*100)+'% dos levantamentos':'—';
+const SVC='https://services.arcgis.com/4CZwpdWHGNPLU7QQ/arcgis/rest/services/';
+window.PAINEL={
+  title:'Fiscalização FICO',
+  subtitle:'Acompanhamento das obras da Ferrovia de Integração Centro-Oeste (FICO)',
+  home:'https://experience.arcgis.com/experience/26c68a6e20144b5199923c22b1722c3e',
+  theme:{primary:'#1F8A4C',dark:'#0F4D2B',soft:'#DDF1E4',header:'#155E37'},
+  sourceName:'Dados Fiscalização – Resultados (Survey123)',
+  layer:SVC+'survey123_f534c787ea064a64b119e9984448af56_results/FeatureServer/0',
+  oid:'objectid',
+  normFields:['trecholote_inspecionado','fiscal_respons_vel','a_obra_est_conforme_o_projeto','h_restri_es_de_acesso_ou_riscos','h_algum_passivo_ambiental','h_sinaliza_o_adequada_e_barreir','h_riscos_para_trabalhadores_ou','empresa_respons_vel_pela_obra'],
+  derive:r=>{
+    const it=r.field_30==='other'?(String(r.field_30_other||'').trim()||'Outros'):String(r.field_30||'Não informado');
+    r.ITEM=it.replace(/_/g,' ').replace(/\s+/g,' ').trim().replace(/^./,c=>c.toUpperCase());
+    r.PACOTE=r.trecholote_inspecionado; r.DATA=dataBR(r.data_da_visita); r.FISCAL=r.fiscal_respons_vel;
+  },
+  filters:[
+    {field:'PACOTE',label:'Pacote',type:'chips',allLabel:'Todos'},
+    {field:'ITEM',label:'Item inspecionado',type:'select',allLabel:'Todos'},
+    {field:'FISCAL',label:'Fiscal',type:'select',allLabel:'Todos'}
+  ],
+  kpis:[
+    {label:'Levantamentos',icon:'clip',value:f=>f.length,sub:{label:'Conformes ao projeto',value:f=>f.filter(r=>r.a_obra_est_conforme_o_projeto==='Sim').length,color:'#1E9E5A',textColor:'#14713F'}},
+    {label:'Registros fotográficos',icon:'camera',value:(f)=>f.reduce((s,r)=>s+((window.__ATTN||{})[r._oid]||0),0),sub:{label:'Levantamentos com foto',value:f=>f.filter(r=>(window.__ATTN||{})[r._oid]).length}},
+    {label:'Riscos a trabalhadores',icon:'alert',value:f=>f.filter(r=>r.h_riscos_para_trabalhadores_ou==='Sim').length,sub:{label:'Proporção',value:f=>pct(f.filter(r=>r.h_riscos_para_trabalhadores_ou==='Sim').length,f.length),color:'#C2410C',textColor:'#9A3412'}},
+    {label:'Passivo ambiental',icon:'leaf',value:f=>f.filter(r=>r.h_algum_passivo_ambiental==='Sim').length,sub:{label:'Proporção',value:f=>pct(f.filter(r=>r.h_algum_passivo_ambiental==='Sim').length,f.length),color:'#C2410C',textColor:'#9A3412'}},
+    {label:'Sinalização inadequada',icon:'sign',value:f=>f.filter(r=>r.h_sinaliza_o_adequada_e_barreir==='Não').length,sub:{label:'Com restrição de acesso',value:f=>f.filter(r=>r.h_restri_es_de_acesso_ou_riscos==='Sim').length,color:'#E0A800',textColor:'#8A6500'}}
+  ],
+  charts:[
+    {slot:'left',type:'vbar',title:'Levantamentos por pacote',field:'PACOTE',sort:'label',height:220},
+    {slot:'left',type:'yn',title:'Condições verificadas em campo',field:'_yn',hint:'clique numa barra para filtrar',items:[
+      {field:'a_obra_est_conforme_o_projeto',label:'Obra conforme o projeto',good:'Sim',bad:'Não'},
+      {field:'h_sinaliza_o_adequada_e_barreir',label:'Sinalização e barreiras adequadas',good:'Sim',bad:'Não'},
+      {field:'h_restri_es_de_acesso_ou_riscos',label:'Restrições de acesso ou riscos',good:'Não',bad:'Sim'},
+      {field:'h_riscos_para_trabalhadores_ou',label:'Riscos a trabalhadores ou terceiros',good:'Não',bad:'Sim'},
+      {field:'h_algum_passivo_ambiental',label:'Passivo ambiental',good:'Não',bad:'Sim'}]},
+    {slot:'right',type:'hbar',title:'Itens inspecionados',field:'ITEM',top:12,height:520,labelWidth:190},
+    {slot:'bottom',type:'donut',title:'Levantamentos por fiscal',field:'FISCAL',centerLabel:'levantamentos'}
+  ],
+  map:{title:'Mapa da fiscalização',colorBy:'h_riscos_para_trabalhadores_ou',colors:{'Sim':'#C2410C','Não':'#1E9E5A'},labels:{'Sim':'Com risco a trabalhadores','Não':'Sem risco identificado'},legendTitle:'Riscos a trabalhadores',size:11,basemap:'hybrid',
+    extraLayers:[{url:SVC+'Eixo_FICO_I_e_II/FeatureServer/0',renderer:{type:'simple',symbol:{type:'simple-line',color:[242,183,5,.95],width:2.5}}}],
+    popupTitle:r=>`${r.PACOTE} — ${r.ITEM}`,
+    popup:(r,att)=>`<b>Data da visita:</b> ${r.DATA} às ${r.hora_de_in_cio_da_fiscaliza_o||'—'}<br><b>Fiscal:</b> ${r.FISCAL}<br><b>Empresa:</b> ${r.empresa_respons_vel_pela_obra}<br><b>Conforme o projeto:</b> ${r.a_obra_est_conforme_o_projeto}<br><b>Riscos a trabalhadores:</b> ${r.h_riscos_para_trabalhadores_ou}<br><b>Passivo ambiental:</b> ${r.h_algum_passivo_ambiental}${r.qual_passivo?' ('+r.qual_passivo+')':''}`
+      +(r.recomenda_es_ou_medidas_a_serem?`<br><b>Recomendações:</b> ${r.recomenda_es_ou_medidas_a_serem}`:'')
+      +att.slice(0,3).map(a=>`<a href="${a.url}" target="_blank" rel="noopener"><img src="${a.url}" style="width:100%;border-radius:6px;margin-top:8px" alt="Foto do levantamento"></a>`).join('')
+      +(att.length>3?`<br><i>+ ${att.length-3} fotos na galeria abaixo</i>`:'')},
+  gallery:{title:'Registros fotográficos das fiscalizações',
+    caption:r=>r.ITEM, sub:r=>`${r.PACOTE} · ${r.DATA} · Fiscal: ${r.FISCAL}`,
+    detail:r=>[r.h_riscos_para_trabalhadores_ou==='Sim'?'Com risco a trabalhadores':'', r.h_algum_passivo_ambiental==='Sim'?'Passivo ambiental':'', r.recomenda_es_ou_medidas_a_serem||''].filter(Boolean).join(' · '),
+    badge:(r,a)=>/passivo/i.test(a.keywords||'')?'Passivo ambiental':(r.h_riscos_para_trabalhadores_ou==='Sim'?'Risco':''),
+    sort:(a,b)=>(b.data_da_visita||0)-(a.data_da_visita||0)},
+  table:{title:'Levantamentos',sort:{f:'DATA',dir:-1},columns:[
+    {f:'DATA',label:'Data',sortGet:r=>r.data_da_visita||0},{f:'PACOTE',label:'Pacote'},{f:'ITEM',label:'Item inspecionado'},
+    {f:'a_obra_est_conforme_o_projeto',label:'Conforme'},{f:'h_riscos_para_trabalhadores_ou',label:'Risco',color:'h_riscos_para_trabalhadores_ou'},
+    {f:'h_algum_passivo_ambiental',label:'Passivo'},{f:'FISCAL',label:'Fiscal'},{f:'FOTOS',label:'Fotos',num:true,get:r=>(window.__ATTN||{})[r._oid]||0}]}
+};
+</script>
+<script src="../assets/painel.js"></script>
+</body>
+</html>

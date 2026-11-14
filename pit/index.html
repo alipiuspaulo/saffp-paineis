@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Projeto de Interesse de Terceiros (PIT)</title>
+<link rel="stylesheet" href="https://js.arcgis.com/4.30/esri/themes/light/main.css">
+<link rel="stylesheet" href="../assets/painel.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/5.5.0/echarts.min.js"></script>
+<script src="https://js.arcgis.com/4.30/"></script>
+</head>
+<body>
+<div id="app"></div>
+<script>
+const dmy=s=>{const m=/^(\d{2})\/(\d{2})\/(\d{4})/.exec(String(s||''));return m?+(m[3]+m[2]+m[1]):0;};
+const STATUS_COR={'Concluído':'#1E9E5A','Autorizado':'#1C5FAD','Atualizado':'#E0A800','Arquivado':'#7B3FA0'};
+window.PAINEL={
+  title:'Projeto de Interesse de Terceiros (PIT)',
+  subtitle:'Travessias, paralelismos e interferências de terceiros na faixa ferroviária',
+  home:'https://experience.arcgis.com/experience/26c68a6e20144b5199923c22b1722c3e',
+  theme:{primary:'#0F7C80',dark:'#0B4F57',soft:'#D5EEEE',header:'#0B5560'},
+  sourceName:'Projeto de Interesse de Terceiros (PIT)',
+  layer:'https://services.arcgis.com/4CZwpdWHGNPLU7QQ/arcgis/rest/services/Projeto_de_Interesse_de_Terceiros_(PIT)/FeatureServer/0',
+  oid:'FID',
+  normFields:['Status','Concession','Classifica','Tipo_de_Pr','UF','Terceiro','Município'],
+  regionFromUF:'UF',
+  derive:r=>{ const m=/(\d{4})$/.exec(String(r.Data_de_en||'').trim()); r.ANO=m?m[1]:'Não informado'; r.LOCAL=[r['Município'],r.UF].filter(x=>x&&x!=='Não informado').join('/'); },
+  filters:[
+    {field:'REGIAO',label:'Região',type:'chips',allLabel:'Brasil',order:['Norte','Nordeste','Centro-Oeste','Sudeste','Sul']},
+    {field:'UF',label:'UF',type:'select',allLabel:'Todas'},
+    {field:'Concession',label:'Concessionária',type:'select',allLabel:'Todas'},
+    {field:'Status',label:'Situação',type:'select',allLabel:'Todas'}
+  ],
+  kpis:[
+    {label:'Processos PIT',icon:'doc',value:f=>f.length,sub:{label:'Concluídos',value:f=>f.filter(r=>r.Status==='Concluído').length,color:'#1E9E5A',textColor:'#14713F'}},
+    {label:'Concessionárias',icon:'train',value:f=>new Set(f.map(r=>r.Concession).filter(v=>v!=='Não informado')).size,
+      sub:{label:'Com mais processos',value:f=>{const m={};f.forEach(r=>m[r.Concession]=(m[r.Concession]||0)+1);const t=Object.entries(m).sort((a,b)=>b[1]-a[1])[0];return t?`${t[0]} (${t[1]})`:'—';}}},
+    {label:'Terceiros requerentes',icon:'building',value:f=>new Set(f.map(r=>r.Terceiro).filter(v=>v!=='Não informado')).size,
+      sub:{label:'Projetos de energia',value:f=>f.filter(r=>/energ/i.test(r.Tipo_de_Pr)).length}},
+    {label:'Municípios',icon:'pin',value:f=>new Set(f.map(r=>r.LOCAL).filter(Boolean)).size,sub:{label:'UFs',value:f=>new Set(f.map(r=>r.UF).filter(v=>v!=='Não informado')).size}},
+    {label:'Duração mediana',icon:'clock',unit:'dias',dec:0,value:f=>{const v=f.map(r=>+r['Duração']).filter(x=>x>0&&x<3650).sort((a,b)=>a-b);if(!v.length)return 0;const h=Math.floor(v.length/2);return v.length%2?v[h]:(v[h-1]+v[h])/2;},
+      sub:{label:'Processos com prazo contado',value:f=>f.filter(r=>+r['Duração']>0).length}}
+  ],
+  charts:[
+    {slot:'left',type:'donut',title:'Situação dos processos',field:'Status',colors:STATUS_COR,centerLabel:'processos'},
+    {slot:'left',type:'hbar',title:'Classificação',field:'Classifica',top:7,height:230},
+    {slot:'right',type:'hbar',title:'Tipo de projeto',field:'Tipo_de_Pr',top:14,height:520,labelWidth:180},
+    {slot:'bottom',type:'vbar',title:'Processos por concessionária',field:'Concession',height:330}
+  ],
+  map:{title:'Mapa dos processos',colorBy:'Status',colors:STATUS_COR,legendTitle:'Situação',size:9,
+    popupTitle:r=>`PIT ${r.ID||''} — ${r.Classifica}`,
+    popup:r=>`<b>Concessionária:</b> ${r.Concession}<br><b>Terceiro:</b> ${r.Terceiro}<br><b>Tipo:</b> ${r.Tipo_de_Pr}<br><b>Local:</b> ${r.LOCAL||'—'}<br><b>Situação:</b> ${r.Status}<br><b>Processo SEI:</b> ${r.Processo_N||'—'}<br><b>Entrada:</b> ${r.Data_de_en||'—'}`},
+  table:{title:'Processos',sort:{f:'Data_de_en',dir:-1},columns:[
+    {f:'ID',label:'ID'},{f:'Processo_N',label:'Processo SEI'},{f:'Concession',label:'Concessionária'},{f:'Terceiro',label:'Terceiro'},
+    {f:'Classifica',label:'Classificação'},{f:'LOCAL',label:'Município/UF'},{f:'Status',label:'Situação',color:'Status'},
+    {f:'Data_de_en',label:'Entrada',sortGet:r=>dmy(r.Data_de_en)}]}
+};
+</script>
+<script src="../assets/painel.js"></script>
+</body>
+</html>

@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ANTT · Logo animado</title>
+
+
+
+<style>
+  :root {
+    /* Cores oficiais (Manual ANTT, p.26) */
+    --green:   #007336;
+    --blue:    #0057A8;
+    --yellow:  #FAC61E;
+    --ink:     #1A1F2A;
+    --ink-2:   #3A4254;
+    --ink-3:   #6B7488;
+    --bg:      #F4F1E9;
+    --paper:   #FFFFFF;
+    --line:    #E2DCCC;
+    --gillsans: "Gill Sans MT", "Gill Sans Nova", "Gill Sans", Cantarell, Lato, -apple-system, BlinkMacSystemFont, "Helvetica Neue", sans-serif;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; }
+
+  body {
+    font-family: var(--gillsans);
+    color: var(--ink);
+    background:
+      radial-gradient(1100px 600px at 0% 0%, rgba(0,115,54,0.045), transparent 55%),
+      radial-gradient(1000px 700px at 110% 110%, rgba(0,87,168,0.045), transparent 55%),
+      radial-gradient(700px 500px at 95% -10%, rgba(250,198,30,0.04), transparent 55%),
+      var(--bg);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: geometricPrecision;
+    display: flex; align-items: center; justify-content: center;
+    padding: 32px 16px; min-height: 100vh;
+  }
+
+  .stage {
+    position: relative;
+    width: min(820px, 100%);
+    padding: 60px 56px 36px;
+    background: var(--paper);
+    border-radius: 22px;
+    box-shadow:
+      0 1px 0 rgba(255,255,255,0.6) inset,
+      0 0 0 1px rgba(26,31,42,0.06),
+      0 30px 80px -40px rgba(26,31,42,0.22),
+      0 8px 24px -16px rgba(26,31,42,0.10);
+    overflow: hidden;
+  }
+
+  .meta {
+    position: absolute; top: 22px; right: 28px;
+    font-family: var(--gillsans); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.22em; text-transform: uppercase; color: var(--ink-3);
+    display: flex; align-items: center; gap: 8px;
+  }
+  .meta::before {
+    content: ""; width: 6px; height: 6px; border-radius: 50%;
+    background: var(--green);
+    box-shadow: 0 0 0 3px rgba(0,115,54,0.18);
+    animation: pulse 2.4s ease-in-out infinite;
+  }
+  @keyframes pulse { 0%,100% { box-shadow: 0 0 0 3px rgba(0,115,54,0.18); } 50% { box-shadow: 0 0 0 6px rgba(0,115,54,0.05); } }
+
+  .mark {
+    position: absolute; top: 22px; left: 28px;
+    display: flex; align-items: center; gap: 10px;
+    font-family: var(--gillsans); font-size: 9.5px; font-weight: 700;
+    letter-spacing: 0.22em; text-transform: uppercase; color: var(--ink-3);
+  }
+  .mark .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--ink-3); display: inline-flex; }
+
+  /* ========== SYMBOL ZONE ========== */
+  .symbol-zone {
+    position: relative;
+    width: 160px;
+    height: 144px;
+    margin: 6px auto 0;
+    /* Allow triangles to fly outside container during juggling */
+    overflow: visible;
+  }
+
+  /* Each triangle is absolutely positioned at its HOME position; transform animates it from there */
+  .tri {
+    position: absolute;
+    transform-origin: 50% 50%;
+    will-change: transform;
+  }
+  .tri svg { width: 100%; height: 100%; display: block; filter: drop-shadow(0 2px 4px rgba(26,31,42,0.06)); }
+
+  /* 10s cycle: 0-58% juggling, 58-65% converging, 65-85% holding (symbol), 85-92% dispersing, 92-100% juggling */
+  .tri-blue-top   { left: 46.66px; top: 14.12px; width: 67.12px; height: 63.51px;
+                    animation: dance-blue-top   10s cubic-bezier(.45,.05,.55,.95) infinite; }
+  .tri-green-bl   { left: 10.45px; top: 76.05px; width: 71.20px; height: 61.39px;
+                    animation: dance-green-bl   10s cubic-bezier(.45,.05,.55,.95) infinite; }
+  .tri-blue-br    { left: 80.93px; top: 81.81px; width: 71.92px; height: 55.64px;
+                    animation: dance-blue-br    10s cubic-bezier(.45,.05,.55,.95) infinite; }
+  .tri-yellow-inv { left: 49.52px; top: 69.55px; width: 78.50px; height: 63.64px;
+                    animation: dance-yellow-inv 10s cubic-bezier(.45,.05,.55,.95) infinite; }
+
+  /* Arcs are designed so each triangle stays roughly above/around its home quadrant.
+     All converge to translate(0,0) rotate(0) at 65% and hold until 85% — that's when the symbol is fully assembled. */
+  @keyframes dance-blue-top {
+    0%   { transform: translate(-22px, 18px)  rotate(-10deg); }
+    14%  { transform: translate(-12px, -6px)  rotate(-2deg); }
+    28%  { transform: translate(8px, -22px)   rotate(8deg); }
+    42%  { transform: translate(22px, -10px)  rotate(14deg); }
+    55%  { transform: translate(8px, -16px)   rotate(4deg); }
+    65%  { transform: translate(0, 0)         rotate(0); }
+    85%  { transform: translate(0, 0)         rotate(0); }
+    92%  { transform: translate(-14px, 6px)   rotate(-6deg); }
+    100% { transform: translate(-22px, 18px)  rotate(-10deg); }
+  }
+  @keyframes dance-green-bl {
+    0%   { transform: translate(18px, -16px)  rotate(10deg); }
+    14%  { transform: translate(22px, 4px)    rotate(4deg); }
+    28%  { transform: translate(10px, 18px)   rotate(-4deg); }
+    42%  { transform: translate(-14px, 12px)  rotate(-12deg); }
+    55%  { transform: translate(-16px, -4px)  rotate(-4deg); }
+    65%  { transform: translate(0, 0)         rotate(0); }
+    85%  { transform: translate(0, 0)         rotate(0); }
+    92%  { transform: translate(10px, -10px)  rotate(6deg); }
+    100% { transform: translate(18px, -16px)  rotate(10deg); }
+  }
+  @keyframes dance-blue-br {
+    0%   { transform: translate(-16px, -18px) rotate(-10deg); }
+    14%  { transform: translate(2px, -20px)   rotate(-4deg); }
+    28%  { transform: translate(20px, -8px)   rotate(6deg); }
+    42%  { transform: translate(16px, 12px)   rotate(12deg); }
+    55%  { transform: translate(-2px, 14px)   rotate(2deg); }
+    65%  { transform: translate(0, 0)         rotate(0); }
+    85%  { transform: translate(0, 0)         rotate(0); }
+    92%  { transform: translate(-10px, -12px) rotate(-4deg); }
+    100% { transform: translate(-16px, -18px) rotate(-10deg); }
+  }
+  @keyframes dance-yellow-inv {
+    0%   { transform: translate(2px, 16px)    rotate(14deg); }
+    14%  { transform: translate(-14px, 12px)  rotate(8deg); }
+    28%  { transform: translate(-18px, -4px)  rotate(-6deg); }
+    42%  { transform: translate(-2px, -18px)  rotate(-12deg); }
+    55%  { transform: translate(14px, -10px)  rotate(-4deg); }
+    65%  { transform: translate(0, 0)         rotate(0); }
+    85%  { transform: translate(0, 0)         rotate(0); }
+    92%  { transform: translate(6px, 12px)    rotate(8deg); }
+    100% { transform: translate(2px, 16px)    rotate(14deg); }
+  }
+
+  /* ========== WORDMARK ========== */
+  .word {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    margin: 8px auto 0;
+  }
+
+  .word__inner {
+    position: relative;
+    display: inline-flex;
+    align-items: flex-end;
+  }
+
+  .antt-letters {
+    display: block;
+    height: clamp(56px, 9vw, 92px);
+    width: auto;
+    z-index: 3;
+    position: relative;
+  }
+  .antt-letters path { fill: var(--green); }
+
+  /* wordmark */
+  .responde {
+    position: relative;
+    z-index: 3;
+    font-family: var(--gillsans);
+    font-weight: 700;
+    color: var(--blue);
+    /* +30% sobre o tamanho anterior (era 36/6vw/60) */
+    font-size: clamp(47px, 7.8vw, 78px);
+    line-height: 1;
+    /* Aglutinação horizontal: margin em px para fixar o canto esquerdo
+       independentemente do font-size (em escalaria com a fonte) */
+    margin-left: -11px;
+    /* translateY ajustado para que o canto INFERIOR fique na mesma posição
+       absoluta de antes: 0.48 × 60 = 28.8px → 28.8 / 78 ≈ 37% */
+    transform: translateY(37%);
+    letter-spacing: -0.012em;
+  }
+
+  /* ========== VEHICLE LANE ========== */
+  .lane {
+    position: absolute;
+    inset: 0 -8px -8px -8px;
+    z-index: 1;
+    pointer-events: none;
+    overflow: hidden;
+  }
+
+  .lane::before {
+    content: ""; position: absolute;
+    left: 4%; right: 4%; bottom: 4px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent 0%, rgba(26,31,42,0.05) 8%, rgba(26,31,42,0.10) 50%, rgba(26,31,42,0.05) 92%, transparent 100%);
+  }
+
+  .veh {
+    position: absolute; left: -120px;
+    color: var(--ink-2); opacity: 0.55;
+    will-change: transform;
+  }
+  .veh svg { display: block; }
+
+  .veh.truck { bottom: 0%; animation: drive 8.5s linear infinite; animation-delay: -1.2s; }
+  .veh.car   { bottom: 38%; animation: drive 6.2s linear infinite; animation-delay: -3.4s; opacity: 0.48; }
+  .veh.train { bottom: 70%; animation: drive 11s linear infinite; animation-delay: -7s;   opacity: 0.42; }
+
+  @keyframes drive {
+    from { transform: translateX(0); }
+    to   { transform: translateX(calc(100vw + 280px)); }
+  }
+
+  /* ========== TAGLINE ========== */
+  .tag {
+    text-align: center; margin-top: 30px;
+    font-family: var(--gillsans); font-size: 11px; font-weight: 700;
+    letter-spacing: 0.24em; text-transform: uppercase; color: var(--ink-3);
+    display: flex; align-items: center; justify-content: center;
+    gap: 14px; flex-wrap: wrap;
+  }
+  .tag .sep { width: 4px; height: 4px; border-radius: 50%; background: var(--ink-3); opacity: 0.5; }
+  .tag .accent { color: var(--green); }
+
+  /* ========== RESPONSIVE ========== */
+  @media (max-width: 600px) {
+    .stage { padding: 56px 22px 26px; }
+    .meta { right: 18px; top: 18px; }
+    .mark { left: 18px; top: 18px; font-size: 9px; gap: 8px; }
+
+    .symbol-zone { width: 110px; height: 99px; margin-bottom: 18px; }
+    .tri-blue-top   { left: 32.1px; top:  9.7px; width: 46.1px; height: 43.7px; }
+    .tri-green-bl   { left:  7.2px; top: 52.3px; width: 49.0px; height: 42.2px; }
+    .tri-blue-br    { left: 55.7px; top: 56.3px; width: 49.4px; height: 38.3px; }
+    .tri-yellow-inv { left: 34.0px; top: 47.8px; width: 54.0px; height: 43.7px; }
+
+    /* Amplitudes proporcionais ao símbolo menor no mobile */
+    @keyframes dance-blue-top {
+      0%   { transform: translate(-13px, 11px)  rotate(-10deg); }
+      14%  { transform: translate(-7px, -3px)   rotate(-2deg); }
+      28%  { transform: translate(5px, -13px)   rotate(8deg); }
+      42%  { transform: translate(13px, -6px)   rotate(14deg); }
+      55%  { transform: translate(5px, -10px)   rotate(4deg); }
+      65%  { transform: translate(0, 0)         rotate(0); }
+      85%  { transform: translate(0, 0)         rotate(0); }
+      92%  { transform: translate(-8px, 3px)    rotate(-6deg); }
+      100% { transform: translate(-13px, 11px)  rotate(-10deg); }
+    }
+    @keyframes dance-green-bl {
+      0%   { transform: translate(11px, -10px)  rotate(10deg); }
+      14%  { transform: translate(13px, 2px)    rotate(4deg); }
+      28%  { transform: translate(6px, 11px)    rotate(-4deg); }
+      42%  { transform: translate(-8px, 7px)    rotate(-12deg); }
+      55%  { transform: translate(-10px, -2px)  rotate(-4deg); }
+      65%  { transform: translate(0, 0)         rotate(0); }
+      85%  { transform: translate(0, 0)         rotate(0); }
+      92%  { transform: translate(6px, -6px)    rotate(6deg); }
+      100% { transform: translate(11px, -10px)  rotate(10deg); }
+    }
+    @keyframes dance-blue-br {
+      0%   { transform: translate(-10px, -11px) rotate(-10deg); }
+      14%  { transform: translate(2px, -12px)   rotate(-4deg); }
+      28%  { transform: translate(12px, -5px)   rotate(6deg); }
+      42%  { transform: translate(10px, 7px)    rotate(12deg); }
+      55%  { transform: translate(-2px, 8px)    rotate(2deg); }
+      65%  { transform: translate(0, 0)         rotate(0); }
+      85%  { transform: translate(0, 0)         rotate(0); }
+      92%  { transform: translate(-6px, -7px)   rotate(-4deg); }
+      100% { transform: translate(-10px, -11px) rotate(-10deg); }
+    }
+    @keyframes dance-yellow-inv {
+      0%   { transform: translate(2px, 10px)    rotate(14deg); }
+      14%  { transform: translate(-8px, 7px)    rotate(8deg); }
+      28%  { transform: translate(-11px, -2px)  rotate(-6deg); }
+      42%  { transform: translate(-2px, -11px)  rotate(-12deg); }
+      55%  { transform: translate(8px, -6px)    rotate(-4deg); }
+      65%  { transform: translate(0, 0)         rotate(0); }
+      85%  { transform: translate(0, 0)         rotate(0); }
+      92%  { transform: translate(3px, 7px)     rotate(8deg); }
+      100% { transform: translate(2px, 10px)    rotate(14deg); }
+    }
+
+    .antt-letters { height: clamp(40px, 11.5vw, 58px); }
+    .responde {
+      /* +30% sobre 26/7.7vw/40 */
+      font-size: clamp(34px, 10vw, 52px);
+      /* 0.45 × 40 = 18px → 18 / 52 ≈ 35% para fixar o canto inferior */
+      transform: translateY(35%);
+      /* margin em px para preservar o canto esquerdo. Antes -0.55em × 40 = -22px */
+      margin-left: -22px;
+    }
+    .tag {
+      font-size: 9px; gap: 6px; letter-spacing: 0.16em;
+      flex-direction: column; margin-top: 22px;
+    }
+    .tag .sep { display: none; }
+  }
+
+  @media (max-width: 400px) {
+    .stage { padding: 50px 16px 22px; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .tri-blue-top, .tri-green-bl, .tri-blue-br, .tri-yellow-inv,
+    .veh, .meta::before { animation: none; }
+  }
+
+
+  /* Wordmark SAFF-P / SUFER / ANTT */
+  .sigma-text {
+    font-family: var(--gillsans);
+    font-size: clamp(24px, 4.2vw, 46px);
+    font-weight: 700;
+    color: var(--green);
+    line-height: 1;
+    position: relative;
+    z-index: 3;
+    letter-spacing: -0.01em;
+    padding: 6px 0 2px;
+    white-space: nowrap;
+  }
+  /* === LIMPEZA FINAL === */
+  .mark, .meta { display: none !important; }
+  /* Remover Google Fonts (evita timeout em ambientes restritos) */
+</style>
+</head>
+<body>
+
+  <main class="stage" role="img" aria-label="Logo animado ANTT — Agência Nacional de Transportes Terrestres">
+
+    <div class="mark" aria-hidden="true">
+      
+    </div>
+    <div class="meta"></div>
+
+    <!-- 4 triângulos oficiais — fazem malabarismo e se compõem no símbolo -->
+    <div class="symbol-zone" aria-hidden="true">
+          <div class="tri tri-blue-top">
+            <svg viewBox="328.08 604.47 26.01 24.61" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg">
+              <path fill="#0057A8" d="M 341.640625 604.46875 L 328.082031 628.207031 C 328.257812 628.636719 328.59375 629.082031 329.035156 629.054688 L 354.09375 626.039062 Z M 341.640625 604.46875 "/>
+            </svg>
+          </div>
+          <div class="tri tri-green-bl">
+            <svg viewBox="314.05 628.47 27.59 23.79" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg">
+              <path fill="#007336" d="M 327.90625 628.46875 L 314.046875 652.261719 L 341.640625 652.261719 Z M 327.90625 628.46875 "/>
+            </svg>
+          </div>
+          <div class="tri tri-blue-br">
+            <svg viewBox="341.36 630.70 27.87 21.56" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg">
+              <path fill="#0057A8" d="M 356.785156 630.699219 L 369.234375 652.261719 L 341.96875 652.261719 C 341.714844 651.820312 341.355469 651.515625 341.699219 651 L 341.699219 650.992188 Z M 356.785156 630.699219 "/>
+            </svg>
+          </div>
+          <div class="tri tri-yellow-inv">
+            <svg viewBox="329.19 625.95 30.42 24.66" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg">
+              <path fill="#FAC61E" d="M 341.335938 650.605469 C 341.378906 650.507812 341.425781 650.417969 341.484375 650.324219 L 341.492188 650.3125 L 359.609375 625.949219 L 329.527344 629.566406 L 329.519531 629.566406 C 329.40625 629.574219 329.292969 629.570312 329.1875 629.554688 Z M 341.335938 650.605469 "/>
+            </svg>
+          </div>
+    </div>
+
+    <div class="word">
+      <div class="word__inner">
+
+        <div class="lane">
+          <div class="veh truck">
+            <svg width="48" height="22" viewBox="0 0 64 28" xmlns="http://www.w3.org/2000/svg">
+              <rect x="2"  y="6"  width="36" height="14" rx="1.2" fill="currentColor"/>
+              <line x1="20" y1="6" x2="20" y2="20" stroke="rgba(255,255,255,0.35)" stroke-width="0.6"/>
+              <path d="M38 10 L52 10 L58 16 L58 20 L38 20 Z" fill="currentColor"/>
+              <rect x="42" y="11.5" width="9" height="4" rx="0.5" fill="rgba(255,255,255,0.4)"/>
+              <circle cx="11" cy="22" r="3" fill="currentColor"/>
+              <circle cx="11" cy="22" r="1.2" fill="rgba(255,255,255,0.5)"/>
+              <circle cx="29" cy="22" r="3" fill="currentColor"/>
+              <circle cx="29" cy="22" r="1.2" fill="rgba(255,255,255,0.5)"/>
+              <circle cx="52" cy="22" r="3" fill="currentColor"/>
+              <circle cx="52" cy="22" r="1.2" fill="rgba(255,255,255,0.5)"/>
+            </svg>
+          </div>
+          <div class="veh car">
+            <svg width="40" height="18" viewBox="0 0 52 22" xmlns="http://www.w3.org/2000/svg">
+              <path d="M2 14 L9 6 Q11 4 14 4 L34 4 Q37 4 39.5 6.5 L46 13 L50 13 L50 17 L2 17 Z" fill="currentColor"/>
+              <path d="M11 6.5 L20 6.5 L20 12.5 L13 12.5 Z" fill="rgba(255,255,255,0.42)"/>
+              <path d="M22 6.5 L33 6.5 L37 12.5 L22 12.5 Z" fill="rgba(255,255,255,0.42)"/>
+              <circle cx="13" cy="18" r="3" fill="currentColor"/>
+              <circle cx="13" cy="18" r="1.2" fill="rgba(255,255,255,0.5)"/>
+              <circle cx="40" cy="18" r="3" fill="currentColor"/>
+              <circle cx="40" cy="18" r="1.2" fill="rgba(255,255,255,0.5)"/>
+            </svg>
+          </div>
+          <div class="veh train">
+            <svg width="68" height="22" viewBox="0 0 88 26" xmlns="http://www.w3.org/2000/svg">
+              <path d="M3 6 L62 6 L70 11 L74 11 L74 20 L3 20 Z" fill="currentColor"/>
+              <rect x="50" y="2" width="5" height="5" fill="currentColor"/>
+              <rect x="7"  y="9" width="5" height="5" rx="0.5" fill="rgba(255,255,255,0.42)"/>
+              <rect x="15" y="9" width="5" height="5" rx="0.5" fill="rgba(255,255,255,0.42)"/>
+              <rect x="23" y="9" width="5" height="5" rx="0.5" fill="rgba(255,255,255,0.42)"/>
+              <rect x="31" y="9" width="5" height="5" rx="0.5" fill="rgba(255,255,255,0.42)"/>
+              <rect x="39" y="9" width="5" height="5" rx="0.5" fill="rgba(255,255,255,0.42)"/>
+              <rect x="47" y="9" width="5" height="5" rx="0.5" fill="rgba(255,255,255,0.42)"/>
+              <rect x="63" y="9" width="6" height="4" rx="0.5" fill="rgba(255,255,255,0.42)"/>
+              <circle cx="13" cy="22" r="2.6" fill="currentColor"/>
+              <circle cx="27" cy="22" r="2.6" fill="currentColor"/>
+              <circle cx="44" cy="22" r="2.6" fill="currentColor"/>
+              <circle cx="60" cy="22" r="2.6" fill="currentColor"/>
+              <line x1="10" y1="24.5" x2="63" y2="24.5" stroke="currentColor" stroke-width="0.8" opacity="0.5"/>
+            </svg>
+          </div>
+        </div>
+        <span class="sigma-text">SAFF-P / SUFER / <span style="color:var(--blue)">ANTT</span></span>
+
+        
+
+      </div>
+    </div>
+
+    <div class="tag">
+      <span>DEMONSTRAÇÃO</span>
+      <span class="sep"></span>
+      <span class="accent">AGÊNCIA NACIONAL DE TRANSPORTES TERRESTRES</span>
+    </div>
+
+  </main>
+
+</body>
+</html>
+
