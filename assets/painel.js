@@ -6,6 +6,8 @@ const C = window.PAINEL;
 const root = document.documentElement.style;
 Object.entries({'--p':C.theme.primary,'--pd':C.theme.dark,'--ps':C.theme.soft,'--hd':C.theme.header})
   .forEach(([k,v])=>root.setProperty(k,v));
+if(C.theme.headerBg) root.setProperty('--hdbg',C.theme.headerBg);
+if(C.theme.headerBorder) root.setProperty('--hdbd',C.theme.headerBorder);
 
 const LOGO='https://imagem-govfed.maps.arcgis.com/sharing/rest/content/items/b9b84e3d709e4bd9af5e652588ace76e/resources/images/logo_antt_header.png';
 const UFSVC='https://services.arcgis.com/4CZwpdWHGNPLU7QQ/arcgis/rest/services/UF/FeatureServer/0';
@@ -36,6 +38,16 @@ const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&g
 const fold=s=>String(s).normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase().replace(/\s+/g,' ').trim();
 const natural=(a,b)=>String(a).localeCompare(String(b),'pt-BR',{numeric:true});
 window.PAINEL_UTIL={UFREG,nf,fold,NI};
+/* marcadores ilustrados (SVG em data-URL) para o mapa e as legendas */
+const MKC={};
+function markerURL(v){
+  const ic=C.map&&C.map.icons&&C.map.icons[v]; if(!ic) return null;
+  if(MKC[v]) return MKC[v];
+  const col=catColor(C.map.colorBy,v,C.map.colors);
+  const s=`<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 48 48"><circle cx="24" cy="25.5" r="20" fill="#000" opacity=".25"/><circle cx="24" cy="24" r="20.5" fill="${col}" stroke="#fff" stroke-width="3"/><g transform="translate(12 12)" fill="none" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round">${ic.glyph}</g></svg>`;
+  return MKC[v]='data:image/svg+xml;base64,'+btoa(s);
+}
+const legendMark=(v,col)=>{ const u=markerURL(v); return u?`<img class="mk" src="${u}" alt="">`:`<i class="dot" style="background:${col}"></i>`; };
 
 /* ---------- estrutura da página ---------- */
 const slots={}; (C.charts||[]).forEach((c,i)=>{c._id='ch'+i; (slots[c.slot]=slots[c.slot]||[]).push(c);});
@@ -47,7 +59,7 @@ const cardChart=c=>`<div class="card" id="${c._id}_card" style="display:flex;fle
 </div>`;
 const app=document.getElementById('app');
 app.innerHTML=`
-<header class="top"><div class="top-in">
+<header class="top ${C.theme.headerLight?'light-end':''}"><div class="top-in">
   <img class="logo" src="${LOGO}" alt="ANTT – Agência Nacional de Transportes Terrestres">
   <span class="vsep" aria-hidden="true"></span>
   <div><h1>${esc(C.title)}</h1><div class="sub">${esc(C.subtitle||'')}</div></div>
@@ -55,12 +67,16 @@ app.innerHTML=`
   ${C.home?`<a class="pill" href="${C.home}" target="_blank" rel="noopener">⌂ Página inicial SAFF-P</a>`:''}
   <span class="pill">Dados ao vivo · ArcGIS Online</span>
 </div></header>
+${C.timelapse?`<div class="tabs" role="tablist" aria-label="Seções do painel">
+  <button class="tab on" role="tab" aria-selected="true" data-t="ov">${icon('doc')}Visão geral</button>
+  <button class="tab" role="tab" aria-selected="false" data-t="tl">${icon('clock')}${esc(C.timelapse.tabTitle||'Histórico e alertas')}<span class="abadge" id="aBadge" hidden></span></button>
+  <span class="sp"></span><span class="newdata" id="newData" hidden></span></div>`:''}
 <nav class="filters" aria-label="Filtros"><div class="fgroup" id="fbox" style="gap:10px 18px"></div>
   <div class="active" id="fActive"></div><button class="clear" id="fClear" hidden>Limpar filtros</button></nav>
 <main class="wrap">
   <div id="loading" class="loading">Carregando dados da camada…</div>
-  <section class="kpis" id="kpis" style="--nk:${(C.kpis||[]).length}"></section>
-  <section class="main">
+  <section class="kpis ov" id="kpis" style="--nk:${(C.kpis||[]).length}"></section>
+  <section class="main ov">
     <div class="col">${(slots.left||[]).map(cardChart).join('')}</div>
     <div class="card mapcard">
       <div class="card-h"><h2>${esc((C.map&&C.map.title)||'Mapa')}</h2><span class="sp"></span>
@@ -69,10 +85,33 @@ app.innerHTML=`
         <option value="streets-vector">Ruas</option><option value="topo-vector">Topográfico</option><option value="hybrid">Imagem de satélite</option><option value="osm">OpenStreetMap</option></select></div>
       <div id="map"></div>
     </div>
-    <div class="col" style="grid-template-rows:1fr">${(slots.right||[]).map(cardChart).join('')}</div>
+    <div class="col" style="grid-template-rows:${(slots.right||[]).length>1?'auto 1fr':'1fr'}">${(slots.right||[]).map(cardChart).join('')}</div>
   </section>
-  ${C.gallery?`<section class="card" id="galCard"><div class="card-h"><h2>${esc(C.gallery.title)}</h2><span class="hint" id="galCount"></span><span class="sp"></span><span class="hint">clique na foto para ampliar</span></div><div class="gallery" id="gallery"></div></section>`:''}
-  <section class="bottom">
+  ${C.gallery?`<section class="card ov" id="galCard"><div class="card-h"><h2>${esc(C.gallery.title)}</h2><span class="hint" id="galCount"></span><span class="sp"></span><span class="hint">clique na foto para ampliar</span></div><div class="gallery" id="gallery"></div></section>`:''}
+  ${C.timelapse?`<section class="tlpane">
+    <div class="tl-grid">
+      <div class="card tl-mapcard">
+        <div class="card-h"><h2>Linha do tempo dos acidentes</h2><span class="sp"></span><span class="hint">${esc(C.timelapse.note||'')}</span></div>
+        <div class="tl-ctrl">
+          <button id="tlPlay" class="tl-play" aria-label="Pausar">❚❚</button>
+          <input type="range" id="tlRange" min="0" max="0" value="0" aria-label="Mês exibido">
+          <span class="tl-now" id="tlNow">—</span>
+          <label class="hint" for="tlSpeed">Velocidade</label>
+          <select id="tlSpeed" class="mapsel"><option value="1300">Lenta</option><option value="650" selected>Normal</option><option value="260">Rápida</option></select>
+          <label class="hint tl-acc"><input type="checkbox" id="tlAcc" checked> Acumular meses</label>
+        </div>
+        <div id="tlMap"></div>
+      </div>
+      <div class="card alerts">
+        <div class="card-h"><h2>Alertas de inclusão</h2><span class="sp"></span><span class="hint">pisca por ${C.timelapse.alertDays||7} dias</span></div>
+        <div id="alertHead" class="alert-head"></div>
+        <div id="alertList" class="alert-list"></div>
+      </div>
+    </div>
+    <div class="card"><div class="card-h"><h2>Acidentes por mês</h2><span class="sp"></span><span class="hint">clique em um mês para ir até ele</span></div>
+      <div id="tlChart" class="chart" style="height:250px"></div></div>
+  </section>`:''}
+  <section class="bottom ov">
     <div class="col" style="grid-template-rows:1fr">${(slots.bottom||[]).map(cardChart).join('')}</div>
     <div class="card"><div class="card-h"><h2>${esc(C.table.title)}</h2><span class="hint" id="tblCount"></span><span class="sp"></span>
       <input class="search" id="tblSearch" type="search" placeholder="Buscar…" aria-label="Buscar na tabela"></div>
@@ -164,7 +203,8 @@ function renderKPIs(f){
 /* ---------- gráficos ---------- */
 const EC={};
 const catColor=(field,v,fixed)=>{ if(fixed&&fixed[v]) return fixed[v]; if(v===NI) return '#C9D2DE'; const i=(ORDER[field]||[]).indexOf(v); return i>=0&&i<PALETTE.length?PALETTE[i]:OTHER; };
-function ec(id){ if(!EC[id]) EC[id]=echarts.init(document.getElementById(id)); return EC[id]; }
+function ec(id,c){ if(!EC[id]){ EC[id]=echarts.init(document.getElementById(id)); if(c) EC[id].on('click',p=>{ if(p.componentType==='series'&&p.name!=null&&p.name!=='') set(c.field,p.name); }); } return EC[id]; }
+const fullName=(c,v)=>c.names&&c.names[v]?`${esc(v)} · ${esc(c.names[v])}`:esc(v);
 function renderChart(c){
   const base=rows(c.field);
   if(c.type==='yn') return renderYN(c);
@@ -173,13 +213,13 @@ function renderChart(c){
   if(c.type==='donut'){
     list.sort((a,b)=>b[1]-a[1]);
     const data=list.map(([v,n])=>({name:v,value:n,itemStyle:{color:catColor(c.field,v,c.colors),opacity:S[c.field]==null||S[c.field]===v?1:.25}}));
-    ec(c._id).setOption({tooltip:{trigger:'item',formatter:p=>`<b>${esc(p.name)}</b><br>${nf(p.value)} · ${nf(p.percent,1)}%`},
+    ec(c._id,c).setOption({tooltip:{trigger:'item',formatter:p=>`<b>${esc(p.name)}</b><br>${nf(p.value)} · ${nf(p.percent,1)}%`},
       series:[{type:'pie',radius:['58%','84%'],center:['50%','52%'],padAngle:1.5,itemStyle:{borderColor:'#fff',borderWidth:2,borderRadius:3},
         label:{show:true,position:'center',formatter:()=>`{v|${nf(S[c.field]!=null?(m.get(S[c.field])||0):tot)}}\n{l|${esc(c.centerLabel||'registros')}}`,
           rich:{v:{fontSize:26,fontWeight:700,color:'#14213D',lineHeight:30},l:{fontSize:12,color:'#6A7486'}}},
         emphasis:{scale:true,scaleSize:4,label:{show:true}},labelLine:{show:false},data}]},true);
     const lg=document.getElementById(c._id+'_lg');
-    lg.innerHTML=data.slice(0,c.legendMax||8).map(d=>`<button class="lg ${S[c.field]!=null&&S[c.field]!==d.name?'off':''}" data-v="${esc(d.name)}"><i class="dot" style="background:${d.itemStyle.color}"></i><span>${esc(c.labels&&c.labels[d.name]||d.name)}</span><span class="c">${nf(d.value)}</span><span class="pc">${tot?nf(d.value/tot*100,1):0}%</span></button>`).join('');
+    lg.innerHTML=data.slice(0,c.legendMax||8).map(d=>`<button class="lg ${S[c.field]!=null&&S[c.field]!==d.name?'off':''}" data-v="${esc(d.name)}">${C.map&&C.map.colorBy===c.field?legendMark(d.name,d.itemStyle.color):`<i class="dot" style="background:${d.itemStyle.color}"></i>`}<span>${esc(c.labels&&c.labels[d.name]||d.name)}</span><span class="c">${nf(d.value)}</span><span class="pc">${tot?nf(d.value/tot*100,1):0}%</span></button>`).join('');
     lg.querySelectorAll('.lg').forEach(b=>b.onclick=()=>set(c.field,b.dataset.v));
     return;
   }
@@ -189,9 +229,9 @@ function renderChart(c){
     if(!c._all) list=list.slice(0,N);
     list.reverse();
     const h=Math.max(c.height||300,list.length*26+30);
-    document.getElementById(c._id).style.height=h+'px'; ec(c._id).resize();
-    ec(c._id).setOption({grid:{left:8,right:40,top:6,bottom:6,containLabel:true},
-      tooltip:{trigger:'item',formatter:p=>`<b>${esc(p.name)}</b><br>${nf(p.value)} · ${tot?nf(p.value/tot*100,1):0}%`},
+    document.getElementById(c._id).style.height=h+'px'; ec(c._id,c).resize();
+    ec(c._id,c).setOption({grid:{left:8,right:40,top:6,bottom:6,containLabel:true},
+      tooltip:{trigger:'item',formatter:p=>`<b>${fullName(c,p.name)}</b><br>${nf(p.value)} acidentes · ${tot?nf(p.value/tot*100,1):0}%<br><span style="color:#6A7486">clique para filtrar</span>`},
       xAxis:{type:'value',splitLine:{lineStyle:{color:'#EDF0F4'}},axisLabel:{color:'#6A7486',fontSize:11}},
       yAxis:{type:'category',data:list.map(x=>x[0]),axisTick:{show:false},axisLine:{lineStyle:{color:'#DDE3EB'}},axisLabel:{color:'#14213D',fontSize:12,width:c.labelWidth||170,overflow:'truncate'}},
       series:[{type:'bar',barMaxWidth:16,data:list.map(([v,n])=>({value:n,itemStyle:{color:c.colors?catColor(c.field,v,c.colors):(S[c.field]===v?C.theme.dark:C.theme.primary),opacity:S[c.field]==null||S[c.field]===v?1:.3,borderRadius:[0,4,4,0]}})),
@@ -203,7 +243,7 @@ function renderChart(c){
   }
   // vbar
   if(c.order) list.sort((a,b)=>c.order.indexOf(a[0])-c.order.indexOf(b[0])); else if(c.sort==='label') list.sort((a,b)=>natural(a[0],b[0])); else list.sort((a,b)=>b[1]-a[1]);
-  ec(c._id).setOption({grid:{left:8,right:12,top:22,bottom:4,containLabel:true},
+  ec(c._id,c).setOption({grid:{left:8,right:12,top:22,bottom:4,containLabel:true},
     tooltip:{trigger:'item',formatter:p=>`<b>${esc(p.name)}</b><br>${nf(p.value)}`},
     xAxis:{type:'category',data:list.map(x=>x[0]),axisTick:{show:false},axisLine:{lineStyle:{color:'#DDE3EB'}},axisLabel:{color:'#14213D',fontSize:12,interval:0,rotate:list.length>8?30:0,width:90,overflow:'truncate'}},
     yAxis:{type:'value',splitLine:{lineStyle:{color:'#EDF0F4'}},axisLabel:{color:'#6A7486',fontSize:11}},
@@ -266,24 +306,49 @@ window.PAINEL_OPEN_PHOTO=(oid)=>{ const i=GAL.findIndex(x=>x.r._oid===oid); if(i
 let view=null, ptLayer=null, ptView=null, hlLayer=null, lastKey=null, Extent=null;
 const q=s=>"'"+String(s).replace(/'/g,"''")+"'";
 function mapColor(r){ return catColor(C.map.colorBy,r[C.map.colorBy],C.map.colors); }
+function pointRenderer(scale){
+  const cats=[...new Set(D.map(r=>String(r[C.map.colorBy])))];
+  const sym=v=>{ const u=markerURL(v), ic=C.map.icons&&C.map.icons[v];
+    if(u){ const s=(ic.size||20)*(scale||1); return {type:'picture-marker',url:u,width:s,height:s}; }
+    return {type:'simple-marker',size:(C.map.size||8)*(scale||1),color:catColor(C.map.colorBy,v,C.map.colors),outline:{color:[255,255,255,.9],width:.8}}; };
+  return {type:'unique-value',field:'_cat',defaultSymbol:{type:'simple-marker',size:C.map.size||8,color:OTHER,outline:{color:[255,255,255,.9],width:.8}},
+    uniqueValueInfos:cats.map(v=>({value:v,symbol:sym(v),label:C.map.labels&&C.map.labels[v]||v}))};
+}
+const iconOrder=v=>{ const k=C.map.icons?Object.keys(C.map.icons):[]; const i=k.indexOf(String(v)); return i<0?99:i; };
+function pointGraphics(Graphic,extra){
+  return D.filter(r=>r._x!=null).map(r=>new Graphic({geometry:{type:'point',longitude:r._x,latitude:r._y},
+    attributes:Object.assign({_oid:r._oid,_cat:String(r[C.map.colorBy]),_ord:iconOrder(r[C.map.colorBy])},extra?extra(r):{})}));
+}
+const popupTpl=()=>({title:f=>{const r=BYOID[f.graphic.attributes._oid]; return esc(C.map.popupTitle(r));},
+  content:f=>{const r=BYOID[f.graphic.attributes._oid]; return C.map.popup(r,ATT[r._oid]||[]);}});
+function mapLegend(){
+  const lg=document.createElement('div'); lg.className='mlegend';
+  const cats=[...new Set(D.map(r=>r[C.map.colorBy]))];
+  const top=(C.map.icons?Object.keys(C.map.icons):(ORDER[C.map.colorBy]||cats)).filter(v=>cats.includes(v)).slice(0,8);
+  lg.innerHTML=`<div class="t">${esc(C.map.legendTitle||'')}</div>`+top.map(v=>`<div class="li">${legendMark(v,catColor(C.map.colorBy,v,C.map.colors))}${esc(C.map.labels&&C.map.labels[v]||v)}</div>`).join('');
+  return lg;
+}
+let heatLayer=null, heatView=null;
 function initMap(){ return new Promise(res=>{
-  require(['esri/Map','esri/views/MapView','esri/layers/FeatureLayer','esri/Graphic','esri/geometry/Extent'],(EMap,MapView,FeatureLayer,Graphic,Ext)=>{
-    Extent=Ext;
-    const cats=[...new Set(D.map(r=>r[C.map.colorBy]))];
-    const graphics=D.filter(r=>r._x!=null).map(r=>new Graphic({geometry:{type:'point',longitude:r._x,latitude:r._y},attributes:{_oid:r._oid,_cat:String(r[C.map.colorBy])}}));
-    ptLayer=new FeatureLayer({source:graphics,objectIdField:'_oid',geometryType:'point',spatialReference:{wkid:4326},
-      fields:[{name:'_oid',type:'oid'},{name:'_cat',type:'string'}],
-      renderer:{type:'unique-value',field:'_cat',defaultSymbol:{type:'simple-marker',size:C.map.size||8,color:OTHER,outline:{color:[255,255,255,.9],width:.8}},
-        uniqueValueInfos:cats.map(v=>({value:String(v),symbol:{type:'simple-marker',size:C.map.size||8,color:catColor(C.map.colorBy,v,C.map.colors),outline:{color:[255,255,255,.9],width:.8}}}))},
-      popupTemplate:{title:f=>{const r=BYOID[f.graphic.attributes._oid]; return esc(C.map.popupTitle(r));},
-        content:f=>{const r=BYOID[f.graphic.attributes._oid]; return C.map.popup(r,ATT[r._oid]||[]);}}});
+  require(['esri/Map','esri/views/MapView','esri/layers/FeatureLayer','esri/Graphic','esri/geometry/Extent','esri/widgets/LayerList','esri/widgets/Expand'],(EMap,MapView,FeatureLayer,Graphic,Ext,LayerList,Expand)=>{
+    Extent=Ext; window.__ESRI={EMap,MapView,FeatureLayer,Graphic,LayerList,Expand};
+    ptLayer=new FeatureLayer({title:C.map.layerTitle||C.title,source:pointGraphics(Graphic),objectIdField:'_oid',geometryType:'point',spatialReference:{wkid:4326},
+      fields:[{name:'_oid',type:'oid'},{name:'_cat',type:'string'},{name:'_ord',type:'integer'}],
+      orderBy:[{field:'_ord',order:'ascending'}],
+      renderer:pointRenderer(1),popupTemplate:popupTpl()});
     const layers=[];
     if(C.regionFromUF){
-      layers.push(new FeatureLayer({url:UFSVC,popupEnabled:false,renderer:{type:'simple',symbol:{type:'simple-fill',color:[0,0,0,0],outline:{color:[255,255,255,.55],width:.7}}}}));
-      hlLayer=new FeatureLayer({url:UFSVC,popupEnabled:false,definitionExpression:'1=0',renderer:{type:'simple',symbol:{type:'simple-fill',color:[255,255,255,.08],outline:{color:[242,183,5,1],width:2}}}});
+      layers.push(new FeatureLayer({url:UFSVC,title:'Limites estaduais',popupEnabled:false,renderer:{type:'simple',symbol:{type:'simple-fill',color:[0,0,0,0],outline:{color:[255,255,255,.55],width:.7}}}}));
+      hlLayer=new FeatureLayer({url:UFSVC,listMode:'hide',popupEnabled:false,definitionExpression:'1=0',renderer:{type:'simple',symbol:{type:'simple-fill',color:[255,255,255,.08],outline:{color:[242,183,5,1],width:2}}}});
       layers.push(hlLayer);
     }
     (C.map.extraLayers||[]).forEach(u=>layers.push(new FeatureLayer(Object.assign({popupEnabled:false},u))));
+    if(C.map.heatmap){
+      heatLayer=new FeatureLayer({title:'Mapa de calor (concentração)',visible:false,source:pointGraphics(Graphic),objectIdField:'_oid',geometryType:'point',spatialReference:{wkid:4326},
+        fields:[{name:'_oid',type:'oid'},{name:'_cat',type:'string'},{name:'_ord',type:'integer'}],popupEnabled:false,
+        renderer:{type:'heatmap',radius:14,maxDensity:0.04,minDensity:0,colorStops:[{ratio:0,color:'rgba(242,183,5,0)'},{ratio:.15,color:'rgba(242,183,5,.55)'},{ratio:.45,color:'rgba(234,120,20,.8)'},{ratio:.75,color:'rgba(194,40,30,.9)'},{ratio:1,color:'rgba(110,20,20,1)'}]}});
+      layers.push(heatLayer);
+    }
     layers.push(ptLayer);
     const sel=document.getElementById('baseSel');
     const m=new EMap({basemap:sel.value,layers});
@@ -291,18 +356,21 @@ function initMap(){ return new Promise(res=>{
     view.navigation.mouseWheelZoomEnabled=false;
     view.on('click',()=>{view.navigation.mouseWheelZoomEnabled=true;});
     view.on('pointer-leave',()=>{view.navigation.mouseWheelZoomEnabled=false;});
-    const lg=document.createElement('div'); lg.className='mlegend';
-    const top=(ORDER[C.map.colorBy]||cats).filter(v=>cats.includes(v)).slice(0,8);
-    lg.innerHTML=`<div class="t">${esc(C.map.legendTitle||'')}</div>`+top.map(v=>`<div><i style="background:${catColor(C.map.colorBy,v,C.map.colors)}"></i>${esc(C.map.labels&&C.map.labels[v]||v)}</div>`).join('');
-    view.ui.add(lg,'bottom-left');
+    view.ui.add(mapLegend(),'bottom-left');
+    if(C.map.layerList!==false){
+      view.ui.add(new Expand({view,content:new LayerList({view}),expandIcon:'layers',expandTooltip:'Camadas do mapa',group:'tr',expanded:false}),'top-right');
+    }
     sel.onchange=e=>{ m.basemap=e.target.value; };
+    if(heatLayer) view.whenLayerView(heatLayer).then(lv=>{ heatView=lv; if(ptView) renderMap(rows(),true); });
     view.whenLayerView(ptLayer).then(lv=>{ ptView=lv; res(); });
   });
 }); }
 let BYOID={};
-function renderMap(f){
+function renderMap(f,noZoom){
   if(!view||!ptView) return;
-  ptView.filter=f.length===D.length?null:{objectIds:f.map(r=>r._oid)};
+  const flt=f.length===D.length?null:{objectIds:f.map(r=>r._oid)};
+  ptView.filter=flt; if(heatView) heatView.filter=flt;
+  if(noZoom) return;
   if(hlLayer) hlLayer.definitionExpression=S.UF?'SIGLA_UF='+q(S.UF):S.REGIAO?(S.REGIAO==='Centro-Oeste'?"NM_REGIAO IN ('Centro-Oeste','Centro-oeste')":'NM_REGIAO='+q(S.REGIAO)):'1=0';
   const key=JSON.stringify(S); if(key===lastKey) return; lastKey=key;
   const bb=(C.map&&C.map.bbox)||[-75,-35,-28,7]; // enquadra só pontos dentro do Brasil (ignora coordenadas erradas)
@@ -312,10 +380,167 @@ function renderMap(f){
   else view.goTo(new Extent({xmin,ymin,xmax,ymax,spatialReference:{wkid:4326}}).expand(1.25),{duration:600}).catch(()=>{});
 }
 
+/* ---------- aba Histórico e alertas (time lapse + alertas de inclusão) ---------- */
+const TLC=C.timelapse;
+const MES=['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'];
+const TL={on:false,ready:false,mk0:0,n:0,cur:0,timer:null,playing:true,hold:0,view:null,layer:null,lv:null,alertLayer:null,blinkT:null,chart:null,preview:null,maxCreated:0};
+const mLabel=(i,long)=>{ const k=TL.mk0+i, y=Math.floor(k/12); return `${MES[k%12]}/${long?y:String(y).slice(2)}`; };
+const fmtDT=t=>new Date(t).toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'});
+function tlPrep(){
+  D.forEach(r=>{ const m=/(\d{2})\/(\d{2})\/(\d{4})/.exec(String(r[TLC.dateField]||'')); r._mk=m?(+m[3])*12+(+m[2]-1):null; });
+  const ks=D.map(r=>r._mk).filter(k=>k!=null); TL.mk0=Math.min(...ks); TL.n=Math.max(...ks)-TL.mk0+1;
+  D.forEach(r=>{ r._t=r._mk==null?-1:r._mk-TL.mk0; });
+  TL.cur=0; TL.maxCreated=D.reduce((m,r)=>Math.max(m,+r[TLC.createdField]||0),0);
+  const rg=document.getElementById('tlRange'); rg.max=TL.n-1; rg.value=0;
+}
+const tlRows=()=>rows('ANO');
+function tlSeries(f){
+  const cats=C.map.icons?Object.keys(C.map.icons):(ORDER[C.map.colorBy]||[]);
+  const per=cats.map(()=>new Array(TL.n).fill(0));
+  f.forEach(r=>{ if(r._t<0) return; const i=cats.indexOf(String(r[C.map.colorBy])); if(i>=0) per[i][r._t]++; });
+  return {cats,per};
+}
+function initTL(){ if(TL.ready||!window.__ESRI) return; TL.ready=true;
+  const {EMap,MapView,FeatureLayer,Graphic}=window.__ESRI;
+  require(['esri/layers/GraphicsLayer'],GraphicsLayer=>{
+    TL.layer=new FeatureLayer({title:'Acidentes no tempo',source:pointGraphics(Graphic,r=>({_t:r._t})),objectIdField:'_oid',geometryType:'point',spatialReference:{wkid:4326},
+      fields:[{name:'_oid',type:'oid'},{name:'_cat',type:'string'},{name:'_ord',type:'integer'},{name:'_t',type:'integer'}],
+      orderBy:[{field:'_ord',order:'ascending'}],renderer:pointRenderer(.85),popupTemplate:popupTpl()});
+    TL.alertLayer=new GraphicsLayer({title:'Alertas',listMode:'hide'});
+    const extra=(C.map.extraLayers||[]).map(u=>new FeatureLayer(Object.assign({popupEnabled:false},u)));
+    const m=new EMap({basemap:'dark-gray-vector',layers:[...extra,TL.layer,TL.alertLayer]});
+    TL.view=new MapView({container:'tlMap',map:m,center:[-50,-17],zoom:4,constraints:{snapToZoom:false},ui:{components:['zoom','attribution']},popup:{dockEnabled:false,dockOptions:{buttonEnabled:false}}});
+    TL.view.navigation.mouseWheelZoomEnabled=false;
+    TL.view.on('click',()=>{TL.view.navigation.mouseWheelZoomEnabled=true;});
+    const st=document.createElement('div'); st.className='tl-stamp'; st.id='tlStamp'; TL.view.ui.add(st,'top-left');
+    TL.view.ui.add(mapLegend(),'bottom-left');
+    TL.view.whenLayerView(TL.layer).then(lv=>{ TL.lv=lv; tlFrame(); });
+    TL.chart=echarts.init(document.getElementById('tlChart'));
+    TL.chart.on('click',p=>{ if(p.dataIndex!=null){ TL.cur=p.dataIndex; tlPlay(false); tlFrame(); } });
+    tlChart(); renderAlerts(); tlPlay(TL.playing);
+  });
+}
+function tlChart(){
+  if(!TL.chart) return;
+  const {cats,per}=tlSeries(tlRows());
+  TL.chart.setOption({grid:{left:8,right:16,top:30,bottom:4,containLabel:true},
+    legend:{top:0,right:8,itemWidth:12,itemHeight:12,textStyle:{color:'#4A5568'}},
+    tooltip:{trigger:'axis',axisPointer:{type:'shadow'},formatter:ps=>`<b>${mLabel(ps[0].dataIndex,true)}</b><br>`+ps.map(p=>`${p.marker} ${esc(p.seriesName)}: <b>${nf(p.value)}</b>`).join('<br>')},
+    xAxis:{type:'category',data:Array.from({length:TL.n},(_,i)=>mLabel(i)),axisTick:{show:false},axisLine:{lineStyle:{color:'#DDE3EB'}},axisLabel:{color:'#6A7486',fontSize:11}},
+    yAxis:{type:'value',splitLine:{lineStyle:{color:'#EDF0F4'}},axisLabel:{color:'#6A7486',fontSize:11}},
+    series:cats.map((v,i)=>({id:'s'+i,name:C.map.labels&&C.map.labels[v]||v,type:'bar',stack:'t',barCategoryGap:'25%',data:per[i],
+      itemStyle:{color:catColor(C.map.colorBy,v,C.map.colors)}}))},true);
+  tlMark();
+}
+function tlMark(){
+  if(!TL.chart) return;
+  TL.chart.setOption({series:[{id:'s0',markLine:{silent:true,symbol:'none',lineStyle:{color:'#F2B705',width:3,type:'solid'},label:{show:true,position:'end',formatter:()=>mLabel(TL.cur),color:'#7A5A00',fontWeight:700},data:[{xAxis:TL.cur}]}}]});
+}
+function tlFrame(){
+  if(!TL.ready) return;
+  const f=tlRows(), acc=document.getElementById('tlAcc').checked;
+  const inM=f.filter(r=>r._t===TL.cur), accN=f.filter(r=>r._t>=0&&r._t<=TL.cur).length;
+  if(TL.lv){
+    const ids=f.length===D.length?null:f.map(r=>r._oid);
+    const where=acc?`_t >= 0 AND _t <= ${TL.cur}`:`_t = ${TL.cur}`;
+    TL.lv.filter=ids?{where,objectIds:ids}:{where};
+    TL.lv.featureEffect=acc?{filter:{where:`_t = ${TL.cur}`},includedEffect:'drop-shadow(0px 0px 6px #F2B705) brightness(1.2)',excludedEffect:'opacity(40%)'}:null;
+  }
+  const firstCat=C.map.icons?Object.keys(C.map.icons)[0]:null, gl=firstCat&&C.map.labels?C.map.labels[firstCat]:'';
+  const g=firstCat?inM.filter(r=>String(r[C.map.colorBy])===firstCat).length:0;
+  const st=document.getElementById('tlStamp');
+  if(st) st.innerHTML=`<div class="m">${mLabel(TL.cur,true)}</div><div class="c"><b>${nf(inM.length)}</b> no mês${gl?` · <b>${nf(g)}</b> ${esc(gl.toLowerCase())}${g===1?'':'s'}`:''}</div><div class="c">acumulado: <b>${nf(accN)}</b></div>`;
+  document.getElementById('tlNow').textContent=mLabel(TL.cur,true);
+  document.getElementById('tlRange').value=TL.cur;
+  tlMark();
+}
+function tlStep(){
+  if(TL.cur>=TL.n-1){ if(++TL.hold<4) return; TL.hold=0; TL.cur=0; } else TL.cur++;
+  tlFrame();
+}
+function tlPlay(on){
+  TL.playing=on; clearInterval(TL.timer); TL.timer=null;
+  const b=document.getElementById('tlPlay'); b.textContent=on?'❚❚':'▶'; b.setAttribute('aria-label',on?'Pausar':'Reproduzir');
+  if(on&&TL.on) TL.timer=setInterval(tlStep,+document.getElementById('tlSpeed').value);
+}
+/* alertas: registros incluídos (campo de criação) há menos de N dias piscam */
+function alertState(){
+  const now=Date.now(), W=(TLC.alertDays||7)*864e5, cf=TLC.createdField;
+  const recs=D.filter(r=>+r[cf]).sort((a,b)=>b[cf]-a[cf]);
+  const pv=TL.preview&&TL.preview.until>now?TL.preview.oid:null;
+  const active=recs.filter(r=>now-r[cf]<W||r._oid===pv);
+  return {recs,active,now,W,cf,pv};
+}
+function renderAlerts(){
+  const {recs,active,now,W,cf,pv}=alertState();
+  const days=TLC.alertDays||7;
+  const b=document.getElementById('aBadge'); b.hidden=!active.length; b.textContent=active.length;
+  const last=recs[0], ago=t=>Math.floor((now-t)/864e5);
+  document.getElementById('alertHead').innerHTML=active.length
+    ? `<div class="ah on"><span class="pulse"></span><div><b>${active.length===1?'1 acidente incluído':active.length+' acidentes incluídos'} ${pv?'(pré-visualização)':`nos últimos ${days} dias`}</b><small>O registro novo pisca no mapa até completar ${days} dias da inclusão.</small></div></div>`
+    : `<div class="ah"><div><b>Nenhum acidente incluído nos últimos ${days} dias</b><small>${last?`Última inclusão em ${fmtDT(+last[cf])} (há ${ago(+last[cf])} dias). `:''}Quando um novo registro entrar na camada, ele aparece aqui e pisca no mapa por ${days} dias.</small></div>
+       ${last?`<button class="pv" id="pvBtn">Pré-visualizar alerta</button>`:''}</div>`;
+  const pvb=document.getElementById('pvBtn');
+  if(pvb) pvb.onclick=()=>{ const pr=recs.find(r=>r._x!=null&&r._x>-75&&r._x<-28&&r._y>-35&&r._y<7)||last; TL.preview={oid:pr._oid,until:Date.now()+20000}; renderAlerts(); tlGoTo(pr._oid,true); setTimeout(renderAlerts,20300); };
+  document.getElementById('alertList').innerHTML=recs.slice(0,TLC.alertList||8).map(r=>{ const on=active.includes(r), t=+r[cf];
+    return `<button class="al ${on?'blink':''}" data-oid="${r._oid}">${legendMark(String(r[C.map.colorBy]),catColor(C.map.colorBy,r[C.map.colorBy],C.map.colors))}
+      <span class="tx"><b>${esc(TLC.alertTitle?TLC.alertTitle(r):r._oid)}</b><small>${esc(TLC.alertSub?TLC.alertSub(r):'')}</small>
+      <small class="inc">Incluído em ${fmtDT(t)}${on?` · <em>NOVO — pisca até ${fmtDT(r._oid===pv?TL.preview.until:t+W)}</em>`:` · há ${ago(t)} dias`}</small></span></button>`; }).join('');
+  document.querySelectorAll('#alertList .al').forEach(el=>el.onclick=()=>tlGoTo(+el.dataset.oid));
+  drawAlertGraphics(active);
+}
+function drawAlertGraphics(active){
+  if(!TL.alertLayer) return;
+  clearInterval(TL.blinkT); TL.alertLayer.removeAll();
+  const pts=active.filter(r=>r._x!=null); if(!pts.length) return;
+  const {Graphic}=window.__ESRI;
+  const ringSym=big=>({type:'simple-marker',size:big?54:26,color:[242,183,5,big?.06:.32],outline:{color:[242,183,5,big?.3:1],width:3}});
+  const ring=pts.map(r=>new Graphic({geometry:{type:'point',longitude:r._x,latitude:r._y},symbol:ringSym(false)}));
+  const ic=pts.map(r=>{ const u=markerURL(String(r[C.map.colorBy])); return new Graphic({geometry:{type:'point',longitude:r._x,latitude:r._y},
+    symbol:u?{type:'picture-marker',url:u,width:32,height:32}:{type:'simple-marker',size:16,color:'#C2410C'}}); });
+  TL.alertLayer.addMany([...ring,...ic]);
+  let k=0; TL.blinkT=setInterval(()=>{ k++; const big=k%2===0;
+    ring.forEach(g=>{ g.symbol=ringSym(big); }); ic.forEach(g=>{ g.visible=!big||k%4!==0; }); },550);
+}
+function tlGoTo(oid,keepFrame){
+  const r=BYOID[oid]; if(!r||!TL.view) return;
+  if(!keepFrame&&r._t>=0){ TL.cur=r._t; tlPlay(false); tlFrame(); }
+  if(r._x==null) return;
+  TL.view.goTo({center:[r._x,r._y],zoom:keepFrame?6:10},{duration:800}).then(()=>keepFrame?null:TL.layer.queryFeatures({objectIds:[oid],returnGeometry:true,outFields:['*']}))
+    .then(fs=>{ if(fs&&fs.features.length) TL.view.openPopup({features:fs.features,location:fs.features[0].geometry}); }).catch(()=>{});
+}
+function showTab(t){
+  document.querySelectorAll('.tab').forEach(b=>{ const on=b.dataset.t===t; b.classList.toggle('on',on); b.setAttribute('aria-selected',on); });
+  document.querySelector('main.wrap').classList.toggle('show-tl',t==='tl');
+  TL.on=t==='tl';
+  if(TL.on){ initTL(); if(TL.chart) setTimeout(()=>TL.chart.resize(),0); tlPlay(TL.playing); }
+  else { clearInterval(TL.timer); TL.timer=null; setTimeout(()=>Object.values(EC).forEach(c=>c.resize()),0); }
+}
+function initTabs(){
+  tlPrep();
+  document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>showTab(b.dataset.t));
+  document.getElementById('tlPlay').onclick=()=>tlPlay(!TL.playing);
+  document.getElementById('tlSpeed').onchange=()=>tlPlay(TL.playing);
+  document.getElementById('tlRange').oninput=e=>{ TL.cur=+e.target.value; tlPlay(false); tlFrame(); };
+  document.getElementById('tlAcc').onchange=()=>tlFrame();
+  renderAlerts();
+  setInterval(renderAlerts,60000); // encerra o pisca-pisca quando completa o prazo
+  // verifica novas inclusões na camada a cada 3 minutos
+  setInterval(async()=>{ try{
+    const ts=new Date(TL.maxCreated).toISOString().slice(0,19).replace('T',' ');
+    const p=new URLSearchParams({where:`${TLC.createdField} > timestamp '${ts}'`,returnCountOnly:'true',f:'json'});
+    const j=await (await fetch(C.layer+'/query?'+p)).json();
+    if(j.count>0){ const n=document.getElementById('newData'); n.hidden=false;
+      n.innerHTML=`<span class="pulse"></span>${j.count===1?'1 novo acidente incluído':j.count+' novos acidentes incluídos'} <button id="reload">Atualizar painel</button>`;
+      document.getElementById('reload').onclick=()=>location.reload(); }
+  }catch(e){} },180000);
+}
+function renderTL(){ if(!TL.ready) return; tlChart(); tlFrame(); }
+
 /* ---------- render ---------- */
 function render(){
   const f=rows();
-  renderFilters(); renderKPIs(f); (C.charts||[]).forEach(renderChart); renderTable(f); renderGallery(f); renderMap(f);
+  renderFilters(); renderKPIs(f); (C.charts||[]).forEach(renderChart); renderTable(f); renderGallery(f); renderMap(f); if(TLC) renderTL();
 }
 (async()=>{
   try{
@@ -332,8 +557,9 @@ function render(){
   }catch(e){ document.getElementById('loading').textContent='Não foi possível carregar os dados da camada: '+e.message; return; }
   document.getElementById('loading').remove();
   document.getElementById('upd').textContent=new Date().toLocaleString('pt-BR');
+  if(TLC) initTabs();
   render();
   await initMap(); lastKey=null; renderMap(rows());
 })();
-window.addEventListener('resize',()=>Object.values(EC).forEach(c=>c.resize()));
+window.addEventListener('resize',()=>{ Object.values(EC).forEach(c=>c.resize()); if(TL.chart) TL.chart.resize(); });
 })();
