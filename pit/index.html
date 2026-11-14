@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Projeto de Interesse de Terceiros (PIT)</title>
 <link rel="stylesheet" href="https://js.arcgis.com/4.30/esri/themes/light/main.css">
-<link rel="stylesheet" href="../assets/painel.css?v=20261114l">
+<link rel="stylesheet" href="../assets/painel.css?v=20261114m">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/5.5.0/echarts.min.js"></script>
 <script src="https://js.arcgis.com/4.30/"></script>
 </head>
@@ -27,6 +27,23 @@ const PIT_LAYERS=[
       {value:'Estudo',label:'Estudo',symbol:fedLine([255,181,90,.95],1.4,'short-dot')},
       {value:'Desativada',label:'Desativada',symbol:fedLine([178,186,200,.8],1.2,'short-dash')}]}}
 ];
+/* grupos de tipo de projeto: cada um com cor e ícone próprios no mapa */
+const GRUPOS=[
+  ['Energia elétrica','#D69E00',/energ|transmiss/,'<path d="M13.5 2 5.5 13h5.5l-1.5 9 8.5-11.5h-5.8z" fill="#fff" stroke="none"/>'],
+  ['Esgoto e saneamento','#8B5A2B',/esgot|saneam/,'<path d="M3 8h10a4 4 0 0 1 4 4v2"/><path d="M3 12h8a2 2 0 0 1 2 2v1"/><path d="M17 17.5c0 1.2-.9 2.2-2 2.2s-2-1-2-2.2 2-3.5 2-3.5 2 2.3 2 3.5z" fill="#fff" stroke="none"/>'],
+  ['Drenagem pluvial','#0A91A8',/pluvial|drenag|bueiro|talude|curso h/,'<path d="M7 14.5a4 4 0 0 1 .4-8 5 5 0 0 1 9.6 1.6 3.4 3.4 0 0 1 0 6.4z"/><path d="M8.5 17.5 7.5 20M12.5 17.5l-1 2.5M16.5 17.5l-1 2.5"/>'],
+  ['Água e irrigação','#1C5FAD',/agua|abastec|irriga|adutora/,'<path d="M12 2.8s6.2 6.6 6.2 11.2a6.2 6.2 0 0 1-12.4 0c0-4.6 6.2-11.2 6.2-11.2z" fill="#fff" stroke="none"/>'],
+  ['Gás e combustíveis','#C2410C',/gas|combust|petrol|etanol|vinhaca|tubula|pipe/,'<path d="M12.5 2.5c.6 3 4.8 5.2 4.8 10.3a5.3 5.3 0 0 1-10.6 0c0-2.6 1.4-4.3 2.6-5.3.2 1.6.9 2.7 2 3.2-.2-3.2-.1-5.6 1.2-8.2z" fill="#fff" stroke="none"/>'],
+  ['Telecomunicações','#7B3FA0',/fibra|telecom|cabo/,'<circle cx="12" cy="16" r="1.7" fill="#fff" stroke="none"/><path d="M8.6 12.6a4.8 4.8 0 0 1 6.8 0M5.6 9.6a9 9 0 0 1 12.8 0M12 17.7V21"/>'],
+  ['Passagem em nível','#B4372B',/passagem em nivel/,'<path d="M5 5l14 14M19 5 5 19"/><circle cx="12" cy="12" r="1.8" fill="#fff" stroke="none"/>'],
+  ['Obras ferroviárias','#1E9E5A',/ferrovi|amv|patio|ramal|pera/,'<rect x="7" y="3" width="10" height="11.5" rx="2.6"/><path d="M7 9h10"/><circle cx="9.6" cy="11.8" r=".9" fill="#fff"/><circle cx="14.4" cy="11.8" r=".9" fill="#fff"/><path d="M9.2 14.5 7.4 19.2M14.8 14.5l1.8 4.7M8 17.6h8"/>'],
+  ['Acessos e obras viárias','#4A5568',/rodovi|viaduto|veicul|pedestre|passagem|paviment|ciclovia|reurban|guarda|esport|bandeirol/,'<path d="M8.5 3 5 21M15.5 3 19 21"/><path d="M12 4v3M12 10v4M12 17v3"/>'],
+  ['Outros','#8A94A6',/.*/,'<circle cx="12" cy="12" r="3.6" fill="#fff" stroke="none"/>']
+];
+const fold2=s=>String(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
+const grupoDe=t=>{ const f=fold2(t); if(!f.trim()||f==='nao informado') return 'Outros'; return (GRUPOS.find(g=>g[2].test(f))||GRUPOS[GRUPOS.length-1])[0]; };
+const GRUPO_COR=Object.fromEntries(GRUPOS.map(g=>[g[0],g[1]]));
+const GRUPO_ICON=Object.fromEntries(GRUPOS.map(g=>[g[0],{glyph:g[3],size:g[0]==='Outros'?14:19}]));
 const STATUS_COR={'Concluído':'#1E9E5A','Autorizado':'#1C5FAD','Atualizado':'#E0A800','Arquivado':'#7B3FA0'};
 window.PAINEL={
   unitLabel:'processos',
@@ -42,6 +59,7 @@ window.PAINEL={
   derive:r=>{
     // registros do formulário gravam Município em campo sem acento
     if(r['Município']==='Não informado'&&r.Municipio) r['Município']=String(r.Municipio).trim();
+    r.GRUPO=grupoDe(r.Tipo_de_Pr);
     const m=/(\d{4})$/.exec(String(r.Data_de_en||'').trim()); r.ANO=m?m[1]:'Não informado'; r.LOCAL=[r['Município'],r.UF].filter(x=>x&&x!=='Não informado').join('/'); },
   filters:[
     {field:'REGIAO',label:'Região',type:'chips',allLabel:'Brasil',order:['Norte','Nordeste','Centro-Oeste','Sudeste','Sul']},
@@ -65,7 +83,7 @@ window.PAINEL={
     {slot:'right',type:'hbar',title:'Tipo de projeto',field:'Tipo_de_Pr',top:14,height:520,labelWidth:180},
     {slot:'bottom',type:'vbar',title:'Processos por concessionária',field:'Concession',height:330}
   ],
-  map:{title:'Mapa dos processos',colorBy:'Status',colors:STATUS_COR,legendTitle:'Situação',size:9,layerTitle:'Processos PIT',heatmap:true,extraLayers:PIT_LAYERS,
+  map:{title:'Mapa dos processos',colorBy:'GRUPO',colors:GRUPO_COR,icons:GRUPO_ICON,legendTitle:'Tipo de projeto',legendMax:10,size:9,layerTitle:'Processos PIT',heatmap:true,extraLayers:PIT_LAYERS,
     popupTitle:r=>`PIT ${r.ID||''} — ${r.Classifica}`,
     popup:r=>`<b>Concessionária:</b> ${r.Concession}<br><b>Terceiro:</b> ${r.Terceiro}<br><b>Tipo:</b> ${r.Tipo_de_Pr}<br><b>Local:</b> ${r.LOCAL||'—'}<br><b>Situação:</b> ${r.Status}<br><b>Processo SEI:</b> ${r.Processo_N||'—'}<br><b>Entrada:</b> ${r.Data_de_en||'—'}`},
   timelapse:{tabTitle:'Histórico e alertas',noun:'processo',nounPl:'processos',dateField:'Data_de_en',createdField:'CreationDate',alertDays:7,alertList:10,fit:true,
@@ -78,6 +96,6 @@ window.PAINEL={
     {f:'Data_de_en',label:'Entrada',sortGet:r=>dmy(r.Data_de_en)}]}
 };
 </script>
-<script src="../assets/painel.js?v=20261114l"></script>
+<script src="../assets/painel.js?v=20261114m"></script>
 </body>
 </html>

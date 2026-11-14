@@ -375,7 +375,7 @@ const popupTpl=()=>({title:f=>{const r=BYOID[f.graphic.attributes._oid]; return 
 function mapLegend(){
   const lg=document.createElement('div'); lg.className='mlegend';
   const cats=[...new Set(D.map(r=>r[C.map.colorBy]))];
-  const top=(C.map.icons?Object.keys(C.map.icons):(ORDER[C.map.colorBy]||cats)).filter(v=>cats.includes(v)).slice(0,8);
+  const top=(C.map.icons?Object.keys(C.map.icons):(ORDER[C.map.colorBy]||cats)).filter(v=>cats.includes(v)).slice(0,C.map.legendMax||8);
   lg.innerHTML=`<div class="t">${esc(C.map.legendTitle||'')}</div>`+top.map(v=>`<div class="li">${legendMark(v,catColor(C.map.colorBy,v,C.map.colors))}${esc(C.map.labels&&C.map.labels[v]||v)}</div>`).join('');
   return lg;
 }
