@@ -1,0 +1,610 @@
+<?xml version="1.0"?>
+<h:html xmlns:esri="http://esri.com/xforms" xmlns="http://www.w3.org/2002/xforms" xmlns:h="http://www.w3.org/1999/xhtml" xmlns:ev="http://www.w3.org/2001/xml-events" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:jr="http://openrosa.org/javarosa" xmlns:orx="http://openrosa.org/xforms" xmlns:odk="http://www.opendatakit.org/xforms">
+  <h:head>
+    <h:title>Acidentes_Ferroviários</h:title>
+    <model>
+      <instance>
+        <xls-b09fb4585e6c484fa93d8ae9bc71446e id="Acidentes_Ferroviários">
+          <generated_note_form_title/>
+          <generated_note_form_submit_text/>
+          <generated_note_form_footer/>
+          <generated_note_prompt_submitted/>
+          <ID/>
+          <Grave/>
+          <Ferrovia/>
+          <Ferrovia_R/>
+          <Data_da_Oc/>
+          <hor_rio_da_ocorr_ncia/>
+          <Data_Regis/>
+          <Tempo_Comu/>
+          <UF/>
+          <Município/>
+          <Linha/>
+          <Km_Inicial/>
+          <Km_Final/>
+          <untitled_question_67>null</untitled_question_67>
+          <Estação/>
+          <Estaçã_1/>
+          <Perímetro/>
+          <Causa_Dire/>
+          <Detalhamen/>
+          <Causa_Cont/>
+          <Detalham_1/>
+          <Natureza/>
+          <Tempo_de_I/>
+          <n_mero_de_trens/>
+          <Prefixo/>
+          <Double_Sta/>
+          <Serviço_d/>
+          <Veíc__Fer/>
+          <Veíc__Id/>
+          <ve_culos_e_suas_quantidades>
+            <Veíc__Tip/>
+            <locomotiva/>
+            <identifica_o_locomotiva/>
+            <vag_o/>
+            <identifica_o_vag_o/>
+            <carro/>
+            <identifica_o_carro/>
+          </ve_culos_e_suas_quantidades>
+          <Mercadoria/>
+          <n_mero_de_feridos/>
+          <n_mero_de_bitos/>
+          <PP/>
+          <Nome_Equip/>
+          <Função_E/>
+          <Outra_Ferr/>
+          <Mod_/>
+          <PN/>
+          <Descriçã/>
+          <Degr_Quald/>
+          <OAE/>
+          <Prejuízo/>
+          <Situação/>
+          <Confirmado/>
+          <Laudo/>
+          <meta>
+            <instanceID/>
+          </meta>
+        </xls-b09fb4585e6c484fa93d8ae9bc71446e>
+      </instance>
+      <bind nodeset="/xls-b09fb4585e6c484fa93d8ae9bc71446e/generated_note_form_title" readonly="true()" type="string"/>
+      <bind nodeset="/xls-b09fb4585e6c484fa93d8ae9bc71446e/generated_note_form_submit_text" readonly="true()" type="string"/>
+      <bind nodeset="/xls-b09fb4585e6c484fa93d8ae9bc71446e/generated_note_form_footer" readonly="true()" type="string"/>
+      <bind nodeset="/xls-b09fb4585e6c484fa93d8ae9bc71446e/generated_note_prompt_submitted" readonly="true()" type="string"/>
+      <bind nodeset="/xls-b09fb4585e6c484fa93d8ae9bc71446e/ID" type="decimal"/>
+      <bind nodeset="/xls-b09fb4585e6c484fa93d8ae9bc71446e/Grave" type="select1"/>
+      <bind nodeset="/xls-b09fb4585e6c484fa93d8ae9bc71446e/Ferrovia" type="select1"/>
+      <bind nodeset="/xls-b09fb4585e6c484fa93d8ae9bc71446e/Ferrovia_R" type="select1"/>
+      <bind nodeset="/xls-b09fb4585e6c484fa93d8ae9bc71446e/Data_da_Oc" type="date" esri:fieldType="esriFieldTypeString" esri:fieldLength="254"/>
+      <bind nodeset="/xls-b09fb4585e6c484fa93d8ae9bc71446e/hor_rio_da_ocorr_ncia" type="time" esri:fieldType="null"/>
+      <bind nodeset="/xls-b09fb4585e6c484fa93d8ae9bc71446e/Data_Regis" type="dateTime" esri:fieldType="esriFieldTypeString" esri:fieldLength="254"/>
+      <bind nodeset="/xls-b09fb4585e6c484fa93d8ae9bc71446e/Tempo_Comu" type="decimal"/>
+      <bind nodeset="/xls-b09fb4585e6c484fa93d8ae9bc71446e/UF" type="select1"/>
+      <bind nodeset="/xls-b09fb4585e6c484fa93d8ae9bc71446e/Município" type="select1"/>
+      <bind nodeset="/xls-b09fb4585e6c484fa93d8ae9bc71446e/Linha" type="string" esri:fieldLength="254"/>
+      <bind nodeset="/xls-b09fb4585e6c484fa93d8ae9bc71446e/Km_Inicial" type="decimal"/>
+      <bind nodeset="/xls-b09fb4585e6c484fa93d8ae9bc71446e/Km_Final" type="decimal"/>
+      <bind nodeset="/xls-b09fb4585e6c484fa93d8ae9bc71446e/untitled_question_67" type="geopoint"/>
+      <bind nodeset="/xls-b09fb4585e6c484fa93d8ae9bc71446e/Estação" type="string"/>
+      <bind nodeset="/xls-b09fb4585e6c484fa93d8ae9bc71446e/Estaçã_1" type="string"/>
+      <bind nodeset="/xls-b09fb4585e6c484fa93d8ae9bc71446e/Perímetro" type="string"/>
+      <bind nodeset="/xls-b09fb4585e6c484fa93d8ae9bc71446e/Causa_Dire" type="string" esri:fieldLength="254"/>
+      <bind nodeset="/xls-b09fb4585e6c484fa93d8ae9bc71446e/Detalhamen" type="string" esri:fieldLength="254"/>
+      <bind nodeset="/xls-b09fb4585e6c484fa93d8ae9bc71446e/Causa_Cont" type="string" esri:fieldLength="254"/>
+      <bind nodeset="/xls-b09fb4585e6c484fa93d8ae9bc71446e/Detalham_1" type="string" esri:fieldLength="254"/>
+      <bind nodeset="/xls-b09fb4585e6c484fa93d8ae9bc71446e/Natureza" type="string" esri:fieldLength="254"/>
+      <bind nodeset="/xls-b09fb4585e6c484fa93d8ae9bc71446e/Tempo_de_I" type="decimal"/>
+      <bind nodeset="/xls-b09fb4585e6c484fa93d8ae9bc71446e/n_mero_de_trens" type="decimal" esri:fieldType="null"/>
+      <bind nodeset="/xls-b09fb4585e6c484fa93d8ae9bc71446e/Prefixo" type="string" esri:fieldLength="254"/>
+      <bind nodeset="/xls-b09fb4585e6c484fa93d8ae9bc71446e/Double_Sta" type="select1"/>
+      <bind nodeset="/xls-b09fb4585e6c484fa93d8ae9bc71446e/Serviço_d" type="select1"/>
+      <bind nodeset="/xls-b09fb4585e6c484fa93d8ae9bc71446e/Veíc__Fer" type="string"/>
+      <bind nodeset="/xls-b09fb4585e6c484fa93d8ae9bc71446e/Veíc__Id" type="string"/>
+      <bind nodeset="/xls-b09fb4585e6c484fa93d8ae9bc71446e/ve_culos_e_suas_quantidades/Veíc__Tip" type="select"/>
+      <bind nodeset="/xls-b09fb4585e6c484fa93d8ae9bc71446e/ve_culos_e_suas_quantidades/locomotiva" type="decimal" relevant="selected( /xls-b09fb4585e6c484fa93d8ae9bc71446e/ve_culos_e_suas_quantidades/Veíc__Tip ,'Locomotiva')" esri:fieldType="null"/>
+      <bind nodeset="/xls-b09fb4585e6c484fa93d8ae9bc71446e/ve_culos_e_suas_quantidades/identifica_o_locomotiva" type="string" relevant="string-length( /xls-b09fb4585e6c484fa93d8ae9bc71446e/ve_culos_e_suas_quantidades/locomotiva )&gt;0" esri:fieldType="null"/>
+      <bind nodeset="/xls-b09fb4585e6c484fa93d8ae9bc71446e/ve_culos_e_suas_quantidades/vag_o" type="decimal" relevant="selected( /xls-b09fb4585e6c484fa93d8ae9bc71446e/ve_culos_e_suas_quantidades/Veíc__Tip ,'Vagão')" esri:fieldType="null"/>
+      <bind nodeset="/xls-b09fb4585e6c484fa93d8ae9bc71446e/ve_culos_e_suas_quantidades/identifica_o_vag_o" type="string" relevant="string-length( /xls-b09fb4585e6c484fa93d8ae9bc71446e/ve_culos_e_suas_quantidades/vag_o )&gt;0" esri:fieldType="null"/>
+      <bind nodeset="/xls-b09fb4585e6c484fa93d8ae9bc71446e/ve_culos_e_suas_quantidades/carro" type="decimal" relevant="selected( /xls-b09fb4585e6c484fa93d8ae9bc71446e/ve_culos_e_suas_quantidades/Veíc__Tip ,'Carro')" esri:fieldType="null"/>
+      <bind nodeset="/xls-b09fb4585e6c484fa93d8ae9bc71446e/ve_culos_e_suas_quantidades/identifica_o_carro" type="string" relevant="string-length( /xls-b09fb4585e6c484fa93d8ae9bc71446e/ve_culos_e_suas_quantidades/carro )&gt;0" esri:fieldType="null"/>
+      <bind nodeset="/xls-b09fb4585e6c484fa93d8ae9bc71446e/Mercadoria" type="string"/>
+      <bind nodeset="/xls-b09fb4585e6c484fa93d8ae9bc71446e/n_mero_de_feridos" type="decimal" esri:fieldType="null"/>
+      <bind nodeset="/xls-b09fb4585e6c484fa93d8ae9bc71446e/n_mero_de_bitos" type="decimal" esri:fieldType="null"/>
+      <bind nodeset="/xls-b09fb4585e6c484fa93d8ae9bc71446e/PP" type="select1"/>
+      <bind nodeset="/xls-b09fb4585e6c484fa93d8ae9bc71446e/Nome_Equip" type="string"/>
+      <bind nodeset="/xls-b09fb4585e6c484fa93d8ae9bc71446e/Função_E" type="string" relevant="string-length( /xls-b09fb4585e6c484fa93d8ae9bc71446e/Nome_Equip )&gt;0"/>
+      <bind nodeset="/xls-b09fb4585e6c484fa93d8ae9bc71446e/Outra_Ferr" type="select1"/>
+      <bind nodeset="/xls-b09fb4585e6c484fa93d8ae9bc71446e/Mod_" type="select1"/>
+      <bind nodeset="/xls-b09fb4585e6c484fa93d8ae9bc71446e/PN" type="select1"/>
+      <bind nodeset="/xls-b09fb4585e6c484fa93d8ae9bc71446e/Descriçã" type="string"/>
+      <bind nodeset="/xls-b09fb4585e6c484fa93d8ae9bc71446e/Degr_Quald" type="select1"/>
+      <bind nodeset="/xls-b09fb4585e6c484fa93d8ae9bc71446e/OAE" type="select1"/>
+      <bind nodeset="/xls-b09fb4585e6c484fa93d8ae9bc71446e/Prejuízo" type="decimal"/>
+      <bind nodeset="/xls-b09fb4585e6c484fa93d8ae9bc71446e/Situação" type="select1"/>
+      <bind nodeset="/xls-b09fb4585e6c484fa93d8ae9bc71446e/Confirmado" type="select1"/>
+      <bind nodeset="/xls-b09fb4585e6c484fa93d8ae9bc71446e/Laudo" type="string" esri:fieldLength="254"/>
+      <bind nodeset="/xls-b09fb4585e6c484fa93d8ae9bc71446e/meta/instanceID" type="string" readonly="true()" calculate="concat('uuid:', uuid())"/>
+    </model>
+  </h:head>
+  <h:body>
+    <input ref="/xls-b09fb4585e6c484fa93d8ae9bc71446e/generated_note_form_title">
+      <label>&lt;p&gt;Acidentes_Ferroviários&lt;/p&gt;</label>
+    </input>
+    <input ref="/xls-b09fb4585e6c484fa93d8ae9bc71446e/generated_note_form_submit_text">
+      <label>Enviar</label>
+    </input>
+    <input ref="/xls-b09fb4585e6c484fa93d8ae9bc71446e/generated_note_form_footer">
+      <label>&lt;p style="text-align:center;"&gt;&lt;a href="https://www.esri.com/products/survey123" target="_blank" style="color:rgb(0, 0, 0);"&gt;Powered by ArcGIS Survey123&lt;/a&gt;&lt;/p&gt;</label>
+    </input>
+    <input ref="/xls-b09fb4585e6c484fa93d8ae9bc71446e/generated_note_prompt_submitted">
+      <label>&lt;p style="text-align:center;"&gt;&lt;br&gt;&lt;/p&gt;&lt;p style="text-align:center;"&gt;&lt;img alt="Green check icon" src="thankYouScreen.svg"&gt;&lt;/p&gt;&lt;p style="text-align:center;"&gt;&lt;br&gt;&lt;/p&gt;&lt;p style="text-align:center;"&gt;&lt;strong style="font-size:16px;"&gt;Thank you.&lt;/strong&gt;&lt;/p&gt;&lt;p style="text-align:center;"&gt;&lt;strong style="font-size:16px;"&gt;Your response was submitted successfully.&lt;/strong&gt;&lt;/p&gt;</label>
+    </input>
+    <input ref="/xls-b09fb4585e6c484fa93d8ae9bc71446e/ID">
+      <label>ID</label>
+    </input>
+    <select1 appearance="horizontal-compact" ref="/xls-b09fb4585e6c484fa93d8ae9bc71446e/Grave">
+      <label>Grave</label>
+      <item>
+        <label>Sim</label>
+        <value>Sim</value>
+      </item>
+      <item>
+        <label>Não</label>
+        <value>Não</value>
+      </item>
+    </select1>
+    <select1 appearance="minimal" ref="/xls-b09fb4585e6c484fa93d8ae9bc71446e/Ferrovia">
+      <label>Ferrovia</label>
+      <item>
+        <label>EFC</label>
+        <value>EFC</value>
+      </item>
+      <item>
+        <label>EFPO</label>
+        <value>EFPO</value>
+      </item>
+      <item>
+        <label>EFVM</label>
+        <value>EFVM</value>
+      </item>
+      <item>
+        <label>FCA</label>
+        <value>FCA</value>
+      </item>
+      <item>
+        <label>FNS - TN</label>
+        <value>FNS - TN</value>
+      </item>
+      <item>
+        <label>FTC</label>
+        <value>FTC</value>
+      </item>
+      <item>
+        <label>FTL</label>
+        <value>FTL</value>
+      </item>
+      <item>
+        <label>MRS</label>
+        <value>MRS</value>
+      </item>
+      <item>
+        <label>RMC</label>
+        <value>RMC</value>
+      </item>
+      <item>
+        <label>RMN</label>
+        <value>RMN</value>
+      </item>
+      <item>
+        <label>RMO</label>
+        <value>RMO</value>
+      </item>
+      <item>
+        <label>RMP</label>
+        <value>RMP</value>
+      </item>
+      <item>
+        <label>RMS</label>
+        <value>RMS</value>
+      </item>
+    </select1>
+    <select1 appearance="minimal" ref="/xls-b09fb4585e6c484fa93d8ae9bc71446e/Ferrovia_R">
+      <label>Ferrovia - Responsável</label>
+      <item>
+        <label>EFC</label>
+        <value>EFC</value>
+      </item>
+      <item>
+        <label>EFPO</label>
+        <value>EFPO</value>
+      </item>
+      <item>
+        <label>EFVM</label>
+        <value>EFVM</value>
+      </item>
+      <item>
+        <label>FCA</label>
+        <value>FCA</value>
+      </item>
+      <item>
+        <label>FNS - TN</label>
+        <value>FNS - TN</value>
+      </item>
+      <item>
+        <label>FTC</label>
+        <value>FTC</value>
+      </item>
+      <item>
+        <label>FTL</label>
+        <value>FTL</value>
+      </item>
+      <item>
+        <label>MRS</label>
+        <value>MRS</value>
+      </item>
+      <item>
+        <label>RMC</label>
+        <value>RMC</value>
+      </item>
+      <item>
+        <label>RMN</label>
+        <value>RMN</value>
+      </item>
+      <item>
+        <label>RMO</label>
+        <value>RMO</value>
+      </item>
+      <item>
+        <label>RMP</label>
+        <value>RMP</value>
+      </item>
+      <item>
+        <label>RMS</label>
+        <value>RMS</value>
+      </item>
+    </select1>
+    <input ref="/xls-b09fb4585e6c484fa93d8ae9bc71446e/Data_da_Oc">
+      <label>Data da Ocorrência</label>
+    </input>
+    <input ref="/xls-b09fb4585e6c484fa93d8ae9bc71446e/hor_rio_da_ocorr_ncia">
+      <label>Horário da Ocorrência</label>
+    </input>
+    <input ref="/xls-b09fb4585e6c484fa93d8ae9bc71446e/Data_Regis">
+      <label>Data e Horário de Registro da Ocorrência</label>
+    </input>
+    <input ref="/xls-b09fb4585e6c484fa93d8ae9bc71446e/Tempo_Comu">
+      <label>Tempo de Comunicação (em horas)</label>
+      <hint>&lt;p&gt;Indique o tempo, em horas, decorrido entre o acidente e a comunicação oficial.&lt;/p&gt;</hint>
+    </input>
+    <select1 appearance="autocomplete search(&quot;list_field_61?url=https://services.arcgis.com/4CZwpdWHGNPLU7QQ/arcgis/rest/services/Municípios_e_UF_-_Lista/FeatureServer/0&quot;)" ref="/xls-b09fb4585e6c484fa93d8ae9bc71446e/UF">
+      <label>UF</label>
+      <item>
+        <label>UF</label>
+        <value>UF</value>
+      </item>
+    </select1>
+    <select1 appearance="autocomplete search(&quot;list_munic_pio?url=https://services.arcgis.com/4CZwpdWHGNPLU7QQ/arcgis/rest/services/Municípios_e_UF_-_Lista/FeatureServer/0&quot;)" ref="/xls-b09fb4585e6c484fa93d8ae9bc71446e/Município">
+      <label>Município</label>
+      <item>
+        <label>Município</label>
+        <value>Município</value>
+      </item>
+    </select1>
+    <input ref="/xls-b09fb4585e6c484fa93d8ae9bc71446e/Linha">
+      <label>Linha</label>
+    </input>
+    <input ref="/xls-b09fb4585e6c484fa93d8ae9bc71446e/Km_Inicial">
+      <label>KM - Inicial</label>
+    </input>
+    <input ref="/xls-b09fb4585e6c484fa93d8ae9bc71446e/Km_Final">
+      <label>KM - Final</label>
+    </input>
+    <input esri:style="map=930c2d903687405da1f901deb1504b66 mapTools=mapSwitcher,zoom,home" ref="/xls-b09fb4585e6c484fa93d8ae9bc71446e/untitled_question_67">
+      <label>Localização do Acidente</label>
+      <hint>&lt;p&gt;Caso esteja no local do acidente, utilize o GPS do celular para marcar.&lt;/p&gt;&lt;p&gt;&lt;strong style="color:rgb(230, 0, 0);"&gt;Caso não esteja, coloque as coordenadas, indicando Latitude e Longitude&lt;/strong&gt;.&lt;/p&gt;</hint>
+    </input>
+    <input ref="/xls-b09fb4585e6c484fa93d8ae9bc71446e/Estação">
+      <label>Estação Anterior</label>
+    </input>
+    <input ref="/xls-b09fb4585e6c484fa93d8ae9bc71446e/Estaçã_1">
+      <label>Estação Posterior</label>
+    </input>
+    <input ref="/xls-b09fb4585e6c484fa93d8ae9bc71446e/Perímetro">
+      <label>Perímetro Urbano</label>
+    </input>
+    <input ref="/xls-b09fb4585e6c484fa93d8ae9bc71446e/Causa_Dire">
+      <label>Causa Direta</label>
+    </input>
+    <input ref="/xls-b09fb4585e6c484fa93d8ae9bc71446e/Detalhamen">
+      <label>Detalhamento da Causa Direta</label>
+    </input>
+    <input ref="/xls-b09fb4585e6c484fa93d8ae9bc71446e/Causa_Cont">
+      <label>Causa Contributiva</label>
+    </input>
+    <input ref="/xls-b09fb4585e6c484fa93d8ae9bc71446e/Detalham_1">
+      <label>Detalhamento da Causa Contributiva</label>
+    </input>
+    <input ref="/xls-b09fb4585e6c484fa93d8ae9bc71446e/Natureza">
+      <label>Natureza</label>
+    </input>
+    <input ref="/xls-b09fb4585e6c484fa93d8ae9bc71446e/Tempo_de_I">
+      <label>Tempo de Interrupção (em horas)</label>
+      <hint>&lt;p&gt;Indique o período, em horas, em que a ferrovia ficou interditada.&lt;/p&gt;</hint>
+    </input>
+    <input ref="/xls-b09fb4585e6c484fa93d8ae9bc71446e/n_mero_de_trens">
+      <label>Número de Trens</label>
+    </input>
+    <input ref="/xls-b09fb4585e6c484fa93d8ae9bc71446e/Prefixo">
+      <label>Prefixo</label>
+    </input>
+    <select1 ref="/xls-b09fb4585e6c484fa93d8ae9bc71446e/Double_Sta">
+      <label>Double Stack</label>
+      <item>
+        <label>Sim</label>
+        <value>Sim</value>
+      </item>
+      <item>
+        <label>Não</label>
+        <value>Não</value>
+      </item>
+    </select1>
+    <select1 appearance="minimal" ref="/xls-b09fb4585e6c484fa93d8ae9bc71446e/Serviço_d">
+      <label>Serviço de Transporte</label>
+      <item>
+        <label>Auto de linha</label>
+        <value>Auto de linha</value>
+      </item>
+      <item>
+        <label>Cargas</label>
+        <value>Cargas</value>
+      </item>
+      <item>
+        <label>Interno</label>
+        <value>Interno</value>
+      </item>
+      <item>
+        <label>Locomotiva Escoteira</label>
+        <value>Locomotiva Escoteira</value>
+      </item>
+      <item>
+        <label>Locomotiva Escoteira de Cargas</label>
+        <value>Locomotiva Escoteira de Cargas</value>
+      </item>
+      <item>
+        <label>Máquina de Serviço</label>
+        <value>Máquina de Serviço</value>
+      </item>
+      <item>
+        <label>Misto</label>
+        <value>Misto</value>
+      </item>
+      <item>
+        <label>Passageiro</label>
+        <value>Passageiro</value>
+      </item>
+    </select1>
+    <input ref="/xls-b09fb4585e6c484fa93d8ae9bc71446e/Veíc__Fer">
+      <label>Veículo Ferroviário</label>
+      <hint>&lt;p&gt;Indique o responsável pelo veículo ferroviário&lt;/p&gt;</hint>
+    </input>
+    <input ref="/xls-b09fb4585e6c484fa93d8ae9bc71446e/Veíc__Id">
+      <label>Identificação do Veículo</label>
+    </input>
+    <group ref="/xls-b09fb4585e6c484fa93d8ae9bc71446e/ve_culos_e_suas_quantidades">
+      <label>Veículos e Suas Quantidades</label>
+      <select ref="/xls-b09fb4585e6c484fa93d8ae9bc71446e/ve_culos_e_suas_quantidades/Veíc__Tip">
+        <label>Tipo de Veículo</label>
+        <item>
+          <label>Locomotiva</label>
+          <value>Locomotiva</value>
+        </item>
+        <item>
+          <label>Vagão</label>
+          <value>Vagão</value>
+        </item>
+        <item>
+          <label>Carro</label>
+          <value>Carro</value>
+        </item>
+      </select>
+      <input ref="/xls-b09fb4585e6c484fa93d8ae9bc71446e/ve_culos_e_suas_quantidades/locomotiva">
+        <label>Locomotiva</label>
+        <hint>&lt;p&gt;Coloque a quantidade de locomotivas envolvidas.&lt;/p&gt;</hint>
+      </input>
+      <input appearance="multiline" ref="/xls-b09fb4585e6c484fa93d8ae9bc71446e/ve_culos_e_suas_quantidades/identifica_o_locomotiva">
+        <label>Identificação - Locomotiva</label>
+        <hint>&lt;p&gt;Coloque a (s) identificação (ões) da (s) locomotiva (s)&lt;/p&gt;</hint>
+      </input>
+      <input ref="/xls-b09fb4585e6c484fa93d8ae9bc71446e/ve_culos_e_suas_quantidades/vag_o">
+        <label>Vagão</label>
+        <hint>&lt;p&gt;Coloque a quantidade de vagões envolvidos.&lt;/p&gt;</hint>
+      </input>
+      <input appearance="multiline" ref="/xls-b09fb4585e6c484fa93d8ae9bc71446e/ve_culos_e_suas_quantidades/identifica_o_vag_o">
+        <label>Identificação - Vagão</label>
+        <hint>&lt;p&gt;Coloque a (s) identificação (ões) do (s) vagão (ões)&lt;/p&gt;</hint>
+      </input>
+      <input ref="/xls-b09fb4585e6c484fa93d8ae9bc71446e/ve_culos_e_suas_quantidades/carro">
+        <label>Carro</label>
+        <hint>&lt;p&gt;Coloque a quantidade de carros envolvidos&lt;/p&gt;</hint>
+      </input>
+      <input appearance="multiline" ref="/xls-b09fb4585e6c484fa93d8ae9bc71446e/ve_culos_e_suas_quantidades/identifica_o_carro">
+        <label>Identificação - Carro</label>
+        <hint>&lt;p&gt;Coloque a (s) identificação (ões) do (s) carro (s), se possível.&lt;/p&gt;</hint>
+      </input>
+    </group>
+    <input ref="/xls-b09fb4585e6c484fa93d8ae9bc71446e/Mercadoria">
+      <label>Mercadoria Transportada</label>
+    </input>
+    <input ref="/xls-b09fb4585e6c484fa93d8ae9bc71446e/n_mero_de_feridos">
+      <label>Número de Feridos</label>
+    </input>
+    <input ref="/xls-b09fb4585e6c484fa93d8ae9bc71446e/n_mero_de_bitos">
+      <label>Número de Óbitos</label>
+    </input>
+    <select1 ref="/xls-b09fb4585e6c484fa93d8ae9bc71446e/PP">
+      <label>Passagem de Pedestre (PNP)</label>
+      <item>
+        <label>Sim</label>
+        <value>Sim</value>
+      </item>
+      <item>
+        <label>Não</label>
+        <value>Não</value>
+      </item>
+    </select1>
+    <input appearance="multiline" ref="/xls-b09fb4585e6c484fa93d8ae9bc71446e/Nome_Equip">
+      <label>Nome Equipagem</label>
+    </input>
+    <input appearance="multiline" ref="/xls-b09fb4585e6c484fa93d8ae9bc71446e/Função_E">
+      <label>Função Equipagem</label>
+      <hint>&lt;p&gt;Relacione com a ordem exposta no campo "Nome Equipagem"&lt;/p&gt;</hint>
+    </input>
+    <select1 appearance="minimal" ref="/xls-b09fb4585e6c484fa93d8ae9bc71446e/Outra_Ferr">
+      <label>Outra Ferrovia</label>
+      <item>
+        <label>EFC</label>
+        <value>EFC</value>
+      </item>
+      <item>
+        <label>EFPO</label>
+        <value>EFPO</value>
+      </item>
+      <item>
+        <label>EFVM</label>
+        <value>EFVM</value>
+      </item>
+      <item>
+        <label>FCA</label>
+        <value>FCA</value>
+      </item>
+      <item>
+        <label>FNS - TN</label>
+        <value>FNS - TN</value>
+      </item>
+      <item>
+        <label>FTC</label>
+        <value>FTC</value>
+      </item>
+      <item>
+        <label>FTL</label>
+        <value>FTL</value>
+      </item>
+      <item>
+        <label>MRS</label>
+        <value>MRS</value>
+      </item>
+      <item>
+        <label>RMC</label>
+        <value>RMC</value>
+      </item>
+      <item>
+        <label>RMN</label>
+        <value>RMN</value>
+      </item>
+      <item>
+        <label>RMO</label>
+        <value>RMO</value>
+      </item>
+      <item>
+        <label>RMP</label>
+        <value>RMP</value>
+      </item>
+      <item>
+        <label>RMS</label>
+        <value>RMS</value>
+      </item>
+      <item>
+        <label>Não se aplica</label>
+        <value>Não se aplica</value>
+      </item>
+    </select1>
+    <select1 ref="/xls-b09fb4585e6c484fa93d8ae9bc71446e/Mod_">
+      <label>Mod.</label>
+      <item>
+        <label>DP</label>
+        <value>DP</value>
+      </item>
+      <item>
+        <label>TM</label>
+        <value>TM</value>
+      </item>
+    </select1>
+    <select1 ref="/xls-b09fb4585e6c484fa93d8ae9bc71446e/PN">
+      <label>Passagem em Nível (PN)</label>
+      <item>
+        <label>Sim</label>
+        <value>Sim</value>
+      </item>
+      <item>
+        <label>Não</label>
+        <value>Não</value>
+      </item>
+    </select1>
+    <input appearance="multiline" ref="/xls-b09fb4585e6c484fa93d8ae9bc71446e/Descriçã">
+      <label>Descrição</label>
+    </input>
+    <select1 ref="/xls-b09fb4585e6c484fa93d8ae9bc71446e/Degr_Quald">
+      <label>Degradação da Qualidade Ambiental</label>
+      <item>
+        <label>Sim</label>
+        <value>Sim</value>
+      </item>
+      <item>
+        <label>Não</label>
+        <value>Não</value>
+      </item>
+    </select1>
+    <select1 appearance="horizontal-compact" ref="/xls-b09fb4585e6c484fa93d8ae9bc71446e/OAE">
+      <label>Obra de Arte Especial (OAE)</label>
+      <item>
+        <label>Sim</label>
+        <value>Sim</value>
+      </item>
+      <item>
+        <label>Não</label>
+        <value>Não</value>
+      </item>
+    </select1>
+    <input ref="/xls-b09fb4585e6c484fa93d8ae9bc71446e/Prejuízo">
+      <label>Prejuízo Financeiro (em R$)</label>
+    </input>
+    <select1 appearance="minimal" ref="/xls-b09fb4585e6c484fa93d8ae9bc71446e/Situação">
+      <label>Situação</label>
+      <item>
+        <label>Aguardando Informações da Ferrovia Envolvida</label>
+        <value>Aguardando Informações da Ferro</value>
+      </item>
+      <item>
+        <label>Confirmada</label>
+        <value>Confirmada</value>
+      </item>
+      <item>
+        <label>Confirmada Responsabilidade</label>
+        <value>Confirmada Responsabilidade</value>
+      </item>
+      <item>
+        <label>Parecer Realizado</label>
+        <value>Parecer Realizado</value>
+      </item>
+      <item>
+        <label>Prazo Esgotado</label>
+        <value>Prazo Esgotado</value>
+      </item>
+    </select1>
+    <select1 appearance="horizontal-compact" ref="/xls-b09fb4585e6c484fa93d8ae9bc71446e/Confirmado">
+      <label>Confirmado</label>
+      <item>
+        <label>Sim</label>
+        <value>Sim</value>
+      </item>
+      <item>
+        <label>Não</label>
+        <value>Não</value>
+      </item>
+    </select1>
+    <input ref="/xls-b09fb4585e6c484fa93d8ae9bc71446e/Laudo">
+      <label>Laudo</label>
+    </input>
+  </h:body>
+</h:html>
