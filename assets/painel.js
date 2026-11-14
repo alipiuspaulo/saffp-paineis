@@ -466,7 +466,7 @@ function tlPlay(on){
 /* alertas: registros incluídos (campo de criação) há menos de N dias piscam */
 function alertState(){
   const now=Date.now(), W=(TLC.alertDays||7)*864e5, cf=TLC.createdField;
-  const recs=D.filter(r=>+r[cf]).sort((a,b)=>b[cf]-a[cf]);
+  const recs=D.filter(r=>+r[cf]).sort((a,b)=>(b[cf]-a[cf])||(b._oid-a._oid));
   const pv=TL.preview&&TL.preview.until>now?TL.preview.oid:null;
   const active=recs.filter(r=>now-r[cf]<W||r._oid===pv);
   return {recs,active,now,W,cf,pv};
