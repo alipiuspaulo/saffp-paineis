@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Acidentes Ferroviários</title>
 <link rel="stylesheet" href="https://js.arcgis.com/4.30/esri/themes/light/main.css">
-<link rel="stylesheet" href="../assets/painel.css?v=20261114h">
+<link rel="stylesheet" href="../assets/painel.css?v=20261114j">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/5.5.0/echarts.min.js"></script>
 <script src="https://js.arcgis.com/4.30/"></script>
 </head>
@@ -29,6 +29,7 @@ const MALHA={title:'Malha ferroviária federal',url:'https://services.arcgis.com
     uniqueValueInfos:[{value:'Em Operação',label:'Em operação',symbol:{type:'simple-line',color:[232,236,242,.9],width:1.4}},
       {value:'Em Obra',label:'Em obra',symbol:{type:'simple-line',color:[242,183,5,.95],width:1.6,style:'dash'}}]}};
 window.PAINEL={
+  unitLabel:'acidentes',
   title:'Acidentes Ferroviários',
   subtitle:'Ocorrências comunicadas pelas concessionárias ferroviárias',
   home:'https://experience.arcgis.com/experience/26c68a6e20144b5199923c22b1722c3e',
@@ -40,7 +41,10 @@ window.PAINEL={
   oid:'FID',
   normFields:['Grave','Ferrovia','Causa_Dire','Natureza','UF','Município'],
   regionFromUF:'UF',
-  derive:r=>{ const m=/(\d{4})\s*$/.exec(String(r.Data_da_Oc||'')); r.ANO=m?m[1]:'Não informado';
+  derive:r=>{
+    // datas digitadas no formulário com ano de 2 dígitos (14/11/26) viram 14/11/2026
+    r.Data_da_Oc=String(r.Data_da_Oc||'').trim().replace(/^(\d{1,2})\/(\d{1,2})\/(\d{2})$/,(x,d,mo,y)=>`${d.padStart(2,'0')}/${mo.padStart(2,'0')}/20${y}`);
+    const m=/(\d{4})\s*$/.exec(String(r.Data_da_Oc||'')); r.ANO=m?m[1]:'Não informado';
     // registros do formulário Survey123 gravam em campos sem acento (Municipio, N_Feridos, N_Obitos)
     r.FER=num(r['Nº_Ferido']??r.N_Feridos)||num(r.N_Feridos); r.OBI=num(r['Nº_Óbito']??r.N_Obitos)||num(r.N_Obitos);
     if(r['Município']==='Não informado'&&r.Municipio) r['Município']=String(r.Municipio).trim(); },
@@ -80,6 +84,6 @@ window.PAINEL={
     {f:'FER',label:'Feridos',num:true},{f:'OBI',label:'Óbitos',num:true}]}
 };
 </script>
-<script src="../assets/painel.js?v=20261114h"></script>
+<script src="../assets/painel.js?v=20261114j"></script>
 </body>
 </html>

@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Fiscalização FICO</title>
 <link rel="stylesheet" href="https://js.arcgis.com/4.30/esri/themes/light/main.css">
-<link rel="stylesheet" href="../assets/painel.css?v=20261114h">
+<link rel="stylesheet" href="../assets/painel.css?v=20261114j">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/5.5.0/echarts.min.js"></script>
 <script src="https://js.arcgis.com/4.30/"></script>
 </head>
@@ -15,7 +15,17 @@
 const dataBR=ms=>ms?new Date(ms).toLocaleDateString('pt-BR',{timeZone:'America/Sao_Paulo'}):'—';
 const pct=(n,t)=>t?Math.round(n/t*100)+'% dos levantamentos':'—';
 const SVC='https://services.arcgis.com/4CZwpdWHGNPLU7QQ/arcgis/rest/services/';
+/* shapefile do traçado usado no painel antigo (FICO_TRAÇADO_JAN_24) */
+const TRACADO=SVC+'FICO_TRA%C3%87ADO_JAN_24/FeatureServer/';
+const FICO_LAYERS=[
+  {url:TRACADO+'4',title:'FICO – municípios atravessados',renderer:{type:'simple',symbol:{type:'simple-fill',color:[242,183,5,.07],outline:{color:[255,255,255,.7],width:1}}},
+    labelingInfo:[{labelExpressionInfo:{expression:'$feature.Name'},symbol:{type:'text',color:'#fff',haloColor:[10,42,94,.9],haloSize:1.2,font:{size:10,weight:'bold'}},minScale:3000000}],labelsVisible:true},
+  {url:TRACADO+'2',title:'FICO – faixa de domínio',definitionExpression:"FolderPath LIKE '%FAIXA DE DOMINIO%'",renderer:{type:'simple',symbol:{type:'simple-line',color:[255,255,255,.85],width:1.2,style:'dash'}}},
+  {url:TRACADO+'2',title:'FICO – estacas',visible:false,definitionExpression:"FolderPath LIKE '%/ESTACAS/%'",renderer:{type:'simple',symbol:{type:'simple-line',color:[220,230,240,.8],width:1}}},
+  {url:TRACADO+'2',title:'FICO – eixo do traçado',definitionExpression:"FolderPath LIKE '%/EIXO/%'",renderer:{type:'simple',symbol:{type:'simple-line',color:[242,183,5,1],width:3.2}}}
+];
 window.PAINEL={
+  unitLabel:'levantamentos',
   title:'Fiscalização FICO',
   subtitle:'Acompanhamento das obras da Ferrovia de Integração Centro-Oeste (FICO)',
   home:'https://experience.arcgis.com/experience/26c68a6e20144b5199923c22b1722c3e',
@@ -52,24 +62,33 @@ window.PAINEL={
     {slot:'right',type:'hbar',title:'Itens inspecionados',field:'ITEM',top:12,height:520,labelWidth:190},
     {slot:'bottom',type:'donut',title:'Levantamentos por fiscal',field:'FISCAL',centerLabel:'levantamentos'}
   ],
-  map:{title:'Mapa da fiscalização',colorBy:'h_riscos_para_trabalhadores_ou',colors:{'Sim':'#C2410C','Não':'#1E9E5A'},labels:{'Sim':'Com risco a trabalhadores','Não':'Sem risco identificado'},legendTitle:'Riscos a trabalhadores',size:11,basemap:'hybrid',
-    extraLayers:[{url:SVC+'Eixo_FICO_I_e_II/FeatureServer/0',renderer:{type:'simple',symbol:{type:'simple-line',color:[242,183,5,.95],width:2.5}}}],
+  map:{title:'Mapa da fiscalização',colorBy:'h_riscos_para_trabalhadores_ou',colors:{'Sim':'#C2410C','Não':'#1E9E5A'},labels:{'Sim':'Com risco a trabalhadores','Não':'Sem risco identificado'},legendTitle:'Riscos a trabalhadores',size:11,basemap:'hybrid',bbox:[-53.8,-15.2,-48.6,-12.2], // enquadra a obra (ignora pontos fora do traçado)
+   
+    layerTitle:'Levantamentos de fiscalização',heatmap:true,extraLayers:FICO_LAYERS,
     popupTitle:r=>`${r.PACOTE} — ${r.ITEM}`,
     popup:(r,att)=>`<b>Data da visita:</b> ${r.DATA} às ${r.hora_de_in_cio_da_fiscaliza_o||'—'}<br><b>Fiscal:</b> ${r.FISCAL}<br><b>Empresa:</b> ${r.empresa_respons_vel_pela_obra}<br><b>Conforme o projeto:</b> ${r.a_obra_est_conforme_o_projeto}<br><b>Riscos a trabalhadores:</b> ${r.h_riscos_para_trabalhadores_ou}<br><b>Passivo ambiental:</b> ${r.h_algum_passivo_ambiental}${r.qual_passivo?' ('+r.qual_passivo+')':''}`
       +(r.recomenda_es_ou_medidas_a_serem?`<br><b>Recomendações:</b> ${r.recomenda_es_ou_medidas_a_serem}`:'')
       +att.slice(0,3).map(a=>`<a href="${a.url}" target="_blank" rel="noopener"><img src="${a.url}" style="width:100%;border-radius:6px;margin-top:8px" alt="Foto do levantamento"></a>`).join('')
       +(att.length>3?`<br><i>+ ${att.length-3} fotos na galeria abaixo</i>`:'')},
-  gallery:{title:'Registros fotográficos das fiscalizações',
+  gallery:{title:'Registros fotográficos das fiscalizações',kicker:'Fiscalização FICO',
+    tags:[{label:'Com risco',test:r=>r.h_riscos_para_trabalhadores_ou==='Sim'},{label:'Passivo ambiental',test:r=>r.h_algum_passivo_ambiental==='Sim'},{label:'Não conforme ao projeto',test:r=>r.a_obra_est_conforme_o_projeto==='Não'}],
+    info:r=>[['Data da visita',`${r.DATA}${r.hora_de_in_cio_da_fiscaliza_o?' às '+r.hora_de_in_cio_da_fiscaliza_o:''}`],['Pacote',r.PACOTE],['Item inspecionado',r.ITEM],['Fiscal',r.FISCAL],
+      ['Empresa',r.empresa_respons_vel_pela_obra],['Obra conforme o projeto',r.a_obra_est_conforme_o_projeto],['Riscos a trabalhadores',r.h_riscos_para_trabalhadores_ou],
+      ['Passivo ambiental',r.h_algum_passivo_ambiental+(r.qual_passivo?' – '+r.qual_passivo:'')],['Sinalização adequada',r.h_sinaliza_o_adequada_e_barreir],['Recomendações',r.recomenda_es_ou_medidas_a_serem]],
     caption:r=>r.ITEM, sub:r=>`${r.PACOTE} · ${r.DATA} · Fiscal: ${r.FISCAL}`,
     detail:r=>[r.h_riscos_para_trabalhadores_ou==='Sim'?'Com risco a trabalhadores':'', r.h_algum_passivo_ambiental==='Sim'?'Passivo ambiental':'', r.recomenda_es_ou_medidas_a_serem||''].filter(Boolean).join(' · '),
     badge:(r,a)=>/passivo/i.test(a.keywords||'')?'Passivo ambiental':(r.h_riscos_para_trabalhadores_ou==='Sim'?'Risco':''),
     sort:(a,b)=>(b.data_da_visita||0)-(a.data_da_visita||0)},
+  timelapse:{tabTitle:'Histórico e alertas',noun:'levantamento',nounPl:'levantamentos',dateField:'DATA',createdField:'CreationDate',unit:'week',alertDays:7,alertList:10,fit:true,
+    mapTitle:'Linha do tempo das fiscalizações',chartTitle:'Levantamentos por semana',layerTitle:'Levantamentos no tempo',note:'filtros do topo aplicados',
+    alertTitle:r=>`${r.ITEM} — ${r.PACOTE}`,
+    alertSub:r=>`Fiscal: ${r.FISCAL} · visita em ${r.DATA}${r.h_riscos_para_trabalhadores_ou==='Sim'?' · COM RISCO':''}`},
   table:{title:'Levantamentos',sort:{f:'DATA',dir:-1},columns:[
     {f:'DATA',label:'Data',sortGet:r=>r.data_da_visita||0},{f:'PACOTE',label:'Pacote'},{f:'ITEM',label:'Item inspecionado'},
     {f:'a_obra_est_conforme_o_projeto',label:'Conforme'},{f:'h_riscos_para_trabalhadores_ou',label:'Risco',color:'h_riscos_para_trabalhadores_ou'},
     {f:'h_algum_passivo_ambiental',label:'Passivo'},{f:'FISCAL',label:'Fiscal'},{f:'FOTOS',label:'Fotos',num:true,get:r=>(window.__ATTN||{})[r._oid]||0}]}
 };
 </script>
-<script src="../assets/painel.js?v=20261114h"></script>
+<script src="../assets/painel.js?v=20261114j"></script>
 </body>
 </html>

@@ -89,18 +89,21 @@ ${C.timelapse?`<div class="tabs" role="tablist" aria-label="Seções do painel">
     </div>
     <div class="col" style="grid-template-rows:${(slots.right||[]).length>1?'auto 1fr':'1fr'}">${(slots.right||[]).map(cardChart).join('')}</div>
   </section>
-  ${C.gallery?`<section class="card ov" id="galCard"><div class="card-h"><h2>${esc(C.gallery.title)}</h2><span class="hint" id="galCount"></span><span class="sp"></span><span class="hint">clique na foto para ampliar</span></div><div class="gallery" id="gallery"></div></section>`:''}
+  ${C.gallery?`<section class="card ov" id="galCard"><div class="card-h gal-h"><h2>${esc(C.gallery.title)}</h2><span class="hint" id="galCount"></span><span class="sp"></span>
+    ${(C.gallery.tags||[]).length?`<div class="seg" id="galTags"></div>`:''}
+    <div class="gsize" id="galSize" role="group" aria-label="Tamanho das fotos"><button data-s="200">Compacto</button><button data-s="280" class="on">Médio</button><button data-s="400">Grande</button></div></div>
+    <div class="hint" style="padding:0 16px 6px">Clique na foto para abrir o visualizador, com navegação, ampliação e localização no mapa.</div><div class="gallery" id="gallery"></div></section>`:''}
   ${C.timelapse?`<section class="tlpane">
     <div class="tl-grid">
       <div class="card tl-mapcard">
-        <div class="card-h"><h2>Linha do tempo dos acidentes</h2><span class="sp"></span><span class="hint">${esc(C.timelapse.note||'')}</span></div>
+        <div class="card-h"><h2>${esc(C.timelapse.mapTitle||'Linha do tempo dos acidentes')}</h2><span class="sp"></span><span class="hint">${esc(C.timelapse.note||'')}</span></div>
         <div class="tl-ctrl">
           <button id="tlPlay" class="tl-play" aria-label="Pausar">❚❚</button>
           <input type="range" id="tlRange" min="0" max="0" value="0" aria-label="Mês exibido">
           <span class="tl-now" id="tlNow">—</span>
           <label class="hint" for="tlSpeed">Velocidade</label>
           <select id="tlSpeed" class="mapsel"><option value="1300">Lenta</option><option value="650" selected>Normal</option><option value="260">Rápida</option></select>
-          <label class="hint tl-acc"><input type="checkbox" id="tlAcc" checked> Acumular meses do ano</label>
+          <label class="hint tl-acc"><input type="checkbox" id="tlAcc" checked> Acumular ${C.timelapse.unit==='week'?'semanas':'meses'} do ano</label>
         </div>
         <div id="tlMap"></div>
       </div>
@@ -110,7 +113,7 @@ ${C.timelapse?`<div class="tabs" role="tablist" aria-label="Seções do painel">
         <div id="alertList" class="alert-list"></div>
       </div>
     </div>
-    <div class="card"><div class="card-h"><h2>Acidentes por mês</h2><span class="sp"></span><span class="hint">clique em um mês para ir até ele</span></div>
+    <div class="card"><div class="card-h"><h2>${esc(C.timelapse.chartTitle||'Acidentes por mês')}</h2><span class="sp"></span><span class="hint">clique em ${C.timelapse.unit==='week'?'uma semana':'um mês'} para ir até ${C.timelapse.unit==='week'?'ela':'ele'}</span></div>
       <div id="tlChart" class="chart" style="height:250px"></div></div>
   </section>`:''}
   <section class="bottom ov">
@@ -122,7 +125,12 @@ ${C.timelapse?`<div class="tabs" role="tablist" aria-label="Seções do painel">
   </section>
 </main>
 <div class="foot">Fonte: camada “${esc(C.sourceName)}”. Dados em tempo real, atualizados em <span id="upd">—</span>.${C.footNote?' '+esc(C.footNote):''}</div>
-<div class="lightbox" id="lb" role="dialog" aria-modal="true"><button class="x" aria-label="Fechar">×</button><button class="nav prev" aria-label="Anterior">‹</button><img alt=""><div class="info"></div><button class="nav next" aria-label="Próxima">›</button></div>`;
+<div class="lightbox" id="lb" role="dialog" aria-modal="true" aria-label="Visualizador de fotos">
+  <div class="lb-main"><div class="lb-stage" id="lbStage"><img alt="" id="lbImg"><button class="nav prev" aria-label="Foto anterior">‹</button><button class="nav next" aria-label="Próxima foto">›</button><span class="lb-count" id="lbCount"></span><span class="lb-tip">clique na foto para ampliar · ← → para navegar · Esc para fechar</span></div>
+    <div class="lb-strip" id="lbStrip"></div></div>
+  <aside class="lb-side"><button class="x" aria-label="Fechar">×</button><div class="lb-info" id="lbInfo"></div>
+    <div class="lb-acts"><button class="bt" id="lbMap">📍 Ver no mapa</button><a class="bt out" id="lbOpen" target="_blank" rel="noopener">Abrir original ↗</a></div></aside>
+</div>`;
 if(C.map&&C.map.basemap) document.getElementById('baseSel').value=C.map.basemap; else document.getElementById('baseSel').value='hybrid';
 
 /* ---------- dados ---------- */
@@ -243,7 +251,7 @@ function renderChart(c){
     const h=Math.max(c.height||300,list.length*26+30);
     document.getElementById(c._id).style.height=h+'px'; ec(c._id,c).resize();
     ec(c._id,c).setOption({grid:{left:8,right:40,top:6,bottom:6,containLabel:true},
-      tooltip:{trigger:'item',formatter:p=>`<b>${fullName(c,p.name)}</b><br>${nf(p.value)} acidentes · ${tot?nf(p.value/tot*100,1):0}%<br><span style="color:#6A7486">clique para filtrar</span>`},
+      tooltip:{trigger:'item',formatter:p=>`<b>${fullName(c,p.name)}</b><br>${nf(p.value)} ${esc(C.unitLabel||'registros')} · ${tot?nf(p.value/tot*100,1):0}%<br><span style="color:#6A7486">clique para filtrar</span>`},
       xAxis:{type:'value',splitLine:{lineStyle:{color:'#EDF0F4'}},axisLabel:{color:'#6A7486',fontSize:11}},
       yAxis:{type:'category',data:list.map(x=>x[0]),axisTick:{show:false},axisLine:{lineStyle:{color:'#DDE3EB'}},axisLabel:{color:'#14213D',fontSize:12,width:c.labelWidth||170,overflow:'truncate'}},
       series:[{type:'bar',barMaxWidth:16,data:list.map(([v,n])=>({value:n,itemStyle:{color:barColor(c,v,list),opacity:S[c.field]==null||S[c.field]===v?1:.3,borderRadius:[0,4,4,0]}})),
@@ -291,28 +299,59 @@ function renderTable(f){
 document.querySelectorAll('#tbl th').forEach(th=>th.onclick=()=>{ const k=th.dataset.k; if(sortK===k) sortDir*=-1; else {sortK=k; sortDir=th.classList.contains('num')?-1:1;} renderTable(rows()); });
 document.getElementById('tblSearch').oninput=()=>renderTable(rows());
 
-/* ---------- galeria ---------- */
-let GAL=[], gi=0;
+/* ---------- galeria e visualizador de fotos ---------- */
+let GAL=[], GALALL=[], gi=0, galTag=null;
 function renderGallery(f){
   if(!C.gallery) return;
-  GAL=[]; f.forEach(r=>(ATT[r._oid]||[]).forEach(a=>GAL.push({r,a})));
-  if(C.gallery.sort) GAL.sort((x,y)=>C.gallery.sort(x.r,y.r));
-  document.getElementById('galCount').textContent=`${nf(GAL.length)} fotos de ${nf(f.filter(r=>(ATT[r._oid]||[]).length).length)} levantamentos`;
+  GALALL=[]; f.forEach(r=>(ATT[r._oid]||[]).forEach((a,k,arr)=>GALALL.push({r,a,k:k+1,n:arr.length})));
+  if(C.gallery.sort) GALALL.sort((x,y)=>C.gallery.sort(x.r,y.r));
+  const tags=C.gallery.tags||[];
+  const tb=document.getElementById('galTags');
+  if(tb){ tb.innerHTML=`<button class="chip ${galTag==null?'on':''}" data-t="">Todas<span class="n">${GALALL.length}</span></button>`+tags.map((t,i)=>{ const n=GALALL.filter(x=>t.test(x.r,x.a)).length; return `<button class="chip ${galTag===i?'on':''}" data-t="${i}" ${n?'':'disabled'}>${esc(t.label)}<span class="n">${n}</span></button>`; }).join('');
+    tb.querySelectorAll('.chip').forEach(c=>c.onclick=()=>{ galTag=c.dataset.t===''?null:+c.dataset.t; renderGallery(rows()); }); }
+  GAL=galTag==null?GALALL:GALALL.filter(x=>tags[galTag].test(x.r,x.a));
+  document.getElementById('galCount').textContent=`${nf(GAL.length)} fotos de ${nf(new Set(GAL.map(x=>x.r._oid)).size)} levantamentos`;
   const g=document.getElementById('gallery');
   g.innerHTML=GAL.length?GAL.map((x,i)=>{ const b=C.gallery.badge&&C.gallery.badge(x.r,x.a);
-    return `<button class="ph" data-i="${i}" aria-label="Ampliar foto ${i+1}"><img loading="lazy" decoding="async" src="${x.a.url}" alt="${esc(C.gallery.caption(x.r))}">
-      ${b?`<span class="badge">${esc(b)}</span>`:''}<span class="cap"><b>${esc(C.gallery.caption(x.r))}</b>${esc(C.gallery.sub(x.r))}</span></button>`; }).join('')
+    return `<button class="ph" data-i="${i}" aria-label="Abrir foto ${i+1}"><img loading="lazy" decoding="async" src="${x.a.url}" alt="${esc(C.gallery.caption(x.r))}">
+      ${b?`<span class="badge">${esc(b)}</span>`:''}${x.n>1?`<span class="multi">${x.k}/${x.n}</span>`:''}<span class="cap"><b>${esc(C.gallery.caption(x.r))}</b>${esc(C.gallery.sub(x.r))}</span></button>`; }).join('')
     :'<div class="hint" style="padding:12px">Nenhuma foto para os filtros atuais.</div>';
   g.querySelectorAll('.ph').forEach(b=>b.onclick=()=>openLB(+b.dataset.i));
 }
-const lb=document.getElementById('lb');
-function openLB(i){ if(!GAL.length) return; gi=(i+GAL.length)%GAL.length; const x=GAL[gi]; lb.querySelector('img').src=x.a.url;
-  lb.querySelector('.info').innerHTML=`<b>${esc(C.gallery.caption(x.r))}</b> — foto ${gi+1} de ${GAL.length}<small>${esc(C.gallery.sub(x.r))}${C.gallery.detail?' · '+esc(C.gallery.detail(x.r)):''}</small>`; lb.classList.add('on'); }
-lb.querySelector('.x').onclick=()=>lb.classList.remove('on');
+document.querySelectorAll('#galSize button').forEach(b=>b.onclick=()=>{ document.querySelectorAll('#galSize button').forEach(x=>x.classList.toggle('on',x===b)); document.getElementById('gallery').style.setProperty('--ph',b.dataset.s+'px'); });
+const lb=document.getElementById('lb'), lbImg=document.getElementById('lbImg'), lbStage=document.getElementById('lbStage');
+const closeLB=()=>{ lb.classList.remove('on'); lbStage.classList.remove('zoom'); document.body.style.overflow=''; };
+function openLB(i){
+  if(!GAL.length) return; gi=(i+GAL.length)%GAL.length; const x=GAL[gi];
+  lbStage.classList.remove('zoom'); lbImg.src=x.a.url; lbImg.alt=C.gallery.caption(x.r);
+  document.getElementById('lbCount').textContent=`${gi+1} / ${GAL.length}`;
+  const info=C.gallery.info?C.gallery.info(x.r,x.a):[];
+  document.getElementById('lbInfo').innerHTML=`<div class="k">${esc(C.gallery.kicker||'Registro fotográfico')}</div><h3>${esc(C.gallery.caption(x.r))}</h3>
+    <div class="s">${esc(C.gallery.sub(x.r))}${x.n>1?` · foto ${x.k} de ${x.n} deste levantamento`:''}</div>
+    ${info.length?`<table class="attr">${info.filter(([,v])=>v!=null&&v!=='').map(([l,v])=>`<tr><th>${esc(l)}</th><td>${esc(v)}</td></tr>`).join('')}</table>`:''}`;
+  document.getElementById('lbOpen').href=x.a.url;
+  document.getElementById('lbMap').hidden=x.r._x==null;
+  const st=document.getElementById('lbStrip');
+  const from=Math.max(0,gi-12), to=Math.min(GAL.length,gi+13);
+  st.innerHTML=GAL.slice(from,to).map((y,k)=>`<button class="${from+k===gi?'on':''}" data-i="${from+k}" aria-label="Foto ${from+k+1}"><img loading="lazy" src="${y.a.url}" alt=""></button>`).join('');
+  st.querySelectorAll('button').forEach(b=>b.onclick=()=>openLB(+b.dataset.i));
+  const cur=st.querySelector('.on'); if(cur) cur.scrollIntoView({inline:'center',block:'nearest'});
+  lb.classList.add('on'); document.body.style.overflow='hidden';
+}
+lbImg.onclick=()=>lbStage.classList.toggle('zoom');
+lb.querySelector('.x').onclick=closeLB;
 lb.querySelector('.prev').onclick=()=>openLB(gi-1); lb.querySelector('.next').onclick=()=>openLB(gi+1);
-lb.onclick=e=>{ if(e.target===lb) lb.classList.remove('on'); };
-document.addEventListener('keydown',e=>{ if(!lb.classList.contains('on')) return; if(e.key==='Escape') lb.classList.remove('on'); if(e.key==='ArrowLeft') openLB(gi-1); if(e.key==='ArrowRight') openLB(gi+1); });
+lb.onclick=e=>{ if(e.target===lb) closeLB(); };
+document.getElementById('lbMap').onclick=()=>{ const x=GAL[gi]; closeLB(); focusOnMap(x.r._oid); };
+document.addEventListener('keydown',e=>{ if(!lb.classList.contains('on')) return; if(e.key==='Escape') closeLB(); if(e.key==='ArrowLeft') openLB(gi-1); if(e.key==='ArrowRight') openLB(gi+1); });
 window.PAINEL_OPEN_PHOTO=(oid)=>{ const i=GAL.findIndex(x=>x.r._oid===oid); if(i>=0) openLB(i); };
+/* leva o mapa até o registro e abre o popup */
+function focusOnMap(oid){
+  const r=BYOID[oid]; if(!r||r._x==null||!view) return;
+  document.querySelector('.mapcard').scrollIntoView({behavior:'smooth',block:'center'});
+  view.goTo({center:[r._x,r._y],zoom:16},{duration:900}).then(()=>ptLayer.queryFeatures({objectIds:[oid],returnGeometry:true,outFields:['*']}))
+    .then(fs=>{ if(fs.features.length) view.openPopup({features:fs.features,location:fs.features[0].geometry}); }).catch(()=>{});
+}
 
 /* ---------- mapa ---------- */
 let view=null, ptLayer=null, ptView=null, hlLayer=null, lastKey=null, Extent=null;
@@ -396,10 +435,15 @@ function renderMap(f,noZoom){
 const TLC=C.timelapse;
 const MES=['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'];
 const TL={on:false,ready:false,mk0:0,n:0,cur:0,timer:null,playing:true,hold:0,view:null,layer:null,lv:null,alertLayer:null,blinkT:null,chart:null,preview:null,maxCreated:0};
-const mLabel=(i,long)=>{ const k=TL.mk0+i, y=Math.floor(k/12); return `${MES[k%12]}/${long?y:String(y).slice(2)}`; };
+const WEEK=TLC&&TLC.unit==='week';
+const N1=(TLC&&TLC.noun)||'acidente', N2=(TLC&&TLC.nounPl)||'acidentes';
+const wkDate=i=>new Date(((TL.mk0+i)*7-3)*864e5); // início (segunda-feira) da semana i
+const yearOf=i=>WEEK?wkDate(i).getUTCFullYear():Math.floor((TL.mk0+i)/12);
+const mLabel=(i,long)=>{ if(WEEK){ const d=wkDate(i), dd=String(d.getUTCDate()).padStart(2,'0'), mm=String(d.getUTCMonth()+1).padStart(2,'0'); return long?`Sem. ${dd}/${mm}/${d.getUTCFullYear()}`:`${dd}/${mm}`; }
+  const k=TL.mk0+i, y=Math.floor(k/12); return `${MES[k%12]}/${long?y:String(y).slice(2)}`; };
 const fmtDT=t=>new Date(t).toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'});
 function tlPrep(){
-  D.forEach(r=>{ const m=/(\d{2})\/(\d{2})\/(\d{4})/.exec(String(r[TLC.dateField]||'')); r._mk=m?(+m[3])*12+(+m[2]-1):null; });
+  D.forEach(r=>{ const m=/(\d{2})\/(\d{2})\/(\d{4})/.exec(String(r[TLC.dateField]||'')); r._mk=!m?null:WEEK?Math.floor((Date.UTC(+m[3],+m[2]-1,+m[1])/864e5+3)/7):(+m[3])*12+(+m[2]-1); });
   const ks=D.map(r=>r._mk).filter(k=>k!=null); TL.mk0=Math.min(...ks); TL.n=Math.max(...ks)-TL.mk0+1;
   D.forEach(r=>{ r._t=r._mk==null?-1:r._mk-TL.mk0; });
   TL.cur=0; TL.maxCreated=D.reduce((m,r)=>Math.max(m,+r[TLC.createdField]||0),0);
@@ -415,7 +459,7 @@ function tlSeries(f){
 function initTL(){ if(TL.ready||!window.__ESRI) return; TL.ready=true;
   const {EMap,MapView,FeatureLayer,Graphic}=window.__ESRI;
   require(['esri/layers/GraphicsLayer'],GraphicsLayer=>{
-    TL.layer=new FeatureLayer({title:'Acidentes no tempo',source:pointGraphics(Graphic,r=>({_t:r._t})),objectIdField:'_oid',geometryType:'point',spatialReference:{wkid:4326},
+    TL.layer=new FeatureLayer({title:TLC.layerTitle||'Acidentes no tempo',source:pointGraphics(Graphic,r=>({_t:r._t})),objectIdField:'_oid',geometryType:'point',spatialReference:{wkid:4326},
       fields:[{name:'_oid',type:'oid'},{name:'_cat',type:'string'},{name:'_ord',type:'integer'},{name:'_t',type:'integer'}],
       orderBy:[{field:'_ord',order:'ascending'}],renderer:pointRenderer(.85),popupTemplate:popupTpl()});
     TL.alertLayer=new GraphicsLayer({title:'Alertas',listMode:'hide'});
@@ -426,7 +470,8 @@ function initTL(){ if(TL.ready||!window.__ESRI) return; TL.ready=true;
     TL.view.on('click',()=>{TL.view.navigation.mouseWheelZoomEnabled=true;});
     const st=document.createElement('div'); st.className='tl-stamp'; st.id='tlStamp'; TL.view.ui.add(st,'top-left');
     TL.view.ui.add(mapLegend(),'bottom-left');
-    TL.view.whenLayerView(TL.layer).then(lv=>{ TL.lv=lv; tlFrame(); });
+    TL.view.whenLayerView(TL.layer).then(lv=>{ TL.lv=lv; tlFrame();
+      if(TLC.fit){ const bb=C.map.bbox||[-75,-35,-28,7]; const pts=D.filter(r=>r._x!=null&&r._x>bb[0]&&r._x<bb[2]&&r._y>bb[1]&&r._y<bb[3]); if(pts.length){ let x0=180,y0=90,x1=-180,y1=-90; pts.forEach(r=>{x0=Math.min(x0,r._x);x1=Math.max(x1,r._x);y0=Math.min(y0,r._y);y1=Math.max(y1,r._y);}); TL.view.goTo(new Extent({xmin:x0,ymin:y0,xmax:x1,ymax:y1,spatialReference:{wkid:4326}}).expand(1.3),{animate:false}).catch(()=>{}); } } });
     TL.chart=echarts.init(document.getElementById('tlChart'));
     TL.chart.on('click',p=>{ if(p.dataIndex!=null){ TL.cur=p.dataIndex; tlPlay(false); tlFrame(); } });
     tlChart(); renderAlerts(); tlPlay(TL.playing);
@@ -451,7 +496,7 @@ function tlMark(){
 function tlFrame(){
   if(!TL.ready) return;
   const f=tlRows(), acc=document.getElementById('tlAcc').checked;
-  const y0=Math.max(0,TL.cur-((TL.mk0+TL.cur)%12)); // janeiro do ano exibido: anos anteriores ficam ocultos
+  let y0=TL.cur; while(y0>0&&yearOf(y0-1)===yearOf(TL.cur)) y0--; // início do ano exibido: anos anteriores ficam ocultos
   const inM=f.filter(r=>r._t===TL.cur), accN=f.filter(r=>r._t>=y0&&r._t<=TL.cur).length;
   if(TL.lv){
     const ids=f.length===D.length?null:f.map(r=>r._oid);
@@ -464,7 +509,7 @@ function tlFrame(){
   const firstCat=C.map.icons?Object.keys(C.map.icons)[0]:null, gl=firstCat&&C.map.labels?C.map.labels[firstCat]:'';
   const g=firstCat?inM.filter(r=>String(r[C.map.colorBy])===firstCat).length:0;
   const st=document.getElementById('tlStamp');
-  if(st) st.innerHTML=`<div class="m">${mLabel(TL.cur,true)}</div><div class="c"><b>${nf(inM.length)}</b> no mês${gl?` · <b>${nf(g)}</b> ${esc(gl.toLowerCase())}${g===1?'':'s'}`:''}</div><div class="c">acumulado em ${Math.floor((TL.mk0+TL.cur)/12)}: <b>${nf(accN)}</b></div>`;
+  if(st) st.innerHTML=`<div class="m">${mLabel(TL.cur,true)}</div><div class="c"><b>${nf(inM.length)}</b> ${WEEK?'na semana':'no mês'}${gl?` · <b>${nf(g)}</b> ${esc(gl.toLowerCase())}${g===1?'':'s'}`:''}</div><div class="c">acumulado em ${yearOf(TL.cur)}: <b>${nf(accN)}</b></div>`;
   document.getElementById('tlNow').textContent=mLabel(TL.cur,true);
   document.getElementById('tlRange').value=TL.cur;
   tlMark();
@@ -492,8 +537,8 @@ function renderAlerts(){
   const b=document.getElementById('aBadge'); b.hidden=!active.length; b.textContent=active.length;
   const last=recs[0], ago=t=>Math.floor((now-t)/864e5);
   document.getElementById('alertHead').innerHTML=active.length
-    ? `<div class="ah on"><span class="pulse"></span><div><b>${active.length===1?'1 acidente incluído':active.length+' acidentes incluídos'} ${pv?'(pré-visualização)':`nos últimos ${days} dias`}</b><small>${pv?'Pré-visualização: o mapa mostra apenas os alertas.':`O registro novo pisca no mapa até completar ${days} dias da inclusão.`}</small></div>${pv?'<button class="pv" id="pvEnd">Encerrar</button>':''}</div>`
-    : `<div class="ah"><div><b>Nenhum acidente incluído nos últimos ${days} dias</b><small>${last?`Última inclusão em ${fmtDT(+last[cf])} (há ${ago(+last[cf])} dias). `:''}Quando um novo registro entrar na camada, ele aparece aqui e pisca no mapa por ${days} dias.</small></div>
+    ? `<div class="ah on"><span class="pulse"></span><div><b>${active.length===1?`1 ${N1} incluído`:`${active.length} ${N2} incluídos`} ${pv?'(pré-visualização)':`nos últimos ${days} dias`}</b><small>${pv?'Pré-visualização: o mapa mostra apenas os alertas.':`O registro novo pisca no mapa até completar ${days} dias da inclusão.`}</small></div>${pv?'<button class="pv" id="pvEnd">Encerrar</button>':''}</div>`
+    : `<div class="ah"><div><b>Nenhum ${N1} incluído nos últimos ${days} dias</b><small>${last?`Última inclusão em ${fmtDT(+last[cf])} (há ${ago(+last[cf])} dias). `:''}Quando um novo registro entrar na camada, ele aparece aqui e pisca no mapa por ${days} dias.</small></div>
        ${last?`<button class="pv" id="pvBtn">Pré-visualizar alerta</button>`:''}</div>`;
   const pvb=document.getElementById('pvBtn');
   if(pvb) pvb.onclick=()=>{ const pr=recs.find(r=>r._x!=null&&r._x>-75&&r._x<-28&&r._y>-35&&r._y<7)||last; TL.wasPlaying=TL.playing; tlPlay(false); TL.preview={oid:pr._oid,until:Date.now()+20000}; renderAlerts(); tlFrame(); tlGoTo(pr._oid,true); clearTimeout(TL.pvT); TL.pvT=setTimeout(endPreview,20300); };
@@ -548,7 +593,7 @@ function initTabs(){
     const p=new URLSearchParams({where:`${TLC.createdField} > timestamp '${ts}'`,returnCountOnly:'true',f:'json'});
     const j=await (await fetch(C.layer+'/query?'+p)).json();
     if(j.count>0){ const n=document.getElementById('newData'); n.hidden=false;
-      n.innerHTML=`<span class="pulse"></span>${j.count===1?'1 novo acidente incluído':j.count+' novos acidentes incluídos'} <button id="reload">Atualizar painel</button>`;
+      n.innerHTML=`<span class="pulse"></span>${j.count===1?`1 novo ${N1} incluído`:`${j.count} novos ${N2} incluídos`} <button id="reload">Atualizar painel</button>`;
       document.getElementById('reload').onclick=()=>location.reload(); }
   }catch(e){} },180000);
 }
@@ -578,6 +623,7 @@ function render(){
   render();
   await initMap(); lastKey=null; renderMap(rows());
   if(TLC&&/historico/.test(location.hash)) showTab('tl'); // link direto para a aba
+  const fm=/#foto(?:\/(\d+))?/.exec(location.hash); if(fm&&C.gallery) openLB(+(fm[1]||0));
 })();
 window.addEventListener('resize',()=>{ Object.values(EC).forEach(c=>c.resize()); if(TL.chart) TL.chart.resize(); });
 })();

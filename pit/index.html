@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Projeto de Interesse de Terceiros (PIT)</title>
 <link rel="stylesheet" href="https://js.arcgis.com/4.30/esri/themes/light/main.css">
-<link rel="stylesheet" href="../assets/painel.css?v=20261114h">
+<link rel="stylesheet" href="../assets/painel.css?v=20261114j">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/5.5.0/echarts.min.js"></script>
 <script src="https://js.arcgis.com/4.30/"></script>
 </head>
@@ -15,6 +15,7 @@
 const dmy=s=>{const m=/^(\d{2})\/(\d{2})\/(\d{4})/.exec(String(s||''));return m?+(m[3]+m[2]+m[1]):0;};
 const STATUS_COR={'Concluído':'#1E9E5A','Autorizado':'#1C5FAD','Atualizado':'#E0A800','Arquivado':'#7B3FA0'};
 window.PAINEL={
+  unitLabel:'processos',
   title:'Projeto de Interesse de Terceiros (PIT)',
   subtitle:'Travessias, paralelismos e interferências de terceiros na faixa ferroviária',
   home:'https://experience.arcgis.com/experience/26c68a6e20144b5199923c22b1722c3e',
@@ -56,6 +57,6 @@ window.PAINEL={
     {f:'Data_de_en',label:'Entrada',sortGet:r=>dmy(r.Data_de_en)}]}
 };
 </script>
-<script src="../assets/painel.js?v=20261114h"></script>
+<script src="../assets/painel.js?v=20261114j"></script>
 </body>
 </html>
