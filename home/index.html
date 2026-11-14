@@ -14,16 +14,22 @@ a{color:var(--blue)}
 /* faixa-título: logo e nome à esquerda; os botões de navegação da experiência ficam sobre a área da direita */
 .band{height:96px;background:linear-gradient(100deg,#071F47 0%,#0A2A5E 45%,#1C5FAD 100%);color:#fff;position:relative;overflow:hidden}
 .band-in{height:100%;padding:0 2%;display:flex;align-items:center;gap:20px;position:relative;z-index:1}
-.band .logo{height:46px;display:block}
+.band .logo{height:42px;display:block}
 .band .vsep{width:1px;height:52px;background:rgba(255,255,255,.3)}
 .band .org{font-size:11.5px;letter-spacing:.09em;text-transform:uppercase;color:#BFD0EA;font-weight:600}
 .band .name{font-size:23px;white-space:nowrap;font-weight:700;line-height:1.15;letter-spacing:-.01em}
 .band .name b{color:var(--yellow);font-weight:800;margin-right:6px}
 .band .sp{flex:1}
 .rails{position:absolute;right:32%;top:-40px;width:420px;height:200px;opacity:.07}
+/* os botões da experiência ocupam 680 px à direita: o título encolhe para não encostar neles */
+.band-in>div{max-width:calc(100vw - 680px - 4vw - 250px);min-width:0}
+@media (max-width:1560px){.band .org{display:none}.band .name{font-size:21px}}
+@media (max-width:1400px){.band .name{font-size:18px}}
+@media (max-width:1340px){.band .name .t{display:none}.band .name{font-size:24px}}
+@media (max-width:1100px){.band .vsep,.band-in>div{display:none}}
 .stripe{height:5px;background:linear-gradient(90deg,var(--yellow) 0 72%,var(--green) 72% 100%)}
 /* simulação dos botões da experiência (só na prévia) */
-.mocknav{display:flex;align-items:center;width:760px;justify-content:space-around}
+.mocknav{display:flex;align-items:center;width:680px;justify-content:space-around}
 .mocknav a{display:inline-flex;align-items:center;gap:8px;color:#fff;font:600 15px "Avenir Next","Segoe UI",sans-serif;text-decoration:none;padding:10px 16px;border-radius:6px}
 .mocknav a:hover{background:rgba(255,255,255,.12);color:var(--yellow)}
 .mocknav a.on{box-shadow:inset 0 -3px 0 var(--yellow)}
@@ -106,7 +112,7 @@ a{color:var(--blue)}
   <div class="band-in">
     <img class="logo" src="https://imagem-govfed.maps.arcgis.com/sharing/rest/content/items/b9b84e3d709e4bd9af5e652588ace76e/resources/images/logo_antt_header.png" alt="ANTT – Agência Nacional de Transportes Terrestres">
     <span class="vsep" aria-hidden="true"></span>
-    <div><div class="org">SUFER · Superintendência de Transporte Ferroviário</div><div class="name"><b>SAFF-P</b>Painéis de acompanhamento</div></div>
+    <div><div class="org">SUFER · Superintendência de Transporte Ferroviário</div><div class="name"><b>SAFF-P</b><span class="t">Painéis de acompanhamento</span></div></div>
     <span class="sp"></span>
     <nav class="mocknav" id="mocknav" hidden aria-hidden="true">
       <a class="on" href="#"><svg viewBox="0 0 16 16" fill="currentColor"><path d="M13.6 6.188V1.824h-2.4v2.14L8 1 0 8.412h2.4V13H1v2h14v-2h-1.4V8.412H16zM10 9v3H6V9z"/></svg>Página Inicial</a><i></i>
