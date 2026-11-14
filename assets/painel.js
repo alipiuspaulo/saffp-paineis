@@ -98,7 +98,7 @@ ${C.timelapse?`<div class="tabs" role="tablist" aria-label="Seções do painel">
           <span class="tl-now" id="tlNow">—</span>
           <label class="hint" for="tlSpeed">Velocidade</label>
           <select id="tlSpeed" class="mapsel"><option value="1300">Lenta</option><option value="650" selected>Normal</option><option value="260">Rápida</option></select>
-          <label class="hint tl-acc"><input type="checkbox" id="tlAcc" checked> Acumular meses</label>
+          <label class="hint tl-acc"><input type="checkbox" id="tlAcc" checked> Acumular meses do ano</label>
         </div>
         <div id="tlMap"></div>
       </div>
@@ -119,7 +119,7 @@ ${C.timelapse?`<div class="tabs" role="tablist" aria-label="Seções do painel">
       <div class="tbl-note" id="tblNote" hidden></div></div>
   </section>
 </main>
-<div class="foot">Fonte: camada “${esc(C.sourceName)}” (ArcGIS Online), consultada ao vivo em <span id="upd">—</span>.${C.footNote?' '+esc(C.footNote):''}</div>
+<div class="foot">Fonte: camada “${esc(C.sourceName)}”. Dados em tempo real, atualizados em <span id="upd">—</span>.${C.footNote?' '+esc(C.footNote):''}</div>
 <div class="lightbox" id="lb" role="dialog" aria-modal="true"><button class="x" aria-label="Fechar">×</button><button class="nav prev" aria-label="Anterior">‹</button><img alt=""><div class="info"></div><button class="nav next" aria-label="Próxima">›</button></div>`;
 if(C.map&&C.map.basemap) document.getElementById('baseSel').value=C.map.basemap; else document.getElementById('baseSel').value='hybrid';
 
@@ -439,17 +439,18 @@ function tlMark(){
 function tlFrame(){
   if(!TL.ready) return;
   const f=tlRows(), acc=document.getElementById('tlAcc').checked;
-  const inM=f.filter(r=>r._t===TL.cur), accN=f.filter(r=>r._t>=0&&r._t<=TL.cur).length;
+  const y0=Math.max(0,TL.cur-((TL.mk0+TL.cur)%12)); // janeiro do ano exibido: anos anteriores ficam ocultos
+  const inM=f.filter(r=>r._t===TL.cur), accN=f.filter(r=>r._t>=y0&&r._t<=TL.cur).length;
   if(TL.lv){
     const ids=f.length===D.length?null:f.map(r=>r._oid);
-    const where=acc?`_t >= 0 AND _t <= ${TL.cur}`:`_t = ${TL.cur}`;
+    const where=acc?`_t >= ${y0} AND _t <= ${TL.cur}`:`_t = ${TL.cur}`;
     TL.lv.filter=ids?{where,objectIds:ids}:{where};
     TL.lv.featureEffect=acc?{filter:{where:`_t = ${TL.cur}`},includedEffect:'drop-shadow(0px 0px 6px #F2B705) brightness(1.2)',excludedEffect:'opacity(40%)'}:null;
   }
   const firstCat=C.map.icons?Object.keys(C.map.icons)[0]:null, gl=firstCat&&C.map.labels?C.map.labels[firstCat]:'';
   const g=firstCat?inM.filter(r=>String(r[C.map.colorBy])===firstCat).length:0;
   const st=document.getElementById('tlStamp');
-  if(st) st.innerHTML=`<div class="m">${mLabel(TL.cur,true)}</div><div class="c"><b>${nf(inM.length)}</b> no mês${gl?` · <b>${nf(g)}</b> ${esc(gl.toLowerCase())}${g===1?'':'s'}`:''}</div><div class="c">acumulado: <b>${nf(accN)}</b></div>`;
+  if(st) st.innerHTML=`<div class="m">${mLabel(TL.cur,true)}</div><div class="c"><b>${nf(inM.length)}</b> no mês${gl?` · <b>${nf(g)}</b> ${esc(gl.toLowerCase())}${g===1?'':'s'}`:''}</div><div class="c">acumulado em ${Math.floor((TL.mk0+TL.cur)/12)}: <b>${nf(accN)}</b></div>`;
   document.getElementById('tlNow').textContent=mLabel(TL.cur,true);
   document.getElementById('tlRange').value=TL.cur;
   tlMark();
