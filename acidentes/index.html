@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Acidentes Ferroviários</title>
 <link rel="stylesheet" href="https://js.arcgis.com/4.30/esri/themes/light/main.css">
-<link rel="stylesheet" href="../assets/painel.css?v=20261114g">
+<link rel="stylesheet" href="../assets/painel.css?v=20261114h">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/5.5.0/echarts.min.js"></script>
 <script src="https://js.arcgis.com/4.30/"></script>
 </head>
@@ -40,7 +40,10 @@ window.PAINEL={
   oid:'FID',
   normFields:['Grave','Ferrovia','Causa_Dire','Natureza','UF','Município'],
   regionFromUF:'UF',
-  derive:r=>{ const m=/(\d{4})\s*$/.exec(String(r.Data_da_Oc||'')); r.ANO=m?m[1]:'Não informado'; r.FER=num(r['Nº_Ferido']); r.OBI=num(r['Nº_Óbito']); },
+  derive:r=>{ const m=/(\d{4})\s*$/.exec(String(r.Data_da_Oc||'')); r.ANO=m?m[1]:'Não informado';
+    // registros do formulário Survey123 gravam em campos sem acento (Municipio, N_Feridos, N_Obitos)
+    r.FER=num(r['Nº_Ferido']??r.N_Feridos)||num(r.N_Feridos); r.OBI=num(r['Nº_Óbito']??r.N_Obitos)||num(r.N_Obitos);
+    if(r['Município']==='Não informado'&&r.Municipio) r['Município']=String(r.Municipio).trim(); },
   filters:[
     {field:'REGIAO',label:'Região',type:'chips',allLabel:'Brasil',order:['Norte','Nordeste','Centro-Oeste','Sudeste','Sul']},
     {field:'ANO',label:'Ano',type:'chips',allLabel:'Todos'},
@@ -77,6 +80,6 @@ window.PAINEL={
     {f:'FER',label:'Feridos',num:true},{f:'OBI',label:'Óbitos',num:true}]}
 };
 </script>
-<script src="../assets/painel.js?v=20261114g"></script>
+<script src="../assets/painel.js?v=20261114h"></script>
 </body>
 </html>
