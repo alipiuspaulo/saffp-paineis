@@ -52,7 +52,7 @@ app.innerHTML=`
   <span class="vsep" aria-hidden="true"></span>
   <div><h1>${esc(C.title)}</h1><div class="sub">${esc(C.subtitle||'')}</div></div>
   <span class="sp"></span>
-  ${C.home?`<a class="pill" href="${C.home}" target="_top">↩ Página inicial SAFF-P</a>`:''}
+  ${C.home?`<a class="pill" href="${C.home}" target="_blank" rel="noopener">⌂ Página inicial SAFF-P</a>`:''}
   <span class="pill">Dados ao vivo · ArcGIS Online</span>
 </div></header>
 <nav class="filters" aria-label="Filtros"><div class="fgroup" id="fbox" style="gap:10px 18px"></div>
