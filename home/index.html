@@ -1,0 +1,228 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SAFF-P · SUFER · ANTT</title>
+<link rel="stylesheet" href="https://cdngovbr-ds.estaleiro.serpro.gov.br/design-system/fonts/rawline/css/rawline.css">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Raleway:wght@400;500;600;700;800&display=swap">
+<style>
+:root{--navy:#0A2A5E;--navy2:#123B7A;--blue:#1C5FAD;--yellow:#F2B705;--green:#1E9E5A;--ink:#14213D;--ink2:#4A5568;--muted:#6A7486;--line:#DDE3EB;--bg:#F3F5F9}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.45 Rawline,Raleway,"Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif}
+a{color:var(--blue)}
+/* faixa-título: logo e nome à esquerda; os botões de navegação da experiência ficam sobre a área da direita */
+.band{height:96px;background:linear-gradient(100deg,#071F47 0%,#0A2A5E 45%,#1C5FAD 100%);color:#fff;position:relative;overflow:hidden}
+.band-in{height:100%;padding:0 2%;display:flex;align-items:center;gap:20px;position:relative;z-index:1}
+.band .logo{height:46px;display:block}
+.band .vsep{width:1px;height:52px;background:rgba(255,255,255,.3)}
+.band .org{font-size:11.5px;letter-spacing:.09em;text-transform:uppercase;color:#BFD0EA;font-weight:600}
+.band .name{font-size:23px;white-space:nowrap;font-weight:700;line-height:1.15;letter-spacing:-.01em}
+.band .name b{color:var(--yellow);font-weight:800;margin-right:6px}
+.band .sp{flex:1}
+.rails{position:absolute;right:32%;top:-40px;width:420px;height:200px;opacity:.07}
+.stripe{height:5px;background:linear-gradient(90deg,var(--yellow) 0 72%,var(--green) 72% 100%)}
+/* simulação dos botões da experiência (só na prévia) */
+.mocknav{display:flex;align-items:center;width:760px;justify-content:space-around}
+.mocknav a{display:inline-flex;align-items:center;gap:8px;color:#fff;font:600 15px "Avenir Next","Segoe UI",sans-serif;text-decoration:none;padding:10px 16px;border-radius:6px}
+.mocknav a:hover{background:rgba(255,255,255,.12);color:var(--yellow)}
+.mocknav a.on{box-shadow:inset 0 -3px 0 var(--yellow)}
+.mocknav i{width:1px;height:20px;background:rgba(255,255,255,.4)}
+.mocknav svg{width:16px;height:16px}
+.intro{background:#fff;border-bottom:1px solid var(--line)}
+.intro-in{max-width:1480px;margin:0 auto;padding:14px 28px;display:flex;align-items:center;gap:18px}
+.intro p{margin:0;color:var(--ink2);font-size:14.5px;flex:1}
+.intro p b{color:var(--navy)}
+.demo-tag{display:inline-flex;align-items:center;gap:8px;background:#FFF4D1;border:1px solid #F2C94C;color:#7A5A00;border-radius:8px;padding:7px 12px;font-size:13px;font-weight:700;white-space:nowrap}
+.demo-tag svg{width:18px;height:18px}
+.wrap{max-width:1480px;margin:0 auto;padding:18px 28px 22px;display:grid;gap:16px}
+.kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}
+.kpi{background:#fff;border:1px solid var(--line);border-radius:10px;padding:14px 16px;display:flex;gap:14px;align-items:center;border-left:5px solid var(--c)}
+.kpi .ic{width:44px;height:44px;border-radius:10px;display:grid;place-items:center;background:color-mix(in srgb,var(--c) 14%,#fff);color:var(--c);flex:none}
+.kpi .ic svg{width:24px;height:24px}
+.kpi .v{font-size:26px;font-weight:700;line-height:1.1;font-variant-numeric:tabular-nums;color:var(--ink)}
+.kpi .v small{font-size:13px;font-weight:600;color:var(--ink2);margin-left:4px}
+.kpi .l{font-size:12.5px;color:var(--ink2)}
+.main{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:16px;align-items:start}
+.sec-h{display:flex;align-items:center;gap:10px;margin:0 0 10px}
+.sec-h h2{margin:0;font-size:17px;color:var(--navy);display:flex;align-items:center;gap:10px}
+.sec-h h2::before{content:"";width:5px;height:20px;border-radius:3px;background:var(--yellow)}
+.sec-h .sp{flex:1}
+.sec-h .hint{font-size:12px;color:var(--muted)}
+.cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.card{background:#fff;border:1px solid var(--line);border-radius:10px;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 1px 2px rgba(10,42,94,.05);transition:box-shadow .18s,transform .18s}
+.card:hover{box-shadow:0 8px 22px rgba(10,42,94,.13);transform:translateY(-2px)}
+.card .img{height:112px;background:#0b1a33 center/cover no-repeat;position:relative}
+.card .img::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(10,42,94,.05),rgba(10,42,94,.55))}
+.card .ic{position:absolute;left:14px;bottom:-18px;z-index:1;width:42px;height:42px;border-radius:10px;background:#fff;color:var(--c);display:grid;place-items:center;box-shadow:0 3px 10px rgba(0,0,0,.18);border:2px solid var(--c)}
+.card .ic svg{width:22px;height:22px}
+.card .st{position:absolute;right:10px;top:10px;z-index:1;font-size:11px;font-weight:700;border-radius:999px;padding:3px 9px;background:#fff;color:var(--navy)}
+.card .st.dev{background:var(--yellow);color:var(--ink)}
+.card .body{padding:24px 16px 14px;display:flex;flex-direction:column;gap:6px;flex:1}
+.card h3{margin:0;font-size:15px;line-height:1.3;color:var(--ink)}
+.card p{margin:0;color:var(--ink2);font-size:12.5px;flex:1}
+.card .acts{display:flex;align-items:center;gap:12px;margin-top:6px;flex-wrap:wrap}
+.btn{display:inline-flex;align-items:center;gap:6px;background:var(--navy);color:#fff;text-decoration:none;font-weight:600;font-size:13px;padding:8px 14px;border-radius:7px;border:0;cursor:pointer}
+.btn:hover{background:var(--blue)}
+.btn.yel{background:var(--yellow);color:var(--ink)}
+.btn.yel:hover{background:#FFC933}
+.btn[aria-disabled="true"]{background:#D5DCE6;color:#4A5568;pointer-events:none}
+.old{font-size:12px;color:var(--muted)}
+.old:hover{color:var(--navy)}
+.side{display:grid;gap:14px}
+.box{background:#fff;border:1px solid var(--line);border-radius:10px;padding:14px 16px}
+.box h3{margin:0 0 8px;font-size:14px;color:var(--navy)}
+.box p{margin:0 0 6px;color:var(--ink2);font-size:13px}
+.box ul{list-style:none;margin:0;padding:0;display:grid;gap:2px}
+.box li a{display:flex;align-items:center;gap:10px;padding:8px 8px;border-radius:7px;text-decoration:none;color:var(--ink);font-size:13px}
+.box li a:hover{background:#F1F4F9;color:var(--navy)}
+.box li a svg{width:18px;height:18px;color:var(--blue);flex:none}
+.box li a .ext{margin-left:auto;color:var(--muted);font-size:12px}
+.box.warn{background:#FFF8E1;border-color:#F2D27A}
+.box.warn h3{color:#7A5A00;display:flex;align-items:center;gap:8px}
+.box.warn h3 svg{width:18px;height:18px}
+.upd{font-size:11.5px;color:var(--muted);text-align:right}
+/* aviso inicial */
+.modal{position:fixed;inset:0;background:rgba(6,18,42,.72);backdrop-filter:blur(3px);display:none;align-items:center;justify-content:center;z-index:50;padding:20px}
+.modal.on{display:flex}
+.dlg{width:min(560px,100%);background:#fff;border-radius:14px;overflow:hidden;box-shadow:0 24px 60px rgba(0,0,0,.4);animation:pop .25s ease-out}
+.dlg .top{background:linear-gradient(100deg,#0A2A5E,#1C5FAD);padding:22px 26px;display:flex;align-items:center;gap:16px;border-bottom:5px solid var(--yellow)}
+.dlg .top img{height:46px}
+.dlg .top .t{color:#fff;font-size:12px;letter-spacing:.08em;text-transform:uppercase;font-weight:600;opacity:.85}
+.dlg .bd{padding:22px 26px 8px}
+.dlg h2{margin:0 0 10px;font-size:20px;color:var(--navy);display:flex;align-items:center;gap:10px}
+.dlg h2 svg{width:24px;height:24px;color:#C77C00}
+.dlg p{margin:0 0 10px;color:var(--ink2);font-size:14px}
+.dlg .ft{padding:12px 26px 22px;display:flex;justify-content:flex-end}
+@keyframes pop{from{transform:translateY(10px) scale(.98);opacity:0}to{transform:none;opacity:1}}
+@media (max-width:1200px){.cards{grid-template-columns:repeat(2,minmax(0,1fr))}.kpis{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:900px){.main{grid-template-columns:1fr}.intro-in{flex-wrap:wrap}}
+@media (max-width:600px){.cards,.kpis{grid-template-columns:1fr}.wrap,.intro-in{padding-left:16px;padding-right:16px}.hero h1{font-size:22px}}
+</style>
+</head>
+<body>
+<header class="band">
+  <svg class="rails" viewBox="0 0 520 260" fill="none" stroke="#fff" stroke-width="6" aria-hidden="true"><path d="M40 260 300 0M140 260 400 0"/><path d="M70 230h110M110 190h110M150 150h110M190 110h110M230 70h110M270 30h110" stroke-width="10"/></svg>
+  <div class="band-in">
+    <img class="logo" src="https://imagem-govfed.maps.arcgis.com/sharing/rest/content/items/b9b84e3d709e4bd9af5e652588ace76e/resources/images/logo_antt_header.png" alt="ANTT – Agência Nacional de Transportes Terrestres">
+    <span class="vsep" aria-hidden="true"></span>
+    <div><div class="org">SUFER · Superintendência de Transporte Ferroviário</div><div class="name"><b>SAFF-P</b>Painéis de acompanhamento</div></div>
+    <span class="sp"></span>
+    <nav class="mocknav" id="mocknav" hidden aria-hidden="true">
+      <a class="on" href="#"><svg viewBox="0 0 16 16" fill="currentColor"><path d="M13.6 6.188V1.824h-2.4v2.14L8 1 0 8.412h2.4V13H1v2h14v-2h-1.4V8.412H16zM10 9v3H6V9z"/></svg>Página Inicial</a><i></i>
+      <a href="#"><svg viewBox="0 0 16 16" fill="currentColor"><path d="M11.8 5.3c.4-.4 1-.4 1.4 0l1.5 1.5c.4.4.4 1 0 1.4l-6.3 6.3-2.7.5a.6.6 0 0 1-.7-.7l.5-2.7zM4 11H1v-1h3zM7 8H1V7h6zM10 5H1V4h9zM12 2H1V1h11z"/></svg>Envie seu formulário</a><i></i>
+      <a href="#"><svg viewBox="0 0 16 16" fill="currentColor"><path d="M7.5 1.5a.5.5 0 0 1 1 0v2.8a.5.5 0 0 1-1 0zM.8 9.8h5c.2 0 .4.2.4.4a1.8 1.8 0 0 0 3.6 0c0-.2.2-.4.4-.4h5V14a.8.8 0 0 1-.8.8H1.6a.8.8 0 0 1-.8-.8z"/></svg>Download de dados</a>
+    </nav>
+  </div>
+</header>
+<div class="stripe"></div>
+<section class="intro"><div class="intro-in">
+  <p>Painéis da <b>Superintendência de Transporte Ferroviário</b> com informações geográficas sobre autorizações, projetos de terceiros, fiscalização de obras, acidentes e meio ambiente.</p>
+  <span class="demo-tag"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 2 20h20z"/><path d="M12 10v4M12 17v.5"/></svg>Ambiente de demonstração · dados não oficiais</span>
+</div></section>
+<main class="wrap">
+  <section class="kpis" id="kpis" aria-label="Indicadores"></section>
+  <div class="main">
+    <section>
+      <div class="sec-h"><h2>Painéis disponíveis</h2><span class="sp"></span><span class="hint">Os painéis abrem em uma nova aba</span></div>
+      <div class="cards" id="cards"></div>
+    </section>
+    <aside class="side">
+      <div class="box">
+        <h3>Sobre o SAFF-P</h3>
+        <p>Conjunto de painéis da SUFER que reúne, em mapas e indicadores, as informações acompanhadas pela área ferroviária da ANTT.</p>
+        <p>Os dados são lidos diretamente das camadas publicadas no ArcGIS, e os filtros de cada painel permitem recortes por região, UF, ferrovia e período.</p>
+      </div>
+      <div class="box">
+        <h3>Acesso rápido</h3>
+        <ul>
+          <li><a href="https://www.gov.br/antt/pt-br" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10 12 4l9 6M5 10v9h14v-9M10 19v-5h4v5"/></svg>Portal da ANTT<span class="ext">↗</span></a></li>
+          <li><a href="https://dados.antt.gov.br/" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="6" rx="7" ry="3"/><path d="M5 6v12c0 1.7 3.1 3 7 3s7-1.3 7-3V6M5 12c0 1.7 3.1 3 7 3s7-1.3 7-3"/></svg>Dados abertos da ANTT<span class="ext">↗</span></a></li>
+          <li><a href="https://www.gov.br/antt/pt-br/assuntos/ferrovias" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="3" width="12" height="12" rx="3"/><path d="M6 9h12M9 15l-3 6M15 15l3 6M8 19h8"/></svg>Transporte ferroviário na ANTT<span class="ext">↗</span></a></li>
+        </ul>
+      </div>
+      <div class="box warn">
+        <h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 2 20h20z"/><path d="M12 10v4M12 17v.5"/></svg>Aviso</h3>
+        <p>As informações contidas neste sistema são meramente demonstrativas e, portanto, não correspondem a dados oficiais.</p>
+        <button class="btn yel" id="reopen" type="button">Ver aviso completo</button>
+      </div>
+      <div class="upd" id="upd"></div>
+    </aside>
+  </div>
+</main>
+
+<div class="modal" id="modal" role="dialog" aria-modal="true" aria-labelledby="mTitle">
+  <div class="dlg">
+    <div class="top"><img src="https://imagem-govfed.maps.arcgis.com/sharing/rest/content/items/b9b84e3d709e4bd9af5e652588ace76e/resources/images/logo_antt_header.png" alt="ANTT"><span class="t">Aviso importante</span></div>
+    <div class="bd">
+      <h2 id="mTitle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 2 20h20z"/><path d="M12 10v4M12 17v.5"/></svg>Ambiente de demonstração</h2>
+      <p>Este sistema é uma <b>demonstração</b> dos painéis SAFF-P da Superintendência de Transporte Ferroviário (SUFER).</p>
+      <p>As informações apresentadas são <b>meramente demonstrativas</b> e <b>não correspondem a dados oficiais</b> da ANTT. Não devem ser usadas como fonte para decisões, publicações ou comunicações externas.</p>
+    </div>
+    <div class="ft"><button class="btn" id="ok" type="button">Entendi, acessar os painéis</button></div>
+  </div>
+</div>
+
+<script>
+const R='https://imagem-govfed.maps.arcgis.com/sharing/rest/content/items/26c68a6e20144b5199923c22b1722c3e/resources/images/';
+const EXP='https://experience.arcgis.com/experience/', DSH='https://imagem-govfed.maps.arcgis.com/apps/dashboards/';
+const SVC='https://services.arcgis.com/4CZwpdWHGNPLU7QQ/arcgis/rest/services/';
+const I={
+  train:'<rect x="6" y="2.5" width="12" height="13" rx="3"/><path d="M6 9.5h12M9.5 5.5h5"/><path d="M9 15.5 6.5 21.5M15 15.5l2.5 6M7.6 19h8.8"/>',
+  pit:'<path d="M3 17h18M5 17V9l7-4 7 4v8"/><path d="M9 17v-4h6v4"/>',
+  fico:'<path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/>',
+  acid:'<path d="M12 3 2 20h20z"/><path d="M12 10v4M12 17v.5"/>',
+  route:'<circle cx="6" cy="18" r="2.5"/><circle cx="18" cy="6" r="2.5"/><path d="M8.5 18H15a3 3 0 0 0 0-6H9a3 3 0 0 1 0-6h6.5"/>',
+  leaf:'<path d="M5 19c0-8 5-13 15-14-1 10-6 15-14 15"/><path d="M5 19l7-7"/>',
+  doc:'<path d="M7 3h7l4 4v14H7z"/><path d="M14 3v4h4M10 12h6M10 16h6"/>'
+};
+const svg=k=>`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${I[k]}</svg>`;
+const P=[
+  {t:'Autorizações Ferroviárias',d:'Contratos de adesão e requerimentos de autorização de novas ferrovias.',c:'#1C5FAD',i:'train',img:'widget_460/1776101652744.png',url:EXP+'99652a1a4f7a4ee89a8e3c1d6af5d9bb',old:DSH+'b9b84e3d709e4bd9af5e652588ace76e'},
+  {t:'Projetos de Interesse de Terceiros (PIT)',d:'Travessias, paralelismos e interferências de terceiros na faixa ferroviária.',c:'#0F7C80',i:'pit',img:'widget_3/1776101665127.png',url:EXP+'f554b9b22f8e4cfe9470046ad6b45a4a',old:DSH+'8d834b7aae7d4b549e3348f8d133bf55'},
+  {t:'Fiscalização FICO',d:'Obras da Ferrovia de Integração Centro-Oeste, com registros fotográficos.',c:'#1F8A4C',i:'fico',img:'widget_4/1776101680715.png',url:EXP+'20d9b3d0ec0c4383b7834ee8c11c7068',old:DSH+'df0398e7fcea4d9c9919e67bdca24cdd'},
+  {t:'Acidentes Ferroviários',d:'Ocorrências por ferrovia, causa e gravidade, com linha do tempo e alertas.',c:'#B4372B',i:'acid',img:'widget_5/1776101691414.png',url:EXP+'8dcb0c4121d643b6ae0b9e2e304288e8',old:DSH+'56dc12a1126c49acb3bf70559ab33477'},
+  {t:'Painel Ambiental',d:'Demonstrativo de dados ambientais relacionados às concessões ferroviárias.',c:'#7B3FA0',i:'leaf',img:'widget_637/1776173961556.jpg',url:DSH+'7cb56f035ee845f59900881a756dfaa6'},
+  {t:'Malha Sul (RMS)',d:'Acompanhamento da ferrovia concedida à Rumo Malha Sul.',c:'#6A7486',i:'train',img:'background_setting/1783278204299.jpg',url:null,dev:true}
+];
+document.getElementById('cards').innerHTML=P.map(p=>`
+  <article class="card" style="--c:${p.c}">
+    <div class="img" style="background-image:url('${R+p.img}')"><span class="ic">${svg(p.i)}</span><span class="st ${p.dev?'dev':''}">${p.dev?'Em desenvolvimento':'Disponível'}</span></div>
+    <div class="body"><h3>${p.t}</h3><p>${p.d}</p>
+      <div class="acts">${p.url?`<a class="btn" href="${p.url}" target="_blank" rel="noopener">Acessar painel ↗</a>`:`<span class="btn" aria-disabled="true">Em breve</span>`}
+      ${p.old?`<a class="old" href="${p.old}" target="_blank" rel="noopener">versão anterior</a>`:''}</div></div>
+  </article>`).join('');
+
+/* indicadores lidos das camadas */
+const K=[
+  {c:'#1C5FAD',i:'route',l:'Extensão em autorizações ferroviárias',q:{u:'AUT___AP___20_02_26/FeatureServer/0',stat:'EXTENSÃO'},unit:'km'},
+  {c:'#0F7C80',i:'pit',l:'Processos de interesse de terceiros',q:{u:'Projeto_de_Interesse_de_Terceiros_(PIT)/FeatureServer/0'}},
+  {c:'#1F8A4C',i:'fico',l:'Levantamentos de fiscalização na FICO',q:{u:'survey123_f534c787ea064a64b119e9984448af56_results/FeatureServer/0'}},
+  {c:'#B4372B',i:'acid',l:'Acidentes ferroviários registrados',q:{u:'Acidentes_Ferrovi%C3%A1rios/FeatureServer/0'}}
+];
+const nf=v=>Math.round(v).toLocaleString('pt-BR');
+const kb=document.getElementById('kpis');
+kb.innerHTML=K.map((k,i)=>`<div class="kpi" style="--c:${k.c}"><div class="ic">${svg(k.i)}</div><div><div class="v" id="k${i}">—</div><div class="l">${k.l}</div></div></div>`).join('');
+K.forEach(async(k,i)=>{ try{
+  const p=new URLSearchParams({where:'1=1',f:'json'});
+  if(k.q.stat) p.set('outStatistics',JSON.stringify([{statisticType:'sum',onStatisticField:k.q.stat,outStatisticFieldName:'v'}])); else p.set('returnCountOnly','true');
+  const j=await (await fetch(SVC+k.q.u+'/query?'+p)).json();
+  const v=k.q.stat?j.features[0].attributes.v:j.count;
+  document.getElementById('k'+i).innerHTML=nf(v)+(k.unit?`<small>${k.unit}</small>`:'');
+}catch(e){} });
+document.getElementById('upd').textContent='Dados em tempo real · consultados em '+new Date().toLocaleString('pt-BR');
+
+/* aviso inicial: aparece a cada nova sessão do navegador */
+const modal=document.getElementById('modal');
+const open=()=>{ modal.classList.add('on'); document.getElementById('ok').focus(); };
+const close=()=>{ modal.classList.remove('on'); try{ sessionStorage.setItem('saffp_aviso','1'); }catch(e){} };
+document.getElementById('ok').onclick=close;
+document.getElementById('reopen').onclick=open;
+modal.onclick=e=>{ if(e.target===modal) close(); };
+document.addEventListener('keydown',e=>{ if(e.key==='Escape'&&modal.classList.contains('on')) close(); });
+if(/mock/.test(location.search)) document.getElementById('mocknav').hidden=false;
+let seen=false; try{ seen=sessionStorage.getItem('saffp_aviso')==='1'; }catch(e){}
+if(!seen && !/semaviso/.test(location.hash)) open();
+</script>
+</body>
+</html>
