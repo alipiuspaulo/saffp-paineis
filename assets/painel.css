@@ -186,3 +186,13 @@ tr:hover td{background:#F7F9FC}
   .search{width:100%}
 }
 @media (max-width:520px){ .kpis{grid-template-columns:1fr} }
+
+/* Botões com cor de destaque configurável (theme.button) */
+.chip.on{background:var(--btn,var(--pd));border-color:var(--btn,var(--pd));color:var(--btnt,#fff)}
+.chip.on .n{background:rgba(20,33,61,.12);color:var(--btnt,#fff)}
+.tl-play{background:var(--btn,var(--pd));color:var(--btnt,#fff)}
+.tl-play:hover{background:var(--btnh,var(--p))}
+.ah .pv{background:var(--btn,#fff);border-color:var(--btn,var(--pd));color:var(--btnt,var(--pd))}
+.ah .pv:hover{background:var(--btnh,var(--ps))}
+.newdata button{background:var(--btn,#C2410C);color:var(--btnt,#fff)}
+.top .pill.btn-home{background:var(--btn,transparent);border-color:var(--btn,rgba(255,255,255,.35));color:var(--btnt,#E4EAF4);font-weight:600}

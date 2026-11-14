@@ -8,6 +8,7 @@ Object.entries({'--p':C.theme.primary,'--pd':C.theme.dark,'--ps':C.theme.soft,'-
   .forEach(([k,v])=>root.setProperty(k,v));
 if(C.theme.headerBg) root.setProperty('--hdbg',C.theme.headerBg);
 if(C.theme.headerBorder) root.setProperty('--hdbd',C.theme.headerBorder);
+if(C.theme.button){ root.setProperty('--btn',C.theme.button); root.setProperty('--btnt',C.theme.buttonText||'#14213D'); root.setProperty('--btnh',C.theme.buttonHover||C.theme.button); }
 
 const LOGO='https://imagem-govfed.maps.arcgis.com/sharing/rest/content/items/b9b84e3d709e4bd9af5e652588ace76e/resources/images/logo_antt_header.png';
 const UFSVC='https://services.arcgis.com/4CZwpdWHGNPLU7QQ/arcgis/rest/services/UF/FeatureServer/0';
@@ -64,7 +65,7 @@ app.innerHTML=`
   <span class="vsep" aria-hidden="true"></span>
   <div><h1>${esc(C.title)}</h1><div class="sub">${esc(C.subtitle||'')}</div></div>
   <span class="sp"></span>
-  ${C.home?`<a class="pill" href="${C.home}" target="_blank" rel="noopener">⌂ Página inicial SAFF-P</a>`:''}
+  ${C.home?`<a class="pill btn-home" href="${C.home}" target="_blank" rel="noopener">⌂ Página inicial SAFF-P</a>`:''}
   <span class="pill">Dados em Tempo Real</span>
 </div></header>
 ${C.timelapse?`<div class="tabs" role="tablist" aria-label="Seções do painel">
@@ -444,7 +445,9 @@ function tlFrame(){
   if(TL.lv){
     const ids=f.length===D.length?null:f.map(r=>r._oid);
     const where=acc?`_t >= ${y0} AND _t <= ${TL.cur}`:`_t = ${TL.cur}`;
-    TL.lv.filter=ids?{where,objectIds:ids}:{where};
+    const pvOn=TL.preview&&TL.preview.until>Date.now();
+    TL.lv.filter=pvOn?{where:'1=0'}:(ids?{where,objectIds:ids}:{where}); // na pré-visualização só o alerta fica visível
+    if(pvOn){ TL.lv.featureEffect=null; const st=document.getElementById('tlStamp'); if(st) st.innerHTML='<div class="m">Alerta</div><div class="c">pré-visualização · só os alertas visíveis</div>'; return; }
     TL.lv.featureEffect=acc?{filter:{where:`_t = ${TL.cur}`},includedEffect:'drop-shadow(0px 0px 6px #F2B705) brightness(1.2)',excludedEffect:'opacity(40%)'}:null;
   }
   const firstCat=C.map.icons?Object.keys(C.map.icons)[0]:null, gl=firstCat&&C.map.labels?C.map.labels[firstCat]:'';
@@ -478,18 +481,20 @@ function renderAlerts(){
   const b=document.getElementById('aBadge'); b.hidden=!active.length; b.textContent=active.length;
   const last=recs[0], ago=t=>Math.floor((now-t)/864e5);
   document.getElementById('alertHead').innerHTML=active.length
-    ? `<div class="ah on"><span class="pulse"></span><div><b>${active.length===1?'1 acidente incluído':active.length+' acidentes incluídos'} ${pv?'(pré-visualização)':`nos últimos ${days} dias`}</b><small>O registro novo pisca no mapa até completar ${days} dias da inclusão.</small></div></div>`
+    ? `<div class="ah on"><span class="pulse"></span><div><b>${active.length===1?'1 acidente incluído':active.length+' acidentes incluídos'} ${pv?'(pré-visualização)':`nos últimos ${days} dias`}</b><small>${pv?'Pré-visualização: o mapa mostra apenas os alertas.':`O registro novo pisca no mapa até completar ${days} dias da inclusão.`}</small></div>${pv?'<button class="pv" id="pvEnd">Encerrar</button>':''}</div>`
     : `<div class="ah"><div><b>Nenhum acidente incluído nos últimos ${days} dias</b><small>${last?`Última inclusão em ${fmtDT(+last[cf])} (há ${ago(+last[cf])} dias). `:''}Quando um novo registro entrar na camada, ele aparece aqui e pisca no mapa por ${days} dias.</small></div>
        ${last?`<button class="pv" id="pvBtn">Pré-visualizar alerta</button>`:''}</div>`;
   const pvb=document.getElementById('pvBtn');
-  if(pvb) pvb.onclick=()=>{ const pr=recs.find(r=>r._x!=null&&r._x>-75&&r._x<-28&&r._y>-35&&r._y<7)||last; TL.preview={oid:pr._oid,until:Date.now()+20000}; renderAlerts(); tlGoTo(pr._oid,true); setTimeout(renderAlerts,20300); };
-  document.getElementById('alertList').innerHTML=recs.slice(0,TLC.alertList||8).map(r=>{ const on=active.includes(r), t=+r[cf];
+  if(pvb) pvb.onclick=()=>{ const pr=recs.find(r=>r._x!=null&&r._x>-75&&r._x<-28&&r._y>-35&&r._y<7)||last; TL.wasPlaying=TL.playing; tlPlay(false); TL.preview={oid:pr._oid,until:Date.now()+20000}; renderAlerts(); tlFrame(); tlGoTo(pr._oid,true); clearTimeout(TL.pvT); TL.pvT=setTimeout(endPreview,20300); };
+  const pve=document.getElementById('pvEnd'); if(pve) pve.onclick=endPreview;
+  document.getElementById('alertList').innerHTML=(pv?active:recs.slice(0,TLC.alertList||8)).map(r=>{ const on=active.includes(r), t=+r[cf];
     return `<button class="al ${on?'blink':''}" data-oid="${r._oid}">${legendMark(String(r[C.map.colorBy]),catColor(C.map.colorBy,r[C.map.colorBy],C.map.colors))}
       <span class="tx"><b>${esc(TLC.alertTitle?TLC.alertTitle(r):r._oid)}</b><small>${esc(TLC.alertSub?TLC.alertSub(r):'')}</small>
       <small class="inc">Incluído em ${fmtDT(t)}${on?` · <em>NOVO — pisca até ${fmtDT(r._oid===pv?TL.preview.until:t+W)}</em>`:` · há ${ago(t)} dias`}</small></span></button>`; }).join('');
   document.querySelectorAll('#alertList .al').forEach(el=>el.onclick=()=>tlGoTo(+el.dataset.oid));
   drawAlertGraphics(active);
 }
+function endPreview(){ clearTimeout(TL.pvT); TL.preview=null; renderAlerts(); tlFrame(); if(TL.view) TL.view.goTo({center:[-50,-17],zoom:4},{duration:600}).catch(()=>{}); if(TL.wasPlaying) tlPlay(true); }
 function drawAlertGraphics(active){
   if(!TL.alertLayer) return;
   clearInterval(TL.blinkT); TL.alertLayer.removeAll();
