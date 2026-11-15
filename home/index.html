@@ -151,6 +151,29 @@ a{color:var(--blue)}
 @media (max-width:1100px){.hero-in{flex-wrap:wrap}.hsep{display:none}}
 @media (max-width:600px){.hero-in{padding:14px 16px 4px;gap:14px}.hero-txt{flex-wrap:wrap}.wm1{font-size:30px}.sym{transform:scale(.8);transform-origin:left center;margin-right:-18px}}
 @media (prefers-reduced-motion:reduce){.tri,.wm,.train,.sig .lamp{animation:none!important}.train.frt{transform:translateX(30cqw)}.train.pax{transform:translateX(60cqw)}}
+
+/* ===== maria-fumaça: faixa fixa no pé da página, logo acima do rodapé da experiência ===== */
+body{padding-bottom:78px}
+.mfz{position:fixed;left:0;right:0;bottom:0;height:78px;z-index:20;pointer-events:none;container-type:inline-size;
+  background:linear-gradient(180deg,rgba(243,245,249,0) 0%,rgba(243,245,249,.92) 34%,#E6EBF2 100%)}
+.mfz .rail{position:absolute;left:0;right:0;bottom:9px;height:2px;background:#6F7F98}
+.mfz .slp{position:absolute;left:0;right:0;bottom:3px;height:6px;background:repeating-linear-gradient(90deg,#9AA7BA 0 6px,transparent 6px 16px)}
+.mfz .gnd{position:absolute;left:0;right:0;bottom:0;height:3px;background:#C9D2DE}
+.mf{position:absolute;left:0;bottom:9px;height:66px;width:auto;animation:mf-run 32s linear infinite;animation-delay:-3s;will-change:transform}
+.mf>svg{height:100%;width:auto;display:block;overflow:visible}
+@keyframes mf-run{0%{transform:translateX(-100%)}82%{transform:translateX(100cqw)}100%{transform:translateX(100cqw)}}
+.mf .whl{transform-box:fill-box;transform-origin:center;animation:mf-spin .9s linear infinite}
+.mf .whl.s{animation-duration:.55s}
+@keyframes mf-spin{to{transform:rotate(360deg)}}
+.mf .rod{animation:mf-rod .9s linear infinite}
+@keyframes mf-rod{0%{transform:translate(4px,0)}25%{transform:translate(0,4px)}50%{transform:translate(-4px,0)}75%{transform:translate(0,-4px)}100%{transform:translate(4px,0)}}
+.mf .bob{animation:mf-bob .45s ease-in-out infinite alternate}
+@keyframes mf-bob{to{transform:translateY(.6px)}}
+.puff{position:absolute;width:16px;height:16px;border-radius:50%;background:radial-gradient(circle at 40% 40%,rgba(255,255,255,.95),rgba(176,186,201,.75) 60%,rgba(150,161,178,0) 72%);
+  opacity:0;animation:puff 2.6s ease-out infinite}
+@keyframes puff{0%{opacity:0;transform:translate(0,0) scale(.35)}12%{opacity:.95}100%{opacity:0;transform:translate(-90px,-46px) scale(3.2)}}
+.mfz .lbl{position:absolute;right:16px;bottom:16px;font:700 10.5px Rawline,Raleway,sans-serif;letter-spacing:.16em;text-transform:uppercase;color:#7A8597;opacity:.85}
+@media (prefers-reduced-motion:reduce){.mf,.mf .whl,.mf .rod,.mf .bob,.puff{animation:none!important}.mf{transform:translateX(40cqw)}}
 @media (max-width:1200px){.cards{grid-template-columns:repeat(2,minmax(0,1fr))}.kpis{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media (max-width:900px){.main{grid-template-columns:1fr}.intro-in{flex-wrap:wrap}}
 @media (max-width:600px){.cards,.kpis{grid-template-columns:1fr}.wrap,.intro-in{padding-left:16px;padding-right:16px}.hero h1{font-size:22px}}
@@ -225,6 +248,11 @@ a{color:var(--blue)}
     </aside>
   </div>
 </main>
+
+<div class="mfz" aria-hidden="true">
+  <div class="gnd"></div><div class="slp"></div><div class="rail"></div>
+  <div class="mf" id="mf"></div>
+</div>
 
 <div class="modal" id="modal" role="dialog" aria-modal="true" aria-labelledby="mTitle">
   <div class="dlg">
@@ -326,6 +354,44 @@ document.getElementById('upd').textContent='Dados em tempo real · consultados e
   // depois de montado, o símbolo "respira" a cada 14 s
   const sym=document.getElementById('sym');
   if(!matchMedia('(prefers-reduced-motion: reduce)').matches) setInterval(()=>{ sym.classList.remove('pulse'); void sym.offsetWidth; sym.classList.add('pulse'); },14000);
+})();
+
+/* maria-fumaça (locomotiva a vapor, tênder e dois carros de passageiros) */
+(function(){
+  const K='#14213D',K2='#22314F',R='#B4372B',G='#F2B705',WD='#7A3B22',WD2='#5E2C18',GL='#D6E4F5';
+  const spokes=(cx,cy,r,col)=>{ let o=`<g class="whl${r<8?' s':''}"><circle cx="${cx}" cy="${cy}" r="${r}" fill="${col}"/><circle cx="${cx}" cy="${cy}" r="${r-1.6}" fill="none" stroke="${K}" stroke-width="1"/>`;
+    for(let a=0;a<180;a+=(r<8?60:30)){ const t=a*Math.PI/180, dx=Math.cos(t)*(r-1.8), dy=Math.sin(t)*(r-1.8); o+=`<path d="M${(cx-dx).toFixed(2)} ${(cy-dy).toFixed(2)}L${(cx+dx).toFixed(2)} ${(cy+dy).toFixed(2)}" stroke="${K}" stroke-width="${r<8?1:1.2}"/>`; }
+    return o+`<circle cx="${cx}" cy="${cy}" r="${r*.28}" fill="${K}"/></g>`; };
+  const coach=x=>`<g transform="translate(${x} 0)"><g class="bob"><path d="M2 14q44-7 88 0v3H2z" fill="${K2}"/><rect x="3" y="17" width="86" height="32" rx="2" fill="${WD}"/>
+    ${[9,23,37,51,65].map(v=>`<rect x="${v}" y="22" width="9" height="11" rx="1.5" fill="${GL}"/>`).join('')}<rect x="80" y="22" width="5" height="22" rx="1" fill="${WD2}"/>
+    <rect x="3" y="38" width="86" height="2" fill="${G}"/><rect x="3" y="44" width="86" height="5" fill="${WD2}"/></g>
+    <rect x="0" y="49" width="92" height="3" fill="${K}"/>${spokes(16,59,6.5,R)}${spokes(30,59,6.5,R)}${spokes(62,59,6.5,R)}${spokes(76,59,6.5,R)}<rect x="90" y="46" width="8" height="2" fill="${K}"/></g>`;
+  const tender=x=>`<g transform="translate(${x} 0)"><g class="bob"><path d="M6 20q24-9 48 0z" fill="#2B2B2B"/><rect x="4" y="20" width="52" height="29" rx="2" fill="${K}"/>
+    <rect x="8" y="26" width="44" height="2" fill="${G}"/><rect x="8" y="42" width="44" height="2" fill="${G}"/></g>
+    <rect x="2" y="49" width="56" height="3" fill="${K}"/>${spokes(16,59,7,R)}${spokes(44,59,7,R)}<rect x="56" y="46" width="8" height="2" fill="${K}"/></g>`;
+  const loco=x=>`<g transform="translate(${x} 0)">
+    <path d="M140 49h10l6 15h-16z" fill="${R}"/><path d="M143 53h8M144 57h9M145 61h9" stroke="${K}" stroke-width="1"/>
+    <g class="bob">
+      <rect x="8" y="9" width="46" height="5" rx="1.5" fill="${K2}"/><rect x="12" y="14" width="38" height="35" fill="${K}"/>
+      <rect x="18" y="19" width="12" height="12" rx="1.5" fill="${GL}"/><rect x="34" y="19" width="10" height="12" rx="1.5" fill="${GL}"/>
+      <rect x="48" y="25" width="88" height="23" rx="3" fill="${K}"/><rect x="128" y="22" width="12" height="27" rx="3" fill="${K2}"/>
+      <path d="M62 25v23M82 25v23M104 25v23" stroke="${G}" stroke-width="1.6"/>
+      <path d="M85 25a8 8 0 0 1 16 0z" fill="${K2}"/><rect x="91" y="15" width="4" height="4" rx="1" fill="${G}"/>
+      <path d="M64 25a6 6 0 0 1 12 0z" fill="${K2}"/>
+      <path d="M126 22l2-11-6-6h20l-6 6 2 11z" fill="${K}"/><rect x="121" y="4" width="22" height="2.4" rx="1" fill="${G}"/>
+      <rect x="136" y="14" width="8" height="7" rx="1.5" fill="${G}"/><circle cx="144" cy="17.5" r="2.4" fill="#FFF2B0"/>
+      <rect x="10" y="48" width="134" height="3" fill="${R}"/>
+    </g>
+    ${spokes(62,54,11,R)}${spokes(88,54,11,R)}${spokes(114,54,11,R)}${spokes(134,59,6,R)}${spokes(30,59,6,R)}
+    <g class="rod"><rect x="60" y="53" width="56" height="2.6" rx="1.3" fill="#C9CED6"/><circle cx="62" cy="54.3" r="1.6" fill="${G}"/><circle cx="88" cy="54.3" r="1.6" fill="${G}"/><circle cx="114" cy="54.3" r="1.6" fill="${G}"/></g>
+  </g>`;
+  const W=262+160;
+  document.getElementById('mf').innerHTML=`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} 66">${coach(0)}${coach(98)}${tender(196)}${loco(262)}</svg>`;
+  // fumaça saindo da chaminé
+  const mf=document.getElementById('mf');
+  const chx=(262+132)/W, chy=4/66;
+  for(let i=0;i<7;i++){ const d=document.createElement('span'); d.className='puff';
+    d.style.left=`calc(${(chx*100).toFixed(2)}% - 8px)`; d.style.top=`calc(${(chy*100).toFixed(2)}% - 10px)`; d.style.animationDelay=`${-i*0.37}s`; mf.appendChild(d); }
 })();
 
 /* aviso inicial: aparece a cada nova sessão do navegador */
