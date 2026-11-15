@@ -1,0 +1,220 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Encaminhe seu formulário · SAFF-P · ANTT</title>
+<link rel="stylesheet" href="https://cdngovbr-ds.estaleiro.serpro.gov.br/design-system/fonts/rawline/css/rawline.css">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Raleway:wght@400;500;600;700;800&display=swap">
+<style>
+:root{--navy:#0A2A5E;--navy2:#123B7A;--blue:#1C5FAD;--yellow:#F2B705;--green:#1E9E5A;--ink:#14213D;--ink2:#4A5568;--muted:#6A7486;--line:#DDE3EB;--bg:#F3F5F9;--top:101px}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.5 Rawline,Raleway,"Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif}
+html{scroll-behavior:smooth;scroll-padding-top:var(--top)}
+a{color:var(--blue)}
+/* faixa-título fixa no topo (os botões de navegação da experiência ficam sobre a área da direita) */
+.top{position:sticky;top:0;z-index:30}
+.band{height:96px;background:linear-gradient(100deg,#071F47 0%,#0A2A5E 45%,#1C5FAD 100%);color:#fff;position:relative;overflow:hidden}
+.band-in{height:100%;padding:0 2%;display:flex;align-items:center;gap:20px;position:relative;z-index:1}
+.band .logo{height:42px;display:block}
+.band .vsep{width:1px;height:52px;background:rgba(255,255,255,.3)}
+.band .org{font-size:11.5px;letter-spacing:.09em;text-transform:uppercase;color:#BFD0EA;font-weight:600}
+.band .name{font-size:23px;white-space:nowrap;font-weight:700;line-height:1.15;letter-spacing:-.01em}
+.band .name b{color:var(--yellow);font-weight:800;margin-right:6px}
+.rails{position:absolute;right:32%;top:-40px;width:420px;height:200px;opacity:.07}
+.band-in>div{max-width:calc(100vw - 680px - 4vw - 250px);min-width:0}
+@media (max-width:1560px){.band .org{display:none}.band .name{font-size:21px}}
+@media (max-width:1400px){.band .name{font-size:18px}}
+@media (max-width:1340px){.band .name .t{display:none}.band .name{font-size:24px}}
+@media (max-width:1100px){.band .vsep,.band-in>div{display:none}}
+.stripe{height:5px;background:linear-gradient(90deg,var(--yellow) 0 72%,var(--green) 72% 100%)}
+.mocknav{display:flex;align-items:center;width:680px;justify-content:space-around;margin-left:auto}
+.mocknav[hidden]{display:none}
+.mocknav a{color:#fff;font:600 14px "Segoe UI",sans-serif;text-decoration:none;padding:10px 16px;border-radius:6px}
+.mocknav a.on{box-shadow:inset 0 -3px 0 var(--yellow)}
+.mocknav i{width:1px;height:20px;background:rgba(255,255,255,.4)}
+/* abertura */
+.intro{background:#fff;border-bottom:1px solid var(--line)}
+.intro-in{max-width:1480px;margin:0 auto;padding:22px 28px;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:18px 28px;align-items:center}
+.kick{font-size:12px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--blue)}
+.intro h1{margin:4px 0 6px;font-size:28px;line-height:1.2;color:var(--navy);display:flex;align-items:center;gap:12px}
+.intro h1::before{content:"";width:6px;height:28px;border-radius:3px;background:var(--yellow)}
+.intro p{margin:0;color:var(--ink2);font-size:15px;max-width:820px}
+.jump{display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end}
+.jump a{display:inline-flex;align-items:center;gap:8px;padding:9px 14px;border:1px solid var(--line);border-left:4px solid var(--c);border-radius:8px;background:#fff;text-decoration:none;color:var(--ink);font-weight:600;font-size:13.5px;transition:box-shadow .15s,transform .15s}
+.jump a:hover{box-shadow:0 6px 16px rgba(10,42,94,.12);transform:translateY(-1px)}
+.jump a span{color:var(--muted);font-weight:700;font-size:12px}
+.demo-tag{display:inline-flex;align-items:center;gap:8px;background:#FFF4D1;border:1px solid #F2C94C;color:#7A5A00;border-radius:8px;padding:7px 12px;font-size:13px;font-weight:700;white-space:nowrap;margin-top:12px}
+.demo-tag svg{width:18px;height:18px}
+/* rolagem em telas: imagem fixa que troca por esmaecimento e cartões que sobem por cima */
+.scrolly{max-width:1480px;margin:0 auto;padding:0 28px;display:grid;grid-template-columns:minmax(0,44%) minmax(0,1fr);gap:36px}
+.steps{padding:6vh 0 10vh}
+.step{min-height:calc(100vh - var(--top));display:flex;align-items:center;padding:4vh 0}
+.card{width:100%;background:#fff;border:1px solid var(--line);border-top:5px solid var(--c);border-radius:12px;box-shadow:0 10px 30px rgba(10,42,94,.08);padding:26px 28px 24px;
+  opacity:.35;transform:translateY(28px);transition:opacity .5s,transform .6s cubic-bezier(.2,.7,.2,1)}
+.step.on .card{opacity:1;transform:none}
+.card .num{display:flex;align-items:center;gap:10px;font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--c)}
+.card .num b{display:grid;place-items:center;width:34px;height:34px;border-radius:9px;background:color-mix(in srgb,var(--c) 13%,#fff);font-size:15px;letter-spacing:0}
+.card h2{margin:10px 0 8px;font-size:26px;line-height:1.2;color:var(--navy)}
+.card p{margin:0 0 6px;color:var(--ink2);font-size:15px}
+.card .ph{display:none}
+.qr{display:flex;gap:22px;align-items:center;margin-top:18px;padding-top:18px;border-top:1px solid var(--line)}
+.qr figure{margin:0;flex:none;text-align:center}
+.qr img{width:150px;height:150px;display:block;border:1px solid var(--line);border-radius:10px;padding:8px;background:#fff}
+.qr figcaption{margin-top:6px;font-size:11.5px;color:var(--muted)}
+.qr .acts{display:flex;flex-direction:column;gap:10px;align-items:flex-start}
+.btn{display:inline-flex;align-items:center;gap:8px;background:var(--navy);color:#fff;text-decoration:none;font-weight:700;font-size:14px;padding:11px 18px;border-radius:8px}
+.btn:hover{background:var(--blue)}
+.btn svg{width:18px;height:18px}
+.lnk{font-size:13px;font-weight:600;color:var(--blue);text-decoration:none}
+.lnk:hover{text-decoration:underline}
+.qr .hint{font-size:12.5px;color:var(--muted);max-width:260px}
+.stage{position:sticky;top:var(--top);height:calc(100vh - var(--top));padding:4vh 0;display:flex;align-items:center}
+.frame{position:relative;width:100%;height:min(76vh,640px);border-radius:14px;overflow:hidden;background:#0b1a33;box-shadow:0 18px 40px rgba(10,42,94,.18)}
+.slide{position:absolute;inset:0;opacity:0;transition:opacity .9s ease;background:#0b1a33}
+.slide.on{opacity:1}
+.slide img{width:100%;height:100%;object-fit:cover;display:block;transform:scale(1.04);transition:transform 6s ease}
+.slide.on img{transform:scale(1)}
+.slide.light{background:#EEF2F7}
+.slide.light img{object-fit:contain;padding:8%}
+.slide::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(10,42,94,0) 55%,rgba(7,31,71,.78) 100%)}
+.slide.light::after{background:linear-gradient(180deg,rgba(10,42,94,0) 60%,rgba(7,31,71,.55) 100%)}
+.cap{position:absolute;left:22px;right:22px;bottom:20px;z-index:2;color:#fff;display:flex;align-items:flex-end;gap:14px}
+.cap .t{font-size:20px;font-weight:700;line-height:1.2}
+.cap .s{font-size:13px;opacity:.85}
+.cap .sp{flex:1}
+.dots{display:flex;gap:8px}
+.dots i{width:9px;height:9px;border-radius:50%;background:rgba(255,255,255,.45);transition:all .3s}
+.dots i.on{width:26px;border-radius:5px;background:var(--yellow)}
+.badge{position:absolute;top:16px;left:16px;z-index:2;background:#fff;color:var(--navy);font-size:11.5px;font-weight:700;border-radius:999px;padding:4px 11px}
+/* encerramento */
+.close{max-width:1480px;margin:0 auto 34px;padding:0 28px}
+.close-in{background:#fff;border:1px solid var(--line);border-radius:12px;padding:20px 26px;display:flex;align-items:center;gap:24px}
+.close-in img{height:78px;flex:none}
+.close-in h3{margin:0 0 4px;color:var(--navy);font-size:16px}
+.close-in p{margin:0;color:var(--ink2);font-size:13.5px}
+/* rodapé no padrão do cabeçalho */
+.foot{background:linear-gradient(100deg,#071F47 0%,#0A2A5E 45%,#1C5FAD 100%);color:#fff;border-top:5px solid var(--yellow);position:relative}
+.foot::before{content:"";position:absolute;right:0;top:-5px;width:28%;height:5px;background:var(--green)}
+.foot-in{max-width:1480px;margin:0 auto;padding:18px 28px;display:flex;align-items:center;gap:26px;flex-wrap:wrap}
+.foot .soc{display:flex;align-items:center;gap:14px}
+.foot .soc span{font-size:15px;font-weight:600}
+.foot .soc a{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;background:rgba(255,255,255,.12);color:#fff;transition:background .15s,color .15s}
+.foot .soc a:hover{background:var(--yellow);color:var(--navy)}
+.foot .soc svg{width:17px;height:17px}
+.foot .obs{flex:1;min-width:280px;font-size:13px;color:#E3ECF8}
+.foot .obs b{color:var(--yellow)}
+.foot .logo{height:64px;display:block}
+@media (max-width:1000px){
+  .intro-in{grid-template-columns:1fr}.jump{justify-content:flex-start}
+  .scrolly{grid-template-columns:1fr}.stage{display:none}
+  .step{min-height:auto}.card{opacity:1;transform:none}
+  .card .ph{display:block;margin:0 0 14px;border-radius:10px;overflow:hidden;height:180px;background:#EEF2F7}
+  .card .ph img{width:100%;height:100%;object-fit:cover}.card .ph.light img{object-fit:contain;padding:4%}
+}
+@media (max-width:600px){.intro-in,.scrolly,.close,.foot-in{padding-left:16px;padding-right:16px}.qr{flex-direction:column;align-items:flex-start}.close-in{flex-direction:column;align-items:flex-start}}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}.card,.slide,.slide img{transition:none}}
+</style>
+</head>
+<body>
+<div class="top">
+  <header class="band">
+    <svg class="rails" viewBox="0 0 520 260" fill="none" stroke="#fff" stroke-width="6" aria-hidden="true"><path d="M40 260 300 0M140 260 400 0"/><path d="M70 230h110M110 190h110M150 150h110M190 110h110M230 70h110M270 30h110" stroke-width="10"/></svg>
+    <div class="band-in">
+      <img class="logo" id="logoW" alt="ANTT – Agência Nacional de Transportes Terrestres">
+      <span class="vsep" aria-hidden="true"></span>
+      <div><div class="org">SUFER · Superintendência de Transporte Ferroviário</div><div class="name"><b>SAFF-P</b><span class="t">Encaminhe seu formulário</span></div></div>
+      <nav class="mocknav" id="mocknav" hidden aria-hidden="true"><a href="#">Página Inicial</a><i></i><a class="on" href="#">Encaminhe seu formulário</a><i></i><a href="#">Download de dados</a></nav>
+    </div>
+  </header>
+  <div class="stripe"></div>
+</div>
+
+<section class="intro"><div class="intro-in">
+  <div>
+    <div class="kick">Formulários de campo · Survey123</div>
+    <h1>Encaminhe seu formulário</h1>
+    <p>Use o link ou o QR Code de cada formulário para registrar levantamentos, projetos e ocorrências. As respostas alimentam automaticamente os painéis de acompanhamento do SAFF-P.</p>
+    <span class="demo-tag"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 2 20h20z"/><path d="M12 10v4M12 17v.5"/></svg>Ambiente de demonstração · dados não oficiais</span>
+  </div>
+  <nav class="jump" id="jump" aria-label="Ir para o formulário"></nav>
+</div></section>
+
+<div class="scrolly">
+  <div class="steps" id="steps"></div>
+  <aside class="stage" aria-hidden="true"><div class="frame" id="frame"></div></aside>
+</div>
+
+<section class="close"><div class="close-in">
+  <img id="logoV" alt="ANTT">
+  <div><h3>Página com intuito de demonstração</h3><p>Os formulários e painéis apresentados fazem parte do ambiente de demonstração do SAFF-P e não correspondem a dados oficiais da ANTT.</p></div>
+</div></section>
+
+<footer class="foot"><div class="foot-in">
+  <div class="soc"><span>Acesse nossas redes sociais</span><span id="soc" style="display:flex;gap:10px"></span></div>
+  <div class="obs"><b>OBS:</b> As informações contidas neste sistema são meramente demonstrativas e, portanto, não correspondem a dados oficiais.</div>
+  <a href="https://www.gov.br/antt/pt-br" target="_blank" rel="noopener" title="Portal da ANTT"><img class="logo" id="logoF" alt="ANTT"></a>
+</div></footer>
+
+<script>
+const R='https://www.arcgis.com/sharing/rest/content/items/26c68a6e20144b5199923c22b1722c3e/resources/images/';
+const EXP='https://experience.arcgis.com/experience/';
+document.getElementById('logoW').src='https://imagem-govfed.maps.arcgis.com/sharing/rest/content/items/b9b84e3d709e4bd9af5e652588ace76e/resources/images/logo_antt_header.png';
+document.getElementById('logoF').src=R+'widget_219/1776087259040.png';
+document.getElementById('logoV').src=R+'widget_219/1776087269420.png';
+const FORMS=[
+  {id:'fico',c:'#1F8A4C',k:'Fiscalização',t:'Fiscalização Ferroviária',
+   d:'Utilize o link ou o QR Code para realizar o levantamento e contribuir com o painel de Fiscalização Ferroviária da Ferrovia de Integração Centro-Oeste (FICO).',
+   url:'https://survey123.arcgis.com/share/f534c787ea064a64b119e9984448af56?open=menu',qr:'widget_642/1777466730254.png',
+   img:'widget_595/1776109343574.jpg',cap:'Obras da FICO',sub:'Ferrovia de Integração Centro-Oeste',panel:EXP+'20d9b3d0ec0c4383b7834ee8c11c7068'},
+  {id:'pit',c:'#0F7C80',k:'Projetos',t:'Projeto de Interesse de Terceiros (PIT)',
+   d:'Utilize o link ou o QR Code para encaminhar seu projeto e contribuir com o painel de acompanhamento de Projetos de Interesse de Terceiros (PIT).',
+   url:'https://survey123.arcgis.com/share/a0c37309a1574749827b56db4320601b?open=menu',qr:'widget_642/1777466730254.png',
+   img:'widget_366/1776088982879.png',light:true,cap:'Projetos de terceiros',sub:'Travessias, paralelismos e interferências na faixa ferroviária',panel:EXP+'f554b9b22f8e4cfe9470046ad6b45a4a'},
+  {id:'acidentes',c:'#B4372B',k:'Ocorrências',t:'Acidentes Ferroviários',
+   d:'Utilize o link ou o QR Code para comunicar um acidente ferroviário e contribuir com o painel de acompanhamento de Acidentes Ferroviários.',
+   url:'https://survey123.arcgis.com/share/b09fb4585e6c484fa93d8ae9bc71446e?open=menu',qr:'widget_649/1777470316779.png',
+   img:'widget_428/1776200938121.jpg',cap:'Segurança ferroviária',sub:'Comunicação de acidentes e ocorrências',panel:EXP+'8dcb0c4121d643b6ae0b9e2e304288e8'}
+];
+const ext='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></svg>';
+document.getElementById('jump').innerHTML=FORMS.map((f,i)=>`<a href="#${f.id}" style="--c:${f.c}"><span>0${i+1}</span>${f.t.replace(' (PIT)','')}</a>`).join('');
+document.getElementById('steps').innerHTML=FORMS.map((f,i)=>`
+  <section class="step" id="${f.id}" data-i="${i}">
+    <article class="card" style="--c:${f.c}">
+      <div class="ph ${f.light?'light':''}"><img src="${R+f.img}" alt=""></div>
+      <div class="num"><b>0${i+1}</b>${f.k}</div>
+      <h2>${f.t}</h2>
+      <p>${f.d}</p>
+      <div class="qr">
+        <figure><img src="${R+f.qr}" alt="QR Code do formulário ${f.t}"><figcaption>Aponte a câmera do celular</figcaption></figure>
+        <div class="acts">
+          <a class="btn" href="${f.url}" target="_blank" rel="noopener">Abrir formulário ${ext}</a>
+          <a class="lnk" href="${f.panel}" target="_blank" rel="noopener">Ver o painel de acompanhamento ↗</a>
+          <span class="hint">O formulário abre em uma nova aba e funciona no computador ou no celular.</span>
+        </div>
+      </div>
+    </article>
+  </section>`).join('');
+const frame=document.getElementById('frame');
+frame.innerHTML=FORMS.map((f,i)=>`<div class="slide ${f.light?'light':''} ${i?'':'on'}"><img src="${R+f.img}" alt=""></div>`).join('')+
+  `<span class="badge" id="badge">01 · ${FORMS[0].k}</span><div class="cap"><div><div class="t" id="capT">${FORMS[0].cap}</div><div class="s" id="capS">${FORMS[0].sub}</div></div><span class="sp"></span><div class="dots">${FORMS.map((f,i)=>`<i class="${i?'':'on'}"></i>`).join('')}</div></div>`;
+const slides=[...frame.querySelectorAll('.slide')], dots=[...frame.querySelectorAll('.dots i')], steps=[...document.querySelectorAll('.step')];
+let cur=-1;
+function show(i){ if(i===cur) return; cur=i;
+  slides.forEach((s,k)=>s.classList.toggle('on',k===i)); dots.forEach((s,k)=>s.classList.toggle('on',k===i)); steps.forEach((s,k)=>s.classList.toggle('on',k===i));
+  document.getElementById('capT').textContent=FORMS[i].cap; document.getElementById('capS').textContent=FORMS[i].sub; document.getElementById('badge').textContent=`0${i+1} · ${FORMS[i].k}`; }
+// a tela ativa é a do cartão que cruza o centro da janela
+const io=new IntersectionObserver(es=>{ es.forEach(e=>{ if(e.isIntersecting) show(+e.target.dataset.i); }); },{rootMargin:'-45% 0px -45% 0px'});
+steps.forEach(s=>io.observe(s)); show(0);
+const SOC=[
+  ['YouTube','https://www.youtube.com/@canalANTT','<path d="M22 8.2a3 3 0 0 0-2.1-2.1C18 5.6 12 5.6 12 5.6s-6 0-7.9.5A3 3 0 0 0 2 8.2 31 31 0 0 0 1.6 12 31 31 0 0 0 2 15.8a3 3 0 0 0 2.1 2.1c1.9.5 7.9.5 7.9.5s6 0 7.9-.5a3 3 0 0 0 2.1-2.1 31 31 0 0 0 .4-3.8 31 31 0 0 0-.4-3.8z" fill="currentColor"/><path d="m10 15 5.2-3L10 9z" fill="#0A2A5E"/>'],
+  ['LinkedIn','https://www.linkedin.com/company/antt/posts/?feedView=all','<path d="M4.5 9h3v11h-3zM6 3.5a1.8 1.8 0 1 1 0 3.6 1.8 1.8 0 0 1 0-3.6zM10 9h2.9v1.5c.4-.8 1.4-1.7 3-1.7 3.1 0 3.7 2 3.7 4.7V20h-3v-5.6c0-1.3 0-3-1.9-3s-2.1 1.4-2.1 2.9V20H10z" fill="currentColor"/>'],
+  ['Facebook','https://web.facebook.com/anttnoface','<path d="M14 8.5V6.8c0-.8.2-1.3 1.4-1.3H17V2.4c-.3 0-1.3-.1-2.4-.1-2.4 0-4 1.4-4 4.1v2.1H8v3.3h2.6V21H14v-9.2h2.6l.4-3.3z" fill="currentColor"/>'],
+  ['Instagram','https://www.instagram.com/anttagencia/','<rect x="3.5" y="3.5" width="17" height="17" rx="5" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="12" r="4" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="17.3" cy="6.7" r="1.2" fill="currentColor"/>'],
+  ['Portal da ANTT','https://www.gov.br/antt/pt-br','<circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2"/><path d="M3 12h18M12 3c2.5 2.6 3.8 5.6 3.8 9s-1.3 6.4-3.8 9c-2.5-2.6-3.8-5.6-3.8-9S9.5 5.6 12 3z" fill="none" stroke="currentColor" stroke-width="1.6"/>']
+];
+document.getElementById('soc').innerHTML=SOC.map(([n,u,p])=>`<a href="${u}" target="_blank" rel="noopener" title="${n}" aria-label="${n}"><svg viewBox="0 0 24 24">${p}</svg></a>`).join('');
+if(/mock/.test(location.search)) document.getElementById('mocknav').hidden=false;
+</script>
+</body>
+</html>

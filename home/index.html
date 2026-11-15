@@ -27,7 +27,8 @@ a{color:var(--blue)}
 @media (max-width:1400px){.band .name{font-size:18px}}
 @media (max-width:1340px){.band .name .t{display:none}.band .name{font-size:24px}}
 @media (max-width:1100px){.band .vsep,.band-in>div{display:none}}
-.stripe{height:5px;background:linear-gradient(90deg,var(--yellow) 0 72%,var(--green) 72% 100%)}
+.band{position:sticky;top:0;z-index:30}
+.stripe{position:sticky;top:96px;z-index:30;height:5px;background:linear-gradient(90deg,var(--yellow) 0 72%,var(--green) 72% 100%)}
 /* simulação dos botões da experiência (só na prévia) */
 .mocknav{display:flex;align-items:center;width:680px;justify-content:space-around}
 .mocknav a{display:inline-flex;align-items:center;gap:8px;color:#fff;font:600 15px "Avenir Next","Segoe UI",sans-serif;text-decoration:none;padding:10px 16px;border-radius:6px}
