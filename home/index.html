@@ -102,6 +102,55 @@ a{color:var(--blue)}
 .dlg p{margin:0 0 10px;color:var(--ink2);font-size:14px}
 .dlg .ft{padding:12px 26px 22px;display:flex;justify-content:flex-end}
 @keyframes pop{from{transform:translateY(10px) scale(.98);opacity:0}to{transform:none;opacity:1}}
+
+/* ===== faixa animada: símbolo ANTT + ferrovia com trens ===== */
+.hero{background:#fff;border-bottom:1px solid var(--line);position:relative;overflow:hidden}
+.hero-in{max-width:1480px;margin:0 auto;padding:16px 28px 6px;display:flex;align-items:center;gap:26px;position:relative;z-index:2}
+.brand{display:flex;align-items:center;gap:16px;flex:none}
+.sym{position:relative;width:92px;height:83px;flex:none}
+.tri{position:absolute;transform-origin:50% 50%;will-change:transform,opacity;animation:tri-in 1.9s cubic-bezier(.2,.7,.2,1) both}
+.tri svg{width:100%;height:100%;display:block}
+.t1{left:26.8px;top:8.1px;width:38.6px;height:36.5px;--x:-26px;--y:-22px;--r:-38deg;animation-delay:.15s}
+.t2{left:6px;top:43.7px;width:41px;height:35.3px;--x:-34px;--y:24px;--r:30deg;animation-delay:.3s}
+.t3{left:46.5px;top:47px;width:41.4px;height:32px;--x:34px;--y:22px;--r:-28deg;animation-delay:.45s}
+.t4{left:28.5px;top:40px;width:45.1px;height:36.6px;--x:22px;--y:-30px;--r:42deg;animation-delay:.6s}
+@keyframes tri-in{0%{opacity:0;transform:translate(var(--x),var(--y)) rotate(var(--r)) scale(.6)}60%{opacity:1}100%{opacity:1;transform:none}}
+.sym.pulse .tri{animation:tri-breath 1.4s ease-in-out both}
+@keyframes tri-breath{0%,100%{transform:none}45%{transform:translate(calc(var(--x)*.14),calc(var(--y)*.14)) rotate(calc(var(--r)*.12))}}
+.wm{line-height:1;animation:fade-in .9s .9s both}
+.wm1{font-size:38px;font-weight:800;color:var(--navy);letter-spacing:-.01em}
+.wm1 span{color:var(--yellow)}
+.wm2{margin-top:6px;font-size:13px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:#007336}
+.wm2 span{color:#0057A8}
+@keyframes fade-in{from{opacity:0;transform:translateX(-8px)}to{opacity:1;transform:none}}
+.hsep{width:1px;align-self:stretch;margin:6px 0;background:var(--line)}
+.hero-txt{flex:1;display:flex;align-items:center;gap:18px;min-width:0}
+.hero-txt p{margin:0;color:var(--ink2);font-size:14.5px;flex:1}
+.hero-txt p b{color:var(--navy)}
+/* cena ferroviária */
+.scene{position:relative;height:74px;container-type:inline-size;overflow:hidden;background:linear-gradient(180deg,#fff 0%,#F3F6FA 46%,#E9EEF5 100%)}
+.trk{position:absolute;left:0;right:0}
+.trk::before{content:"";position:absolute;left:0;right:0;top:0;height:2px;background:#7F8EA6;border-radius:1px}
+.trk::after{content:"";position:absolute;left:0;right:0;top:2px;height:4px;background:repeating-linear-gradient(90deg,#B4BFCF 0 4px,transparent 4px 13px)}
+.trk.far{bottom:40px;opacity:.72}
+.trk.far::before{height:1.5px;background:#A3AFC2}
+.trk.far::after{height:3px;background:repeating-linear-gradient(90deg,#CBD3DF 0 3px,transparent 3px 10px)}
+.trk.near{bottom:10px}
+.ballast{position:absolute;left:0;right:0;bottom:0;height:10px;background:linear-gradient(180deg,#DCE2EB,#E9EEF5)}
+.train{position:absolute;bottom:2px;left:0;will-change:transform}
+.train svg{display:block;height:100%;width:auto}
+.train.frt{height:36px;animation:run-r 30s linear infinite;animation-delay:-6s}
+.train.pax{height:25px;bottom:1.5px;animation:run-l 15s linear infinite;animation-delay:-2s}
+@keyframes run-r{from{transform:translateX(-100%)}to{transform:translateX(100cqw)}}
+@keyframes run-l{from{transform:translateX(100cqw)}to{transform:translateX(-100%)}}
+.sig{position:absolute;bottom:16px;width:8px;height:40px}
+.sig svg{width:100%;height:100%;display:block}
+.sig .lamp{animation:lamp 6s steps(1) infinite}
+@keyframes lamp{0%{fill:#1E9E5A}70%{fill:#F2B705}85%{fill:#1E9E5A}}
+.hero .demo-tag{flex:none}
+@media (max-width:1100px){.hero-in{flex-wrap:wrap}.hsep{display:none}}
+@media (max-width:600px){.hero-in{padding:14px 16px 4px;gap:14px}.hero-txt{flex-wrap:wrap}.wm1{font-size:30px}.sym{transform:scale(.8);transform-origin:left center;margin-right:-18px}}
+@media (prefers-reduced-motion:reduce){.tri,.wm,.train,.sig .lamp{animation:none!important}.train.frt{transform:translateX(30cqw)}.train.pax{transform:translateX(60cqw)}}
 @media (max-width:1200px){.cards{grid-template-columns:repeat(2,minmax(0,1fr))}.kpis{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media (max-width:900px){.main{grid-template-columns:1fr}.intro-in{flex-wrap:wrap}}
 @media (max-width:600px){.cards,.kpis{grid-template-columns:1fr}.wrap,.intro-in{padding-left:16px;padding-right:16px}.hero h1{font-size:22px}}
@@ -123,10 +172,29 @@ a{color:var(--blue)}
   </div>
 </header>
 <div class="stripe"></div>
-<section class="intro"><div class="intro-in">
+<section class="hero" aria-label="SAFF-P · SUFER · ANTT">
+  <div class="hero-in">
+    <div class="brand" aria-hidden="true">
+      <div class="sym" id="sym">
+      <div class="tri t1"><svg viewBox="328.08 604.47 26.01 24.61"><path fill="#0057A8" d="M341.64 604.47 328.08 628.21c.18.43.51.87.95.85l25.06-3.02z"/></svg></div>
+      <div class="tri t2"><svg viewBox="314.05 628.47 27.59 23.79"><path fill="#007336" d="M327.91 628.47 314.05 652.26h27.59z"/></svg></div>
+      <div class="tri t3"><svg viewBox="341.36 630.70 27.87 21.56"><path fill="#0057A8" d="M356.79 630.7 369.23 652.26H341.97c-.25-.44-.61-.75-.27-1.26z"/></svg></div>
+      <div class="tri t4"><svg viewBox="329.19 625.95 30.42 24.66"><path fill="#FAC61E" d="M341.34 650.61c.04-.1.09-.19.15-.29L359.61 625.95l-30.08 3.62c-.11.01-.23 0-.34-.01z"/></svg></div>
+      </div>
+      <div class="wm"><div class="wm1">SAFF<span>-</span>P</div><div class="wm2">SUFER · <span>ANTT</span></div></div>
+    </div>
+    <span class="hsep" aria-hidden="true"></span>
+    <div class="hero-txt">
   <p>Painéis da <b>Superintendência de Transporte Ferroviário</b> com informações geográficas sobre autorizações, projetos de terceiros, fiscalização de obras, acidentes e meio ambiente.</p>
   <span class="demo-tag"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 2 20h20z"/><path d="M12 10v4M12 17v.5"/></svg>Ambiente de demonstração · dados não oficiais</span>
-</div></section>
+    </div>
+  </div>
+  <div class="scene" id="scene" aria-hidden="true">
+    <div class="trk far"><div class="train pax" id="pax"></div></div>
+    <div class="ballast"></div>
+    <div class="trk near"><div class="train frt" id="frt"></div></div>
+  </div>
+</section>
 <main class="wrap">
   <section class="kpis" id="kpis" aria-label="Indicadores"></section>
   <div class="main">
@@ -218,6 +286,47 @@ K.forEach(async(k,i)=>{ try{
   document.getElementById('k'+i).innerHTML=nf(v)+(k.unit?`<small>${k.unit}</small>`:'');
 }catch(e){} });
 document.getElementById('upd').textContent='Dados em tempo real · consultados em '+new Date().toLocaleString('pt-BR');
+
+/* trens da faixa animada (silhuetas laterais) */
+(function(){
+  const N='#0A2A5E',N2='#16407F',B='#1C5FAD',Y='#F2B705',W='#D6E4F5';
+  const wheel=(x,y,r)=>`<circle cx="${x}" cy="${y}" r="${r}" fill="${N}"/><circle cx="${x}" cy="${y}" r="${r*.35}" fill="#9FB3D1"/>`;
+  // composição de carga: vagões hopper + locomotiva na frente (sentido para a direita)
+  const hopper=x=>`<g transform="translate(${x} 0)"><path d="M3 9q30-6 58 0z" fill="#5B4A3E"/><path d="M1 9h62v8l-7 7H8l-7-7z" fill="#3A64A0"/>`+
+    [12,22,32,42,52].map(v=>`<path d="M${v} 9v13" stroke="#2C4F86" stroke-width="1.2"/>`).join('')+
+    `<rect x="0" y="24" width="64" height="2.6" fill="${N}"/>`+wheel(10,29,3.1)+wheel(18,29,3.1)+wheel(46,29,3.1)+wheel(54,29,3.1)+
+    `<rect x="-3" y="22.6" width="4" height="1.6" fill="${N}"/></g>`;
+  const NW=8, WW=66, fw=NW*WW+102;
+  let f=`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${fw} 34">`;
+  for(let i=0;i<NW;i++) f+=hopper(3+i*WW);
+  const lx=NW*WW+4;
+  f+=`<g transform="translate(${lx} 0)">
+    <path d="M4 9h64v15H4z" fill="${N2}"/><path d="M68 3h16l9 9v12H68z" fill="${N}"/>
+    <path d="M72 6h11l6 6H72z" fill="${W}"/><rect x="4" y="18" width="89" height="2.2" fill="${Y}"/>
+    <rect x="10" y="5.5" width="14" height="3.5" rx="1" fill="${N}"/><rect x="30" y="5.5" width="20" height="3.5" rx="1" fill="${N}"/>
+    <path d="M14 12h6M26 12h6M38 12h6M50 12h6" stroke="#2C5592" stroke-width="2"/>
+    <rect x="0" y="24" width="96" height="3" fill="${N}"/>`+wheel(14,29.4,3.4)+wheel(23,29.4,3.4)+wheel(32,29.4,3.4)+wheel(64,29.4,3.4)+wheel(73,29.4,3.4)+wheel(82,29.4,3.4)+
+    `<circle cx="92.6" cy="16" r="1.4" fill="#FFE27A"/></g></svg>`;
+  document.getElementById('frt').innerHTML=f;
+  // trem de passageiros: 3 carros (sentido para a esquerda)
+  const win=(x0,x1)=>{let o='';for(let x=x0;x<x1;x+=11)o+=`<rect x="${x}" y="8" width="7.5" height="6" rx="1.2" fill="${W}"/>`;return o;};
+  const car=(x,kind)=>{
+    const body = kind==='lead' ? 'M18 4h96v20H2v-8q2-10 16-12z' : kind==='tail' ? 'M2 4h96q14 2 16 12v8H2z' : 'M2 4h112v20H2z';
+    const w = kind==='lead' ? `<path d="M5 15q2-7 11-8v7H5z" fill="${W}"/>`+win(22,110) : kind==='tail' ? win(6,94)+`<path d="M111 15q-2-7-11-8v7h11z" fill="${W}"/>` : win(6,112);
+    return `<g transform="translate(${x} 0)"><path d="${body}" fill="${B}"/>${w}<rect x="${kind==='lead'?3:2}" y="17" width="${kind==='mid'?112:110}" height="2" fill="${Y}"/>
+      <rect x="10" y="24" width="20" height="2.5" fill="${N}"/><rect x="86" y="24" width="20" height="2.5" fill="${N}"/>`+wheel(15,28.5,2.6)+wheel(25,28.5,2.6)+wheel(91,28.5,2.6)+wheel(101,28.5,2.6)+
+      (kind==='lead'?`<circle cx="4" cy="19.5" r="1.3" fill="#FFE27A"/>`:'')+`</g>`;
+  };
+  document.getElementById('pax').innerHTML=`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 354 32">${car(0,'lead')}<rect x="116" y="12" width="4" height="10" fill="${N2}"/>${car(120,'mid')}<rect x="236" y="12" width="4" height="10" fill="${N2}"/>${car(240,'tail')}</svg>`;
+  // sinaleiros ao longo da via
+  const sc=document.getElementById('scene');
+  ['18%','63%'].forEach((l,i)=>{ const d=document.createElement('div'); d.className='sig'; d.style.left=l;
+    d.innerHTML=`<svg viewBox="0 0 8 40"><rect x="3.2" y="12" width="1.6" height="28" fill="#8C99AE"/><rect x=".5" y="0" width="7" height="14" rx="2" fill="${N}"/><circle class="lamp" cx="4" cy="4" r="1.9" fill="#1E9E5A" style="animation-delay:${-i*3}s"/><circle cx="4" cy="9.6" r="1.9" fill="#2A3A55"/></svg>`;
+    sc.insertBefore(d,sc.querySelector('.trk.near')); });
+  // depois de montado, o símbolo "respira" a cada 14 s
+  const sym=document.getElementById('sym');
+  if(!matchMedia('(prefers-reduced-motion: reduce)').matches) setInterval(()=>{ sym.classList.remove('pulse'); void sym.offsetWidth; sym.classList.add('pulse'); },14000);
+})();
 
 /* aviso inicial: aparece a cada nova sessão do navegador */
 const modal=document.getElementById('modal');
