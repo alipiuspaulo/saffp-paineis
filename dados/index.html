@@ -1,0 +1,288 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dados Abertos · SAFF-P · ANTT</title>
+<link rel="stylesheet" href="https://cdngovbr-ds.estaleiro.serpro.gov.br/design-system/fonts/rawline/css/rawline.css">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Raleway:wght@400;500;600;700;800&display=swap">
+<link rel="stylesheet" href="https://js.arcgis.com/4.30/esri/themes/light/main.css">
+<script src="https://js.arcgis.com/4.30/"></script>
+<style>
+:root{--navy:#0A2A5E;--navy2:#123B7A;--blue:#1C5FAD;--yellow:#F2B705;--green:#1E9E5A;--ink:#14213D;--ink2:#4A5568;--muted:#6A7486;--line:#DDE3EB;--bg:#F3F5F9;--top:101px}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.45 Rawline,Raleway,"Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif}
+a{color:var(--blue)}
+.top{position:sticky;top:0;z-index:30}
+.band{height:96px;background:linear-gradient(100deg,#071F47 0%,#0A2A5E 45%,#1C5FAD 100%);color:#fff;position:relative;overflow:hidden}
+.band-in{height:100%;padding:0 2%;display:flex;align-items:center;gap:20px;position:relative;z-index:1}
+.band .logo{height:42px;display:block}
+.band .vsep{width:1px;height:52px;background:rgba(255,255,255,.3)}
+.band .org{font-size:11.5px;letter-spacing:.09em;text-transform:uppercase;color:#BFD0EA;font-weight:600}
+.band .name{font-size:23px;white-space:nowrap;font-weight:700;line-height:1.15;letter-spacing:-.01em}
+.band .name b{color:var(--yellow);font-weight:800;margin-right:6px}
+.rails{position:absolute;right:32%;top:-40px;width:420px;height:200px;opacity:.07}
+.band-in>div{max-width:calc(100vw - 680px - 4vw - 250px);min-width:0}
+@media (max-width:1560px){.band .org{display:none}.band .name{font-size:21px}}
+@media (max-width:1400px){.band .name{font-size:18px}}
+@media (max-width:1340px){.band .name .t{display:none}.band .name{font-size:24px}}
+@media (max-width:1100px){.band .vsep,.band-in>div{display:none}}
+.stripe{height:5px;background:linear-gradient(90deg,var(--yellow) 0 72%,var(--green) 72% 100%)}
+.mocknav{display:flex;align-items:center;width:680px;justify-content:space-around;margin-left:auto}
+.mocknav[hidden]{display:none}
+.mocknav a{color:#fff;font:600 14px "Segoe UI",sans-serif;text-decoration:none;padding:10px 16px;border-radius:6px}
+.mocknav a.on{box-shadow:inset 0 -3px 0 var(--yellow)}
+.mocknav i{width:1px;height:20px;background:rgba(255,255,255,.4)}
+.intro{background:#fff;border-bottom:1px solid var(--line)}
+.intro-in{max-width:1560px;margin:0 auto;padding:16px 28px;display:flex;align-items:center;gap:24px;flex-wrap:wrap}
+.intro h1{margin:0;font-size:24px;color:var(--navy);display:flex;align-items:center;gap:12px;white-space:nowrap}
+.intro h1::before{content:"";width:6px;height:26px;border-radius:3px;background:var(--yellow)}
+.intro p{margin:0;color:var(--ink2);font-size:14px;flex:1;min-width:320px}
+.stats{display:flex;gap:10px}
+.stat{background:#F4F7FC;border:1px solid var(--line);border-radius:8px;padding:6px 12px;text-align:center}
+.stat b{display:block;font-size:18px;color:var(--navy);font-variant-numeric:tabular-nums}
+.stat span{font-size:11.5px;color:var(--muted)}
+.wrap{max-width:1560px;margin:0 auto;padding:16px 28px 22px;display:grid;grid-template-columns:minmax(0,1fr) 520px;gap:16px;align-items:start}
+.mapbox{position:sticky;top:calc(var(--top) + 16px);height:calc(100vh - var(--top) - 32px);min-height:460px;background:#fff;border:1px solid var(--line);border-radius:12px;overflow:hidden;display:flex;flex-direction:column}
+.mapbox .h{display:flex;align-items:center;gap:10px;padding:10px 14px;border-bottom:1px solid var(--line)}
+.mapbox .h h2{margin:0;font-size:15px;color:var(--navy);display:flex;align-items:center;gap:8px}
+.mapbox .h h2::before{content:"";width:5px;height:18px;border-radius:3px;background:var(--yellow)}
+.mapbox .h .sp{flex:1}
+.mapbox .h select{font:inherit;font-size:12.5px;border:1px solid var(--line);border-radius:6px;padding:4px 8px;color:var(--ink)}
+#map{flex:1}
+.cat{display:grid;gap:14px}
+.grp{background:#fff;border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.grp>.gh{display:flex;align-items:center;gap:10px;padding:11px 14px;border-bottom:1px solid var(--line);border-left:5px solid var(--c)}
+.grp>.gh h3{margin:0;font-size:14.5px;color:var(--navy)}
+.grp>.gh .sp{flex:1}
+.grp>.gh a{font-size:12px;color:var(--muted);text-decoration:none}
+.grp>.gh a:hover{color:var(--navy)}
+.ly{display:grid;grid-template-columns:auto minmax(0,1fr);gap:6px 12px;padding:12px 14px;border-top:1px solid #EEF1F5}
+.ly:first-of-type{border-top:0}
+.sw{grid-row:span 2;width:34px;height:34px;border-radius:9px;display:grid;place-items:center;background:color-mix(in srgb,var(--c) 14%,#fff);color:var(--c)}
+.sw svg{width:20px;height:20px}
+.ly .nm{display:flex;align-items:center;gap:8px;min-width:0}
+.ly .nm b{font-size:13.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ly .nm .n{margin-left:auto;font-size:12px;color:var(--muted);white-space:nowrap;font-variant-numeric:tabular-nums}
+.ly .ds{font-size:12px;color:var(--ink2)}
+.ly .acts{grid-column:2;display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-top:2px}
+.b{display:inline-flex;align-items:center;gap:5px;border:1px solid var(--line);background:#fff;color:var(--ink);font:600 12.5px Rawline,Raleway,sans-serif;padding:5px 10px;border-radius:7px;cursor:pointer;text-decoration:none}
+.b:hover{border-color:var(--blue);color:var(--navy);background:#F4F7FC}
+.b svg{width:14px;height:14px}
+.b.dl{background:var(--navy);border-color:var(--navy);color:#fff}
+.b.dl:hover{background:var(--blue);border-color:var(--blue);color:#fff}
+.b.on{background:#FFF4D1;border-color:#F2C94C;color:#7A5A00}
+.b[disabled]{opacity:.6;cursor:progress}
+.tg{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;color:var(--ink2);cursor:pointer;user-select:none;margin-right:4px}
+.tg input{accent-color:var(--navy);width:15px;height:15px}
+.note{font-size:12px;color:var(--muted);padding:2px 2px 0}
+.lic{background:#fff;border:1px solid var(--line);border-radius:12px;padding:12px 14px;font-size:12.5px;color:var(--ink2)}
+.lic b{color:var(--navy)}
+.foot{background:linear-gradient(100deg,#071F47 0%,#0A2A5E 45%,#1C5FAD 100%);color:#fff;border-top:5px solid var(--yellow);position:relative}
+.foot::before{content:"";position:absolute;right:0;top:-5px;width:28%;height:5px;background:var(--green)}
+.foot-in{max-width:1560px;margin:0 auto;padding:18px 28px;display:flex;align-items:center;gap:26px;flex-wrap:wrap}
+.foot .soc{display:flex;align-items:center;gap:14px}
+.foot .soc>span:first-child{font-size:15px;font-weight:600}
+.foot .soc a{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;background:rgba(255,255,255,.12);color:#fff}
+.foot .soc a:hover{background:var(--yellow);color:var(--navy)}
+.foot .soc svg{width:17px;height:17px}
+.foot .obs{flex:1;min-width:280px;font-size:13px;color:#E3ECF8}
+.foot .obs b{color:var(--yellow)}
+.foot .logo{height:64px;display:block}
+.toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);background:var(--navy);color:#fff;padding:10px 16px;border-radius:8px;font-size:13px;box-shadow:0 8px 24px rgba(0,0,0,.25);z-index:60;display:none}
+.toast.on{display:block}
+.dlv{position:fixed;inset:0;z-index:80;background:var(--bg);display:grid;place-items:center;padding:20px}
+.dlv .bx{width:min(520px,100%);background:#fff;border:1px solid var(--line);border-top:5px solid var(--yellow);border-radius:12px;padding:26px 28px;text-align:center;box-shadow:0 18px 40px rgba(10,42,94,.15)}
+.dlv img{height:40px;margin-bottom:12px}
+.dlv h2{margin:0 0 6px;color:var(--navy);font-size:19px}
+.dlv p{margin:0 0 10px;color:var(--ink2)}
+.dlv .bar{height:8px;border-radius:4px;background:#E6EBF2;overflow:hidden;margin:14px 0 6px}
+.dlv .bar i{display:block;height:100%;width:0;background:var(--navy);transition:width .3s}
+@media (max-width:1150px){.wrap{grid-template-columns:1fr}.mapbox{position:relative;top:0;height:60vh}}
+@media (max-width:600px){.intro-in,.wrap,.foot-in{padding-left:16px;padding-right:16px}}
+</style>
+</head>
+<body>
+<div class="top">
+  <header class="band">
+    <svg class="rails" viewBox="0 0 520 260" fill="none" stroke="#fff" stroke-width="6" aria-hidden="true"><path d="M40 260 300 0M140 260 400 0"/><path d="M70 230h110M110 190h110M150 150h110M190 110h110M230 70h110M270 30h110" stroke-width="10"/></svg>
+    <div class="band-in">
+      <img class="logo" src="https://imagem-govfed.maps.arcgis.com/sharing/rest/content/items/b9b84e3d709e4bd9af5e652588ace76e/resources/images/logo_antt_header.png" alt="ANTT – Agência Nacional de Transportes Terrestres">
+      <span class="vsep" aria-hidden="true"></span>
+      <div><div class="org">SUFER · Superintendência de Transporte Ferroviário</div><div class="name"><b>SAFF-P</b><span class="t">Dados Abertos</span></div></div>
+      <nav class="mocknav" id="mocknav" hidden aria-hidden="true"><a href="#">Página Inicial</a><i></i><a href="#">Envie seu formulário</a><i></i><a class="on" href="#">Dados Abertos</a></nav>
+    </div>
+  </header>
+  <div class="stripe"></div>
+</div>
+
+<section class="intro"><div class="intro-in">
+  <h1>Dados Abertos</h1>
+  <p>Todas as camadas usadas nos painéis do SAFF-P em um único mapa. Ligue e desligue as camadas, aproxime e baixe os dados em <b>GeoJSON</b> (com geometria) ou <b>CSV</b> (planilha).</p>
+  <div class="stats"><div class="stat"><b id="stL">—</b><span>camadas</span></div><div class="stat"><b id="stR">—</b><span>registros</span></div><div class="stat"><b>4</b><span>painéis</span></div></div>
+</div></section>
+
+<main class="wrap">
+  <section class="mapbox">
+    <div class="h"><h2>Mapa das camadas</h2><span class="sp"></span><label for="bm" style="font-size:12px;color:var(--muted)">Mapa base</label>
+      <select id="bm"><option value="gray-vector">Cinza</option><option value="topo-vector">Topográfico</option><option value="hybrid">Imagem de satélite</option><option value="streets-vector">Ruas</option></select></div>
+    <div id="map"></div>
+  </section>
+  <aside class="cat">
+    <div id="cat" class="cat"></div>
+    <div class="lic"><b>Sobre os arquivos.</b> Os dados são lidos na hora diretamente dos serviços publicados no ArcGIS Online da ANTT. O GeoJSON usa coordenadas geográficas (WGS 84, EPSG:4326). O CSV traz os atributos e, para camadas de pontos, as colunas de longitude e latitude. Camadas grandes podem levar alguns segundos para baixar.</div>
+    <div class="note">Ambiente de demonstração · as informações não correspondem a dados oficiais.</div>
+  </aside>
+</main>
+
+<footer class="foot"><div class="foot-in">
+  <div class="soc"><span>Acesse nossas redes sociais</span><span id="soc" style="display:flex;gap:10px"></span></div>
+  <div class="obs"><b>OBS:</b> As informações contidas neste sistema são meramente demonstrativas e, portanto, não correspondem a dados oficiais.</div>
+  <a href="https://www.gov.br/antt/pt-br" target="_blank" rel="noopener" title="Portal da ANTT"><img class="logo" src="https://www.arcgis.com/sharing/rest/content/items/26c68a6e20144b5199923c22b1722c3e/resources/images/widget_219/1776087259040.png" alt="ANTT"></a>
+</div></footer>
+<div class="toast" id="toast"></div>
+
+<script>
+const S='https://services.arcgis.com/4CZwpdWHGNPLU7QQ/arcgis/rest/services/';
+const EXP='https://experience.arcgis.com/experience/';
+const GEO={point:'<circle cx="12" cy="12" r="4.5" fill="currentColor"/><circle cx="12" cy="12" r="8" fill="none" stroke="currentColor" stroke-width="1.6" opacity=".5"/>',
+  line:'<path d="M3 17c4-1 4-9 9-9s5 8 9 7" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/>',
+  poly:'<path d="M4 7l7-3 9 4-2 10-10 2-5-6z" fill="currentColor" fill-opacity=".25" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>'};
+const GRUPOS=[
+  {t:'Autorizações Ferroviárias',c:'#1C5FAD',p:EXP+'99652a1a4f7a4ee89a8e3c1d6af5d9bb',L:[
+    {id:'aut',n:'Trechos autorizados',d:'Contratos de adesão e requerimentos de autorização (traçados).',u:S+'AUT___AP___20_02_26/FeatureServer/0',g:'line',f:'aut_trechos_autorizados',on:true,
+      r:{type:'simple',symbol:{type:'simple-line',color:'#C2410C',width:2.6}}}]},
+  {t:'Projetos de Interesse de Terceiros (PIT)',c:'#0F7C80',p:EXP+'f554b9b22f8e4cfe9470046ad6b45a4a',L:[
+    {id:'pit',n:'Processos PIT',d:'Travessias, paralelismos e interferências na faixa ferroviária.',u:S+'Projeto_de_Interesse_de_Terceiros_(PIT)/FeatureServer/0',g:'point',f:'pit_processos',on:true,
+      r:{type:'simple',symbol:{type:'simple-marker',size:7,color:'#0F7C80',outline:{color:'#fff',width:1}}}}]},
+  {t:'Fiscalização FICO',c:'#1F8A4C',p:EXP+'20d9b3d0ec0c4383b7834ee8c11c7068',L:[
+    {id:'fico',n:'Levantamentos de fiscalização',d:'Vistorias de campo registradas no Survey123.',u:S+'survey123_f534c787ea064a64b119e9984448af56_results/FeatureServer/0',g:'point',f:'fico_levantamentos',on:true,
+      r:{type:'simple',symbol:{type:'simple-marker',size:7,color:'#1F8A4C',outline:{color:'#fff',width:1}}}},
+    {id:'ficol',n:'Traçado da FICO',d:'Eixo, faixa de domínio e estacas (FICO_TRAÇADO_JAN_24).',u:S+'FICO_TRA%C3%87ADO_JAN_24/FeatureServer/2',g:'line',f:'fico_tracado',on:true,
+      r:{type:'simple',symbol:{type:'simple-line',color:'#E0A800',width:1.6}}},
+    {id:'ficom',n:'Municípios atravessados pela FICO',d:'Polígonos dos municípios ao longo do traçado.',u:S+'FICO_TRA%C3%87ADO_JAN_24/FeatureServer/4',g:'poly',f:'fico_municipios',on:false,
+      r:{type:'simple',symbol:{type:'simple-fill',color:[242,183,5,.12],outline:{color:'#C98A00',width:1}}}}]},
+  {t:'Acidentes Ferroviários',c:'#B4372B',p:EXP+'8dcb0c4121d643b6ae0b9e2e304288e8',L:[
+    {id:'acid',n:'Acidentes ferroviários',d:'Ocorrências por ferrovia, causa e gravidade.',u:S+'Acidentes_Ferrovi%C3%A1rios/FeatureServer/0',g:'point',f:'acidentes_ferroviarios',on:true,
+      r:{type:'simple',symbol:{type:'simple-marker',size:5,color:'#B4372B',outline:{color:[255,255,255,.8],width:.5}}}}]},
+  {t:'Camadas de referência',c:'#6A7486',L:[
+    {id:'fed',n:'Malha ferroviária federal (2021)',d:'Ferrovias concedidas e situação. Usada nos painéis de Autorizações, PIT e Acidentes.',u:S+'Ferrovias_Concedidas_(2021)/FeatureServer/0',g:'line',f:'malha_ferroviaria_federal_2021',on:true,
+      r:{type:'simple',symbol:{type:'simple-line',color:'#0A2A5E',width:1.4}}},
+    {id:'uf',n:'Limites estaduais',d:'Unidades da Federação (BR_UF_2020).',u:S+'UF/FeatureServer/0',g:'poly',f:'limites_estaduais',on:true,
+      r:{type:'simple',symbol:{type:'simple-fill',color:[0,0,0,0],outline:{color:[106,116,134,.6],width:.7}}}},
+    {id:'mun',n:'Limites municipais',d:'Municípios brasileiros (BR_Municipios_2022). Aparece no mapa ao aproximar.',u:S+'BR_Municipios/FeatureServer/0',g:'poly',f:'limites_municipais',on:false,minScale:2500000,big:true,
+      r:{type:'simple',symbol:{type:'simple-fill',color:[0,0,0,0],outline:{color:[106,116,134,.35],width:.4}}}}]}
+];
+const ALL=GRUPOS.flatMap(g=>g.L.map(l=>({...l,grp:g})));
+const nf=v=>Number(v).toLocaleString('pt-BR');
+const ic={dl:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg>',
+  zoom:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="6"/><path d="M20 20l-4.5-4.5M11 8v6M8 11h6"/></svg>',
+  api:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 7l-5 5 5 5M16 7l5 5-5 5"/></svg>'};
+document.getElementById('cat').innerHTML=GRUPOS.map(g=>`<section class="grp" style="--c:${g.c}"><div class="gh"><h3>${g.t}</h3><span class="sp"></span>${g.p?`<a href="${g.p}" target="_blank" rel="noopener">abrir painel ↗</a>`:''}</div>
+  ${g.L.map(l=>`<div class="ly" data-id="${l.id}" style="--c:${l.r.symbol.outline&&l.g==='poly'?(typeof l.r.symbol.outline.color==='string'?l.r.symbol.outline.color:g.c):(typeof l.r.symbol.color==='string'?l.r.symbol.color:g.c)}">
+    <span class="sw"><svg viewBox="0 0 24 24">${GEO[l.g]}</svg></span>
+    <div class="nm"><b title="${l.n}">${l.n}</b><span class="n" id="n_${l.id}">…</span></div>
+    <div class="ds">${l.d}</div>
+    <div class="acts">
+      <label class="tg"><input type="checkbox" data-t="${l.id}" ${l.on?'checked':''}>No mapa</label>
+      <button class="b" data-z="${l.id}" title="Aproximar desta camada">${ic.zoom}Aproximar</button>
+      <button class="b dl" data-d="${l.id}" data-fmt="geojson">${ic.dl}GeoJSON</button>
+      <button class="b dl" data-d="${l.id}" data-fmt="csv">${ic.dl}CSV</button>
+      <a class="b" href="${l.u}" target="_blank" rel="noopener" title="Serviço REST (ArcGIS)">${ic.api}API</a>
+    </div></div>`).join('')}</section>`).join('');
+document.getElementById('stL').textContent=ALL.length;
+
+/* metadados e contagens */
+const META={}; let totR=0;
+ALL.forEach(async l=>{ try{
+  const [m,c]=await Promise.all([fetch(l.u+'?f=json').then(r=>r.json()),fetch(l.u+'/query?where=1%3D1&returnCountOnly=true&f=json').then(r=>r.json())]);
+  META[l.id]={...m,count:c.count};
+  document.getElementById('n_'+l.id).textContent=nf(c.count)+' registros'; totR+=c.count; document.getElementById('stR').textContent=nf(totR);
+}catch(e){ document.getElementById('n_'+l.id).textContent='indisponível'; } });
+
+/* download: lê o serviço em páginas e monta o arquivo no navegador */
+const toast=(t,ms)=>{ const el=document.getElementById('toast'); el.textContent=t; el.classList.add('on'); clearTimeout(toast.t); if(ms) toast.t=setTimeout(()=>el.classList.remove('on'),ms); };
+async function fetchAll(l,onp){
+  const m=META[l.id]||await fetch(l.u+'?f=json').then(r=>r.json());
+  const page=Math.min(m.maxRecordCount||1000,2000); const oid=m.objectIdField||'OBJECTID';
+  const total=(META[l.id]&&META[l.id].count)||(await fetch(l.u+'/query?where=1%3D1&returnCountOnly=true&f=json').then(r=>r.json())).count;
+  const feats=[];
+  for(let off=0;off<total;off+=page){
+    const q=new URLSearchParams({where:'1=1',outFields:'*',outSR:'4326',f:'geojson',orderByFields:oid,resultOffset:off,resultRecordCount:page});
+    const j=await fetch(l.u+'/query?'+q).then(r=>r.json()); if(j.error) throw new Error(j.error.message);
+    feats.push(...(j.features||[])); onp&&onp(feats.length,total);
+  }
+  return {m,fc:{type:'FeatureCollection',name:l.f,crs:{type:'name',properties:{name:'urn:ogc:def:crs:OGC:1.3:CRS84'}},features:feats}};
+}
+const save=(blob,name)=>{ const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=name; document.body.appendChild(a); a.click(); setTimeout(()=>{URL.revokeObjectURL(a.href); a.remove();},1500); };
+function toCSV(fc,m,g){
+  const fields=(m.fields||[]).filter(f=>!/Shape__|shape_/i.test(f.name)); const isDate=Object.fromEntries(fields.map(f=>[f.name,f.type==='esriFieldTypeDate']));
+  const cols=fields.map(f=>f.name), hdr=fields.map(f=>f.alias&&f.alias!==f.name?`${f.alias} (${f.name})`:f.name);
+  if(g==='point'){ cols.push('_lon','_lat'); hdr.push('longitude','latitude'); }
+  const q=v=>{ if(v==null) return ''; const s=String(v); return /[";\n\r]/.test(s)?'"'+s.replace(/"/g,'""')+'"':s; };
+  const rows=fc.features.map(ft=>{ const p=ft.properties||{}; const c=ft.geometry&&ft.geometry.type==='Point'?ft.geometry.coordinates:[];
+    return cols.map(k=>k==='_lon'?(c[0]??''):k==='_lat'?(c[1]??''):(isDate[k]&&p[k]!=null?new Date(p[k]).toISOString():p[k])).map(q).join(';'); });
+  return '﻿'+hdr.map(q).join(';')+'\r\n'+rows.join('\r\n');
+}
+document.querySelectorAll('[data-d]').forEach(b=>b.onclick=async()=>{
+  const l=ALL.find(x=>x.id===b.dataset.d), fmt=b.dataset.fmt, lab=b.innerHTML;
+  // dentro da experiência (moldura sem permissão de download) o arquivo é gerado numa aba própria
+  if(window.self!==window.top){ window.open(location.pathname+location.search.replace(/[?&]mock/,'')+'#baixar='+l.id+','+fmt,'_blank','noopener'); toast('O download abre em uma nova aba.',3000); return; }
+  if(l.big&&fmt==='geojson'&&!confirm('Os limites municipais formam um arquivo grande (dezenas de MB). Deseja baixar mesmo assim?')) return;
+  b.disabled=true;
+  try{
+    const {m,fc}=await fetchAll(l,(n,t)=>{ b.innerHTML=`${ic.dl}${nf(n)}/${nf(t)}`; });
+    const d=new Date().toISOString().slice(0,10);
+    if(fmt==='geojson') save(new Blob([JSON.stringify(fc)],{type:'application/geo+json'}),`${l.f}_${d}.geojson`);
+    else save(new Blob([toCSV(fc,m,l.g)],{type:'text/csv;charset=utf-8'}),`${l.f}_${d}.csv`);
+    toast(`${l.n}: ${nf(fc.features.length)} registros baixados (${fmt.toUpperCase()}).`,3500);
+  }catch(e){ toast('Não foi possível baixar: '+e.message,5000); }
+  b.disabled=false; b.innerHTML=lab;
+});
+
+/* mapa único com todas as camadas */
+require(['esri/Map','esri/views/MapView','esri/layers/FeatureLayer','esri/widgets/Home','esri/widgets/Legend','esri/widgets/Expand','esri/widgets/ScaleBar'],(EMap,MapView,FeatureLayer,Home,Legend,Expand,ScaleBar)=>{
+  const order=['mun','uf','ficom','fed','aut','ficol','pit','fico','acid'];
+  const LY={};
+  order.forEach(id=>{ const l=ALL.find(x=>x.id===id);
+    LY[id]=new FeatureLayer({url:l.u,title:l.n,visible:l.on,renderer:l.r,outFields:['*'],minScale:l.minScale||0,popupEnabled:true,
+      popupTemplate:{title:l.n,content:[{type:'fields'}]}}); });
+  const map=new EMap({basemap:'gray-vector',layers:order.map(id=>LY[id])});
+  const view=new MapView({container:'map',map,center:[-50,-15],zoom:4,constraints:{snapToZoom:false},popup:{dockEnabled:true,dockOptions:{position:'bottom-right',breakpoint:false}}});
+  view.ui.add(new Home({view}),'top-left');
+  view.ui.add(new Expand({view,content:new Legend({view}),expanded:false,expandTooltip:'Legenda'}),'top-right');
+  view.ui.add(new ScaleBar({view,unit:'metric'}),'bottom-left');
+  document.getElementById('bm').onchange=e=>map.basemap=e.target.value;
+  document.querySelectorAll('[data-t]').forEach(c=>c.onchange=()=>{ LY[c.dataset.t].visible=c.checked; });
+  document.querySelectorAll('[data-z]').forEach(b=>b.onclick=async()=>{ const id=b.dataset.z; const lyr=LY[id];
+    if(!lyr.visible){ lyr.visible=true; document.querySelector(`[data-t="${id}"]`).checked=true; }
+    try{ const r=await lyr.queryExtent(); if(r.extent) view.goTo(r.extent.expand(1.15),{duration:700}); }catch(e){} });
+});
+
+const SOC=[
+  ['YouTube','https://www.youtube.com/@canalANTT','<path d="M22 8.2a3 3 0 0 0-2.1-2.1C18 5.6 12 5.6 12 5.6s-6 0-7.9.5A3 3 0 0 0 2 8.2 31 31 0 0 0 1.6 12 31 31 0 0 0 2 15.8a3 3 0 0 0 2.1 2.1c1.9.5 7.9.5 7.9.5s6 0 7.9-.5a3 3 0 0 0 2.1-2.1 31 31 0 0 0 .4-3.8 31 31 0 0 0-.4-3.8z" fill="currentColor"/><path d="m10 15 5.2-3L10 9z" fill="#0A2A5E"/>'],
+  ['LinkedIn','https://www.linkedin.com/company/antt/posts/?feedView=all','<path d="M4.5 9h3v11h-3zM6 3.5a1.8 1.8 0 1 1 0 3.6 1.8 1.8 0 0 1 0-3.6zM10 9h2.9v1.5c.4-.8 1.4-1.7 3-1.7 3.1 0 3.7 2 3.7 4.7V20h-3v-5.6c0-1.3 0-3-1.9-3s-2.1 1.4-2.1 2.9V20H10z" fill="currentColor"/>'],
+  ['Facebook','https://web.facebook.com/anttnoface','<path d="M14 8.5V6.8c0-.8.2-1.3 1.4-1.3H17V2.4c-.3 0-1.3-.1-2.4-.1-2.4 0-4 1.4-4 4.1v2.1H8v3.3h2.6V21H14v-9.2h2.6l.4-3.3z" fill="currentColor"/>'],
+  ['Instagram','https://www.instagram.com/anttagencia/','<rect x="3.5" y="3.5" width="17" height="17" rx="5" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="12" r="4" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="17.3" cy="6.7" r="1.2" fill="currentColor"/>'],
+  ['Portal da ANTT','https://www.gov.br/antt/pt-br','<circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2"/><path d="M3 12h18M12 3c2.5 2.6 3.8 5.6 3.8 9s-1.3 6.4-3.8 9c-2.5-2.6-3.8-5.6-3.8-9S9.5 5.6 12 3z" fill="none" stroke="currentColor" stroke-width="1.6"/>']
+];
+document.getElementById('soc').innerHTML=SOC.map(([n,u,p])=>`<a href="${u}" target="_blank" rel="noopener" title="${n}" aria-label="${n}"><svg viewBox="0 0 24 24">${p}</svg></a>`).join('');
+if(/mock/.test(location.search)) document.getElementById('mocknav').hidden=false;
+/* modo de download (aba aberta a partir da experiência) */
+(async()=>{ const m=/#baixar=([a-z]+),(geojson|csv)/.exec(location.hash); if(!m) return;
+  const l=ALL.find(x=>x.id===m[1]); if(!l) return; const fmt=m[2];
+  const v=document.createElement('div'); v.className='dlv';
+  v.innerHTML=`<div class="bx"><img src="https://www.arcgis.com/sharing/rest/content/items/26c68a6e20144b5199923c22b1722c3e/resources/images/widget_219/1776087269420.png" alt="ANTT"><h2>Dados Abertos · ${l.n}</h2><p id="dlm">Preparando o arquivo ${fmt.toUpperCase()}…</p><div class="bar"><i id="dlb"></i></div><small id="dlc" style="color:var(--muted)"></small></div>`;
+  document.body.appendChild(v);
+  if(l.big&&fmt==='geojson'&&!confirm('Os limites municipais formam um arquivo grande (dezenas de MB). Deseja baixar mesmo assim?')){ document.getElementById('dlm').textContent='Download cancelado. Você pode fechar esta aba.'; return; }
+  try{ const {m:meta,fc}=await fetchAll(l,(n,t)=>{ document.getElementById('dlb').style.width=(n/t*100)+'%'; document.getElementById('dlc').textContent=`${nf(n)} de ${nf(t)} registros`; });
+    const d=new Date().toISOString().slice(0,10);
+    if(fmt==='geojson') save(new Blob([JSON.stringify(fc)],{type:'application/geo+json'}),`${l.f}_${d}.geojson`);
+    else save(new Blob([toCSV(fc,meta,l.g)],{type:'text/csv;charset=utf-8'}),`${l.f}_${d}.csv`);
+    document.getElementById('dlb').style.width='100%';
+    document.getElementById('dlm').innerHTML=`<b>Download concluído.</b> ${nf(fc.features.length)} registros salvos em ${fmt.toUpperCase()}. Você pode fechar esta aba.`;
+  }catch(e){ document.getElementById('dlm').textContent='Não foi possível gerar o arquivo: '+e.message; }
+})();
+</script>
+</body>
+</html>
