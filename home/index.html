@@ -139,7 +139,7 @@ a{color:var(--blue)}
 .ballast{position:absolute;left:0;right:0;bottom:0;height:10px;background:linear-gradient(180deg,#DCE2EB,#E9EEF5)}
 .train{position:absolute;bottom:2px;left:0;will-change:transform}
 .train svg{display:block;height:100%;width:auto}
-.train.frt{height:36px;animation:run-r 30s linear infinite;animation-delay:-6s}
+.train.frt{height:46px;animation:run-r 30s linear infinite;animation-delay:-6s}
 .train.pax{height:25px;bottom:1.5px;animation:run-l 15s linear infinite;animation-delay:-2s}
 @keyframes run-r{from{transform:translateX(-100%)}to{transform:translateX(100cqw)}}
 @keyframes run-l{from{transform:translateX(100cqw)}to{transform:translateX(-100%)}}
@@ -320,19 +320,21 @@ document.getElementById('upd').textContent='Dados em tempo real · consultados e
   const N='#0A2A5E',N2='#16407F',B='#1C5FAD',Y='#F2B705',W='#D6E4F5';
   const wheel=(x,y,r)=>`<circle cx="${x}" cy="${y}" r="${r}" fill="${N}"/><circle cx="${x}" cy="${y}" r="${r*.35}" fill="#9FB3D1"/>`;
   // composição de carga: vagões hopper + locomotiva na frente (sentido para a direita)
-  const hopper=x=>`<g transform="translate(${x} 0)"><path d="M3 9q30-6 58 0z" fill="#5B4A3E"/><path d="M1 9h62v8l-7 7H8l-7-7z" fill="#3A64A0"/>`+
-    [12,22,32,42,52].map(v=>`<path d="M${v} 9v13" stroke="#2C4F86" stroke-width="1.2"/>`).join('')+
+  const hopper=(x,t)=>`<g transform="translate(${x} 0)"><path d="M3 9q30-6 58 0z" fill="#5B4A3E"/><path d="M1 9h62v8l-7 7H8l-7-7z" fill="#3A64A0"/>`+
+    [6,58].map(v=>`<path d="M${v} 9v10" stroke="#2C4F86" stroke-width="1.2"/>`).join('')+
+    `<rect x="11" y="10.5" width="42" height="10.5" rx="1.5" fill="#0A2A5E"/><text x="32" y="18.6" font-size="8" letter-spacing=".4" fill="#fff" font-family="Rawline,Raleway,'Segoe UI',sans-serif" font-weight="800" text-anchor="middle">${t}</text>`+
     `<rect x="0" y="24" width="64" height="2.6" fill="${N}"/>`+wheel(10,29,3.1)+wheel(18,29,3.1)+wheel(46,29,3.1)+wheel(54,29,3.1)+
     `<rect x="-3" y="22.6" width="4" height="1.6" fill="${N}"/></g>`;
-  const NW=8, WW=66, fw=NW*WW+102;
+  const GER=['GECOF','GEFEF','GEPEF','GEREF','GIFER'];
+  const NW=GER.length, WW=66, fw=NW*WW+102;
   let f=`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${fw} 34">`;
-  for(let i=0;i<NW;i++) f+=hopper(3+i*WW);
+  for(let i=0;i<NW;i++) f+=hopper(3+i*WW,GER[i]);
   const lx=NW*WW+4;
   f+=`<g transform="translate(${lx} 0)">
     <path d="M4 9h64v15H4z" fill="${N2}"/><path d="M68 3h16l9 9v12H68z" fill="${N}"/>
     <path d="M72 6h11l6 6H72z" fill="${W}"/><rect x="4" y="18" width="89" height="2.2" fill="${Y}"/>
     <rect x="10" y="5.5" width="14" height="3.5" rx="1" fill="${N}"/><rect x="30" y="5.5" width="20" height="3.5" rx="1" fill="${N}"/>
-    <path d="M14 12h6M26 12h6M38 12h6M50 12h6" stroke="#2C5592" stroke-width="2"/>
+    <text x="36" y="16.8" font-size="7.6" letter-spacing="1" fill="#fff" font-family="Rawline,Raleway,'Segoe UI',sans-serif" font-weight="800" text-anchor="middle">SUFER</text>
     <rect x="0" y="24" width="96" height="3" fill="${N}"/>`+wheel(14,29.4,3.4)+wheel(23,29.4,3.4)+wheel(32,29.4,3.4)+wheel(64,29.4,3.4)+wheel(73,29.4,3.4)+wheel(82,29.4,3.4)+
     `<circle cx="92.6" cy="16" r="1.4" fill="#FFE27A"/></g></svg>`;
   document.getElementById('frt').innerHTML=f;
@@ -373,7 +375,7 @@ document.getElementById('upd').textContent='Dados em tempo real · consultados e
     <path d="M140 49h10l6 15h-16z" fill="${R}"/><path d="M143 53h8M144 57h9M145 61h9" stroke="${K}" stroke-width="1"/>
     <g class="bob">
       <rect x="8" y="9" width="46" height="5" rx="1.5" fill="${K2}"/><rect x="12" y="14" width="38" height="35" fill="${K}"/>
-      <rect x="18" y="19" width="12" height="12" rx="1.5" fill="${GL}"/><rect x="34" y="19" width="10" height="12" rx="1.5" fill="${GL}"/>
+      <rect x="18" y="19" width="12" height="12" rx="1.5" fill="${GL}"/><rect x="34" y="19" width="10" height="12" rx="1.5" fill="${GL}"/><text x="31" y="43.5" font-size="9.5" letter-spacing=".6" fill="${G}" font-family="Rawline,Raleway,'Segoe UI',sans-serif" font-weight="800" text-anchor="middle">ANTT</text>
       <rect x="48" y="25" width="88" height="23" rx="3" fill="${K}"/><rect x="128" y="22" width="12" height="27" rx="3" fill="${K2}"/>
       <path d="M62 25v23M82 25v23M104 25v23" stroke="${G}" stroke-width="1.6"/>
       <path d="M85 25a8 8 0 0 1 16 0z" fill="${K2}"/><rect x="91" y="15" width="4" height="4" rx="1" fill="${G}"/>
