@@ -7,7 +7,9 @@
 <link rel="stylesheet" href="https://cdngovbr-ds.estaleiro.serpro.gov.br/design-system/fonts/rawline/css/rawline.css">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Raleway:wght@400;500;600;700;800&display=swap">
 <link rel="stylesheet" href="https://js.arcgis.com/4.30/esri/themes/light/main.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 <script src="https://js.arcgis.com/4.30/"></script>
+<script src="../assets/legenda.js?v=1"></script>
 <style>
 :root{--navy:#0A2A5E;--navy2:#123B7A;--blue:#1C5FAD;--yellow:#F2B705;--green:#1E9E5A;--ink:#14213D;--ink2:#4A5568;--muted:#6A7486;--line:#DDE3EB;--bg:#F3F5F9;--top:101px}
 *{box-sizing:border-box}
@@ -42,7 +44,7 @@ a{color:var(--blue)}
 .stat{background:#F4F7FC;border:1px solid var(--line);border-radius:8px;padding:6px 12px;text-align:center}
 .stat b{display:block;font-size:18px;color:var(--navy);font-variant-numeric:tabular-nums}
 .stat span{font-size:11.5px;color:var(--muted)}
-.wrap{max-width:1560px;margin:0 auto;padding:16px 28px 22px;display:grid;grid-template-columns:minmax(0,1fr) 520px;gap:16px;align-items:start}
+.wrap{max-width:1560px;margin:0 auto;padding:16px 28px 22px;display:grid;grid-template-columns:minmax(0,1fr) 600px;gap:16px;align-items:start}
 .mapbox{position:sticky;top:calc(var(--top) + 16px);height:calc(100vh - var(--top) - 32px);min-height:460px;background:#fff;border:1px solid var(--line);border-radius:12px;overflow:hidden;display:flex;flex-direction:column}
 .mapbox .h{display:flex;align-items:center;gap:10px;padding:10px 14px;border-bottom:1px solid var(--line)}
 .mapbox .h h2{margin:0;font-size:15px;color:var(--navy);display:flex;align-items:center;gap:8px}
@@ -66,7 +68,7 @@ a{color:var(--blue)}
 .ly .nm .n{margin-left:auto;font-size:12px;color:var(--muted);white-space:nowrap;font-variant-numeric:tabular-nums}
 .ly .ds{font-size:12px;color:var(--ink2)}
 .ly .acts{grid-column:2;display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-top:2px}
-.b{display:inline-flex;align-items:center;gap:5px;border:1px solid var(--line);background:#fff;color:var(--ink);font:600 12.5px Rawline,Raleway,sans-serif;padding:5px 10px;border-radius:7px;cursor:pointer;text-decoration:none}
+.b{display:inline-flex;align-items:center;gap:5px;border:1px solid var(--line);background:#fff;color:var(--ink);font:600 12px Rawline,Raleway,sans-serif;padding:5px 8px;border-radius:7px;cursor:pointer;text-decoration:none}
 .b:hover{border-color:var(--blue);color:var(--navy);background:#F4F7FC}
 .b svg{width:14px;height:14px}
 .b.dl{background:var(--navy);border-color:var(--navy);color:#fff}
@@ -118,7 +120,7 @@ a{color:var(--blue)}
 
 <section class="intro"><div class="intro-in">
   <h1>Dados Abertos</h1>
-  <p>Todas as camadas usadas nos painéis do SAFF-P em um único mapa. Ligue e desligue as camadas, aproxime e baixe os dados em <b>GeoJSON</b> (com geometria) ou <b>CSV</b> (planilha).</p>
+  <p>Todas as camadas usadas nos painéis do SAFF-P em um único mapa. Ligue e desligue as camadas no mapa ou na lista, aproxime e baixe os dados em <b>Shapefile</b>, <b>GeoJSON</b> ou <b>CSV</b> (planilha).</p>
   <div class="stats"><div class="stat"><b id="stL">—</b><span>camadas</span></div><div class="stat"><b id="stR">—</b><span>registros</span></div><div class="stat"><b>4</b><span>painéis</span></div></div>
 </div></section>
 
@@ -130,7 +132,7 @@ a{color:var(--blue)}
   </section>
   <aside class="cat">
     <div id="cat" class="cat"></div>
-    <div class="lic"><b>Sobre os arquivos.</b> Os dados são lidos na hora diretamente dos serviços publicados no ArcGIS Online da ANTT. O GeoJSON usa coordenadas geográficas (WGS 84, EPSG:4326). O CSV traz os atributos e, para camadas de pontos, as colunas de longitude e latitude. Camadas grandes podem levar alguns segundos para baixar.</div>
+    <div class="lic"><b>Sobre os arquivos.</b> Os dados são lidos na hora diretamente dos serviços publicados no ArcGIS Online da ANTT. O Shapefile vem compactado (.zip) com o arquivo de projeção e uma tabela com os nomes completos dos campos. O GeoJSON e o Shapefile usam coordenadas geográficas (WGS 84, EPSG:4326). O CSV traz os atributos e, para camadas de pontos, as colunas de longitude e latitude. Camadas grandes podem levar alguns segundos para baixar.</div>
     <div class="note">Ambiente de demonstração · as informações não correspondem a dados oficiais.</div>
   </aside>
 </main>
@@ -150,25 +152,25 @@ const GEO={point:'<circle cx="12" cy="12" r="4.5" fill="currentColor"/><circle c
   poly:'<path d="M4 7l7-3 9 4-2 10-10 2-5-6z" fill="currentColor" fill-opacity=".25" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>'};
 const GRUPOS=[
   {t:'Autorizações Ferroviárias',c:'#1C5FAD',p:EXP+'99652a1a4f7a4ee89a8e3c1d6af5d9bb',L:[
-    {id:'aut',n:'Trechos autorizados',d:'Contratos de adesão e requerimentos de autorização (traçados).',u:S+'AUT___AP___20_02_26/FeatureServer/0',g:'line',f:'aut_trechos_autorizados',on:true,
+    {id:'aut',n:'Trechos autorizados',d:'Contratos de adesão e requerimentos de autorização (traçados).',u:S+'AUT___AP___20_02_26/FeatureServer/0',g:'line',f:'aut_trechos_autorizados',on:false,
       r:{type:'simple',symbol:{type:'simple-line',color:'#C2410C',width:2.6}}}]},
   {t:'Projetos de Interesse de Terceiros (PIT)',c:'#0F7C80',p:EXP+'f554b9b22f8e4cfe9470046ad6b45a4a',L:[
-    {id:'pit',n:'Processos PIT',d:'Travessias, paralelismos e interferências na faixa ferroviária.',u:S+'Projeto_de_Interesse_de_Terceiros_(PIT)/FeatureServer/0',g:'point',f:'pit_processos',on:true,
+    {id:'pit',n:'Processos PIT',d:'Travessias, paralelismos e interferências na faixa ferroviária.',u:S+'Projeto_de_Interesse_de_Terceiros_(PIT)/FeatureServer/0',g:'point',f:'pit_processos',on:false,
       r:{type:'simple',symbol:{type:'simple-marker',size:7,color:'#0F7C80',outline:{color:'#fff',width:1}}}}]},
   {t:'Fiscalização FICO',c:'#1F8A4C',p:EXP+'20d9b3d0ec0c4383b7834ee8c11c7068',L:[
-    {id:'fico',n:'Levantamentos de fiscalização',d:'Vistorias de campo registradas no Survey123.',u:S+'survey123_f534c787ea064a64b119e9984448af56_results/FeatureServer/0',g:'point',f:'fico_levantamentos',on:true,
+    {id:'fico',n:'Levantamentos de fiscalização',d:'Vistorias de campo registradas no Survey123.',u:S+'survey123_f534c787ea064a64b119e9984448af56_results/FeatureServer/0',g:'point',f:'fico_levantamentos',on:false,
       r:{type:'simple',symbol:{type:'simple-marker',size:7,color:'#1F8A4C',outline:{color:'#fff',width:1}}}},
-    {id:'ficol',n:'Traçado da FICO',d:'Eixo, faixa de domínio e estacas (FICO_TRAÇADO_JAN_24).',u:S+'FICO_TRA%C3%87ADO_JAN_24/FeatureServer/2',g:'line',f:'fico_tracado',on:true,
+    {id:'ficol',n:'Traçado da FICO',d:'Eixo, faixa de domínio e estacas (FICO_TRAÇADO_JAN_24).',u:S+'FICO_TRA%C3%87ADO_JAN_24/FeatureServer/2',g:'line',f:'fico_tracado',on:false,
       r:{type:'simple',symbol:{type:'simple-line',color:'#E0A800',width:1.6}}},
     {id:'ficom',n:'Municípios atravessados pela FICO',d:'Polígonos dos municípios ao longo do traçado.',u:S+'FICO_TRA%C3%87ADO_JAN_24/FeatureServer/4',g:'poly',f:'fico_municipios',on:false,
       r:{type:'simple',symbol:{type:'simple-fill',color:[242,183,5,.12],outline:{color:'#C98A00',width:1}}}}]},
   {t:'Acidentes Ferroviários',c:'#B4372B',p:EXP+'8dcb0c4121d643b6ae0b9e2e304288e8',L:[
-    {id:'acid',n:'Acidentes ferroviários',d:'Ocorrências por ferrovia, causa e gravidade.',u:S+'Acidentes_Ferrovi%C3%A1rios/FeatureServer/0',g:'point',f:'acidentes_ferroviarios',on:true,
+    {id:'acid',n:'Acidentes ferroviários',d:'Ocorrências por ferrovia, causa e gravidade.',u:S+'Acidentes_Ferrovi%C3%A1rios/FeatureServer/0',g:'point',f:'acidentes_ferroviarios',on:false,
       r:{type:'simple',symbol:{type:'simple-marker',size:5,color:'#B4372B',outline:{color:[255,255,255,.8],width:.5}}}}]},
   {t:'Camadas de referência',c:'#6A7486',L:[
     {id:'fed',n:'Malha ferroviária federal (2021)',d:'Ferrovias concedidas e situação. Usada nos painéis de Autorizações, PIT e Acidentes.',u:S+'Ferrovias_Concedidas_(2021)/FeatureServer/0',g:'line',f:'malha_ferroviaria_federal_2021',on:true,
       r:{type:'simple',symbol:{type:'simple-line',color:'#0A2A5E',width:1.4}}},
-    {id:'uf',n:'Limites estaduais',d:'Unidades da Federação (BR_UF_2020).',u:S+'UF/FeatureServer/0',g:'poly',f:'limites_estaduais',on:true,
+    {id:'uf',n:'Limites estaduais',d:'Unidades da Federação (BR_UF_2020).',u:S+'UF/FeatureServer/0',g:'poly',f:'limites_estaduais',on:false,
       r:{type:'simple',symbol:{type:'simple-fill',color:[0,0,0,0],outline:{color:[106,116,134,.6],width:.7}}}},
     {id:'mun',n:'Limites municipais',d:'Municípios brasileiros (BR_Municipios_2022). Aparece no mapa ao aproximar.',u:S+'BR_Municipios/FeatureServer/0',g:'poly',f:'limites_municipais',on:false,minScale:2500000,big:true,
       r:{type:'simple',symbol:{type:'simple-fill',color:[0,0,0,0],outline:{color:[106,116,134,.35],width:.4}}}}]}
@@ -186,6 +188,7 @@ document.getElementById('cat').innerHTML=GRUPOS.map(g=>`<section class="grp" sty
     <div class="acts">
       <label class="tg"><input type="checkbox" data-t="${l.id}" ${l.on?'checked':''}>No mapa</label>
       <button class="b" data-z="${l.id}" title="Aproximar desta camada">${ic.zoom}Aproximar</button>
+      <button class="b dl" data-d="${l.id}" data-fmt="shp" title="Shapefile compactado (.zip)">${ic.dl}Shapefile</button>
       <button class="b dl" data-d="${l.id}" data-fmt="geojson">${ic.dl}GeoJSON</button>
       <button class="b dl" data-d="${l.id}" data-fmt="csv">${ic.dl}CSV</button>
       <a class="b" href="${l.u}" target="_blank" rel="noopener" title="Serviço REST (ArcGIS)">${ic.api}API</a>
@@ -224,24 +227,94 @@ function toCSV(fc,m,g){
     return cols.map(k=>k==='_lon'?(c[0]??''):k==='_lat'?(c[1]??''):(isDate[k]&&p[k]!=null?new Date(p[k]).toISOString():p[k])).map(q).join(';'); });
   return '﻿'+hdr.map(q).join(';')+'\r\n'+rows.join('\r\n');
 }
+/* shapefile: .shp/.shx/.dbf/.prj/.cpg em um .zip (atributos em Windows-1252, nomes de campo com até 10 caracteres) */
+const PRJ='GEOGCS["GCS_WGS_1984",DATUM["D_WGS_1984",SPHEROID["WGS_1984",6378137.0,298.257223563]],PRIMEM["Greenwich",0.0],UNIT["Degree",0.0174532925199433]]';
+/* gravador de shapefile próprio (ESRI Shapefile: .shp/.shx/.dbf), sem bibliotecas externas */
+function shpWrite(kind,geoms){ // kind: 1 ponto, 3 linha, 5 polígono; geoms: [x,y] ou lista de partes [[x,y],...]
+  const recLen=g=>kind===1?20:44+4*g.length+16*g.reduce((s,p)=>s+p.length,0);
+  const lens=geoms.map(recLen), shpBytes=100+lens.reduce((s,n)=>s+8+n,0);
+  const shp=new DataView(new ArrayBuffer(shpBytes)), shx=new DataView(new ArrayBuffer(100+8*geoms.length));
+  let X0=Infinity,Y0=Infinity,X1=-Infinity,Y1=-Infinity;
+  const bb=g=>{ let a=Infinity,b=Infinity,c=-Infinity,d=-Infinity; (kind===1?[[g]]:g).forEach(pt=>pt.forEach(([x,y])=>{ if(x<a)a=x; if(y<b)b=y; if(x>c)c=x; if(y>d)d=y; })); return [a,b,c,d]; };
+  const boxes=geoms.map(bb); boxes.forEach(([a,b,c,d])=>{ X0=Math.min(X0,a);Y0=Math.min(Y0,b);X1=Math.max(X1,c);Y1=Math.max(Y1,d); });
+  const head=(v,len)=>{ v.setInt32(0,9994,false); v.setInt32(24,len/2,false); v.setInt32(28,1000,true); v.setInt32(32,kind,true);
+    [X0,Y0,X1,Y1].forEach((n,i)=>v.setFloat64(36+8*i,isFinite(n)?n:0,true)); };
+  head(shp,shpBytes); head(shx,100+8*geoms.length);
+  let o=100;
+  geoms.forEach((g,i)=>{ const L=lens[i];
+    shx.setInt32(100+8*i,o/2,false); shx.setInt32(104+8*i,L/2,false);
+    shp.setInt32(o,i+1,false); shp.setInt32(o+4,L/2,false); o+=8;
+    shp.setInt32(o,kind,true);
+    if(kind===1){ shp.setFloat64(o+4,g[0],true); shp.setFloat64(o+12,g[1],true); o+=20; return; }
+    boxes[i].forEach((n,k)=>shp.setFloat64(o+4+8*k,n,true));
+    const np=g.reduce((s,p)=>s+p.length,0); shp.setInt32(o+36,g.length,true); shp.setInt32(o+40,np,true);
+    let q=o+44, idx=0; g.forEach(p=>{ shp.setInt32(q,idx,true); q+=4; idx+=p.length; });
+    g.forEach(p=>p.forEach(([x,y])=>{ shp.setFloat64(q,x,true); shp.setFloat64(q+8,y,true); q+=16; }));
+    o+=L; });
+  return {shp:shp.buffer,shx:shx.buffer};
+}
+function dbfWrite(cols,rows){ // cols: [{name,type:'C'|'N',len,dec}], rows: arrays de valores
+  const enc=t=>{ const s=String(t), b=new Uint8Array(s.length); for(let i=0;i<s.length;i++){ const c=s.charCodeAt(i); b[i]=c<256?c:63; } return b; };
+  const recLen=1+cols.reduce((s,c)=>s+c.len,0), hdrLen=32+32*cols.length+1;
+  const buf=new Uint8Array(hdrLen+recLen*rows.length+1), v=new DataView(buf.buffer), d=new Date();
+  buf[0]=3; buf[1]=d.getFullYear()-1900; buf[2]=d.getMonth()+1; buf[3]=d.getDate();
+  v.setUint32(4,rows.length,true); v.setUint16(8,hdrLen,true); v.setUint16(10,recLen,true); buf[29]=0x57; // LDID 87 = ANSI/1252
+  cols.forEach((c,i)=>{ const o=32+32*i; buf.set(enc(c.name).slice(0,10),o); buf[o+11]=c.type.charCodeAt(0); buf[o+16]=c.len; buf[o+17]=c.dec||0; });
+  buf[hdrLen-1]=0x0D;
+  let o=hdrLen;
+  rows.forEach(r=>{ buf[o++]=0x20; cols.forEach((c,k)=>{ const val=r[k]; let t='';
+      if(c.type==='N'){ t=(val==null||val===''||!isFinite(val))?'':(c.dec?Number(val).toFixed(c.dec):String(Math.round(val))); t=t.length>c.len?t.slice(0,c.len):t.padStart(c.len,' '); }
+      else { t=(val==null?'':String(val)); const b=enc(t).slice(0,c.len); buf.fill(0x20,o,o+c.len); buf.set(b,o); o+=c.len; return; }
+      buf.set(enc(t),o); o+=c.len; }); });
+  buf[o]=0x1A; return buf.buffer;
+}
+const ringArea=r=>{ let a=0; for(let i=0,j=r.length-1;i<r.length;j=i++) a+=(r[j][0]-r[i][0])*(r[j][1]+r[i][1]); return a/2; }; // >0 horário
+async function toSHP(fc,m,l){
+  const NUM=/Integer|Double|Single|OID/, INT=/Integer|OID/;
+  const fields=(m.fields||[]).filter(f=>!/Shape__|shape_/i.test(f.name));
+  const used=new Set(), nm={};
+  fields.forEach(f=>{ let b=f.name.normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^A-Za-z0-9_]/g,'_').slice(0,10)||'CAMPO'; let n=b,i=1; while(used.has(n.toUpperCase())){ const sfx=String(i++); n=b.slice(0,10-sfx.length)+sfx; } used.add(n.toUpperCase()); nm[f.name]=n; });
+  const feats=fc.features.filter(f=>f.geometry&&f.geometry.coordinates&&f.geometry.coordinates.length);
+  const dt=v=>{ const d=new Date(v); return isNaN(d)?'':d.toISOString().replace('T',' ').slice(0,19); };
+  const enc1=t=>String(t).replace(/[^\u0000-\u00ff]/g,'?');
+  const cols=fields.map(f=>{ if(NUM.test(f.type)) return {name:nm[f.name],type:'N',len:INT.test(f.type)?12:19,dec:INT.test(f.type)?0:8};
+    const len=Math.min(254,Math.max(1,f.type==='esriFieldTypeDate'?19:0,...feats.map(ft=>{ const v=ft.properties[f.name]; return v==null?0:enc1(f.type==='esriFieldTypeDate'?dt(v):v).length; })));
+    return {name:nm[f.name],type:'C',len}; });
+  const rows=feats.map(ft=>fields.map(f=>{ const v=ft.properties[f.name]; return v==null?null:f.type==='esriFieldTypeDate'?dt(v):v; }));
+  let kind, geoms;
+  if(l.g==='point'){ kind=1; geoms=feats.map(f=>f.geometry.type==='MultiPoint'?f.geometry.coordinates[0]:f.geometry.coordinates); }
+  else if(l.g==='line'){ kind=3; geoms=feats.map(f=>f.geometry.type==='LineString'?[f.geometry.coordinates]:f.geometry.coordinates); }
+  else { kind=5; geoms=feats.map(f=>{ const polys=f.geometry.type==='Polygon'?[f.geometry.coordinates]:f.geometry.coordinates;
+    return polys.flatMap(pg=>pg.map((r,i)=>{ const cw=ringArea(r)>0; return (i===0)!==cw?r.slice().reverse():r; })); }); } // externo horário, furos anti-horário
+  const {shp,shx}=shpWrite(kind,geoms), dbf=dbfWrite(cols,rows);
+  const z=new JSZip(), base=l.f;
+  z.file(base+'.shp',shp); z.file(base+'.shx',shx); z.file(base+'.dbf',dbf); z.file(base+'.prj',PRJ); z.file(base+'.cpg','1252');
+  z.file('LEIA-ME_campos.csv','\ufeffcampo_shapefile;campo_original;descricao\r\n'+fields.map(f=>[nm[f.name],f.name,(f.alias||'').replace(/;/g,',')].join(';')).join('\r\n'));
+  return z.generateAsync({type:'blob',compression:'DEFLATE'});
+}
+async function buildFile(l,fmt,onp){
+  const {m,fc}=await fetchAll(l,onp); const d=new Date().toISOString().slice(0,10);
+  if(fmt==='geojson') return {blob:new Blob([JSON.stringify(fc)],{type:'application/geo+json'}),name:`${l.f}_${d}.geojson`,n:fc.features.length};
+  if(fmt==='csv') return {blob:new Blob([toCSV(fc,m,l.g)],{type:'text/csv;charset=utf-8'}),name:`${l.f}_${d}.csv`,n:fc.features.length};
+  return {blob:await toSHP(fc,m,l),name:`${l.f}_${d}_shapefile.zip`,n:fc.features.length};
+}
+const FMT={geojson:'GeoJSON',csv:'CSV',shp:'Shapefile'};
 document.querySelectorAll('[data-d]').forEach(b=>b.onclick=async()=>{
   const l=ALL.find(x=>x.id===b.dataset.d), fmt=b.dataset.fmt, lab=b.innerHTML;
   // dentro da experiência (moldura sem permissão de download) o arquivo é gerado numa aba própria
   if(window.self!==window.top){ window.open(location.pathname+location.search.replace(/[?&]mock/,'')+'#baixar='+l.id+','+fmt,'_blank','noopener'); toast('O download abre em uma nova aba.',3000); return; }
-  if(l.big&&fmt==='geojson'&&!confirm('Os limites municipais formam um arquivo grande (dezenas de MB). Deseja baixar mesmo assim?')) return;
+  if(l.big&&fmt!=='csv'&&!confirm('Os limites municipais formam um arquivo grande (dezenas de MB). Deseja baixar mesmo assim?')) return;
   b.disabled=true;
   try{
-    const {m,fc}=await fetchAll(l,(n,t)=>{ b.innerHTML=`${ic.dl}${nf(n)}/${nf(t)}`; });
-    const d=new Date().toISOString().slice(0,10);
-    if(fmt==='geojson') save(new Blob([JSON.stringify(fc)],{type:'application/geo+json'}),`${l.f}_${d}.geojson`);
-    else save(new Blob([toCSV(fc,m,l.g)],{type:'text/csv;charset=utf-8'}),`${l.f}_${d}.csv`);
-    toast(`${l.n}: ${nf(fc.features.length)} registros baixados (${fmt.toUpperCase()}).`,3500);
+    const r=await buildFile(l,fmt,(n,t)=>{ b.innerHTML=`${ic.dl}${nf(n)}/${nf(t)}`; });
+    save(r.blob,r.name);
+    toast(`${l.n}: ${nf(r.n)} registros baixados (${FMT[fmt]}).`,3500);
   }catch(e){ toast('Não foi possível baixar: '+e.message,5000); }
   b.disabled=false; b.innerHTML=lab;
 });
 
 /* mapa único com todas as camadas */
-require(['esri/Map','esri/views/MapView','esri/layers/FeatureLayer','esri/widgets/Home','esri/widgets/Legend','esri/widgets/Expand','esri/widgets/ScaleBar'],(EMap,MapView,FeatureLayer,Home,Legend,Expand,ScaleBar)=>{
+require(['esri/Map','esri/views/MapView','esri/layers/FeatureLayer','esri/widgets/Home','esri/widgets/Legend','esri/widgets/Expand','esri/widgets/ScaleBar','esri/widgets/LayerList','esri/core/reactiveUtils'],(EMap,MapView,FeatureLayer,Home,Legend,Expand,ScaleBar,LayerList,reactiveUtils)=>{
   const order=['mun','uf','ficom','fed','aut','ficol','pit','fico','acid'];
   const LY={};
   order.forEach(id=>{ const l=ALL.find(x=>x.id===id);
@@ -250,10 +323,13 @@ require(['esri/Map','esri/views/MapView','esri/layers/FeatureLayer','esri/widget
   const map=new EMap({basemap:'gray-vector',layers:order.map(id=>LY[id])});
   const view=new MapView({container:'map',map,center:[-50,-15],zoom:4,constraints:{snapToZoom:false},popup:{dockEnabled:true,dockOptions:{position:'bottom-right',breakpoint:false}}});
   view.ui.add(new Home({view}),'top-left');
-  view.ui.add(new Expand({view,content:new Legend({view}),expanded:false,expandTooltip:'Legenda'}),'top-right');
-  view.ui.add(new ScaleBar({view,unit:'metric'}),'bottom-left');
+  view.ui.add(new Expand({view,content:new LayerList({view}),expandIcon:'layers',expandTooltip:'Ligar e desligar camadas',expanded:innerWidth>1150,mode:'floating'}),'top-right');
+  const lgd=document.createElement('div'); new Legend({view,container:lgd,style:{type:'classic',layout:'stack'}});
+  view.ui.add(legendToggle(lgd,{maxHeight:'42vh'}),'bottom-left');
+  view.ui.add(new ScaleBar({view,unit:'metric'}),'bottom-right');
   document.getElementById('bm').onchange=e=>map.basemap=e.target.value;
   document.querySelectorAll('[data-t]').forEach(c=>c.onchange=()=>{ LY[c.dataset.t].visible=c.checked; });
+  Object.entries(LY).forEach(([id,lyr])=>reactiveUtils.watch(()=>lyr.visible,v=>{ const c=document.querySelector(`[data-t="${id}"]`); if(c) c.checked=v; }));
   document.querySelectorAll('[data-z]').forEach(b=>b.onclick=async()=>{ const id=b.dataset.z; const lyr=LY[id];
     if(!lyr.visible){ lyr.visible=true; document.querySelector(`[data-t="${id}"]`).checked=true; }
     try{ const r=await lyr.queryExtent(); if(r.extent) view.goTo(r.extent.expand(1.15),{duration:700}); }catch(e){} });
@@ -269,18 +345,16 @@ const SOC=[
 document.getElementById('soc').innerHTML=SOC.map(([n,u,p])=>`<a href="${u}" target="_blank" rel="noopener" title="${n}" aria-label="${n}"><svg viewBox="0 0 24 24">${p}</svg></a>`).join('');
 if(/mock/.test(location.search)) document.getElementById('mocknav').hidden=false;
 /* modo de download (aba aberta a partir da experiência) */
-(async()=>{ const m=/#baixar=([a-z]+),(geojson|csv)/.exec(location.hash); if(!m) return;
+(async()=>{ const m=/#baixar=([a-z]+),(geojson|csv|shp)/.exec(location.hash); if(!m) return;
   const l=ALL.find(x=>x.id===m[1]); if(!l) return; const fmt=m[2];
   const v=document.createElement('div'); v.className='dlv';
-  v.innerHTML=`<div class="bx"><img src="https://www.arcgis.com/sharing/rest/content/items/26c68a6e20144b5199923c22b1722c3e/resources/images/widget_219/1776087269420.png" alt="ANTT"><h2>Dados Abertos · ${l.n}</h2><p id="dlm">Preparando o arquivo ${fmt.toUpperCase()}…</p><div class="bar"><i id="dlb"></i></div><small id="dlc" style="color:var(--muted)"></small></div>`;
+  v.innerHTML=`<div class="bx"><img src="https://www.arcgis.com/sharing/rest/content/items/26c68a6e20144b5199923c22b1722c3e/resources/images/widget_219/1776087269420.png" alt="ANTT"><h2>Dados Abertos · ${l.n}</h2><p id="dlm">Preparando o arquivo ${FMT[fmt]}…</p><div class="bar"><i id="dlb"></i></div><small id="dlc" style="color:var(--muted)"></small></div>`;
   document.body.appendChild(v);
-  if(l.big&&fmt==='geojson'&&!confirm('Os limites municipais formam um arquivo grande (dezenas de MB). Deseja baixar mesmo assim?')){ document.getElementById('dlm').textContent='Download cancelado. Você pode fechar esta aba.'; return; }
-  try{ const {m:meta,fc}=await fetchAll(l,(n,t)=>{ document.getElementById('dlb').style.width=(n/t*100)+'%'; document.getElementById('dlc').textContent=`${nf(n)} de ${nf(t)} registros`; });
-    const d=new Date().toISOString().slice(0,10);
-    if(fmt==='geojson') save(new Blob([JSON.stringify(fc)],{type:'application/geo+json'}),`${l.f}_${d}.geojson`);
-    else save(new Blob([toCSV(fc,meta,l.g)],{type:'text/csv;charset=utf-8'}),`${l.f}_${d}.csv`);
+  if(l.big&&fmt!=='csv'&&!confirm('Os limites municipais formam um arquivo grande (dezenas de MB). Deseja baixar mesmo assim?')){ document.getElementById('dlm').textContent='Download cancelado. Você pode fechar esta aba.'; return; }
+  try{ const r=await buildFile(l,fmt,(n,t)=>{ document.getElementById('dlb').style.width=(n/t*100)+'%'; document.getElementById('dlc').textContent=`${nf(n)} de ${nf(t)} registros`; });
+    save(r.blob,r.name);
     document.getElementById('dlb').style.width='100%';
-    document.getElementById('dlm').innerHTML=`<b>Download concluído.</b> ${nf(fc.features.length)} registros salvos em ${fmt.toUpperCase()}. Você pode fechar esta aba.`;
+    document.getElementById('dlm').innerHTML=`<b>Download concluído.</b> ${nf(r.n)} registros salvos em ${FMT[fmt]}. Você pode fechar esta aba.`;
   }catch(e){ document.getElementById('dlm').textContent='Não foi possível gerar o arquivo: '+e.message; }
 })();
 </script>

@@ -407,7 +407,7 @@ function initMap(){ return new Promise(res=>{
     view.navigation.mouseWheelZoomEnabled=false;
     view.on('click',()=>{view.navigation.mouseWheelZoomEnabled=true;});
     view.on('pointer-leave',()=>{view.navigation.mouseWheelZoomEnabled=false;});
-    view.ui.add(mapLegend(),'bottom-left');
+    view.ui.add(window.legendToggle?legendToggle(mapLegend(),{maxHeight:'40vh'}):mapLegend(),'bottom-left');
     if(C.map.layerList!==false){
       view.ui.add(new Expand({view,content:new LayerList({view}),expandIcon:'layers',expandTooltip:'Camadas do mapa',group:'tr',expanded:false}),'top-right');
     }
@@ -469,7 +469,7 @@ function initTL(){ if(TL.ready||!window.__ESRI) return; TL.ready=true;
     TL.view.navigation.mouseWheelZoomEnabled=false;
     TL.view.on('click',()=>{TL.view.navigation.mouseWheelZoomEnabled=true;});
     const st=document.createElement('div'); st.className='tl-stamp'; st.id='tlStamp'; TL.view.ui.add(st,'top-left');
-    TL.view.ui.add(mapLegend(),'bottom-left');
+    TL.view.ui.add(window.legendToggle?legendToggle(mapLegend(),{maxHeight:'40vh'}):mapLegend(),'bottom-left');
     TL.view.whenLayerView(TL.layer).then(lv=>{ TL.lv=lv; tlFrame();
       if(TLC.fit){ const bb=C.map.bbox||[-75,-35,-28,7]; const pts=D.filter(r=>r._x!=null&&r._x>bb[0]&&r._x<bb[2]&&r._y>bb[1]&&r._y<bb[3]); if(pts.length){ let x0=180,y0=90,x1=-180,y1=-90; pts.forEach(r=>{x0=Math.min(x0,r._x);x1=Math.max(x1,r._x);y0=Math.min(y0,r._y);y1=Math.max(y1,r._y);}); TL.view.goTo(new Extent({xmin:x0,ymin:y0,xmax:x1,ymax:y1,spatialReference:{wkid:4326}}).expand(1.3),{animate:false}).catch(()=>{}); } } });
     TL.chart=echarts.init(document.getElementById('tlChart'));
