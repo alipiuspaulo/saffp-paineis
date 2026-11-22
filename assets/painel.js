@@ -466,6 +466,7 @@ function initMap(){ return new Promise(res=>{
     view=new MapView({container:'map',map:m,center:[-52,-14.5],zoom:4,constraints:{snapToZoom:false},ui:{components:['zoom','attribution']},popup:Object.assign({dockEnabled:false,dockOptions:{buttonEnabled:false}},C.map.photoBubble?{alignment:'bottom-center'}:{})});
     if(C.map.photoBubble) require(['esri/core/reactiveUtils'],ru=>{
       ru.watch(()=>view.popup&&view.popup.visible?view.popup.selectedFeature:null,f=>{ if(f&&f.layer===ptLayer) showBubble(f.attributes._oid,f.geometry); });
+      ru.watch(()=>!!(view.popup&&view.popup.visible),v=>{ if(!v) hideBubble(); }); // fechar as informações fecha também o balão de fotos
       ru.watch(()=>[view.extent,view.width,view.height],()=>placeBubble()); });
     view.navigation.mouseWheelZoomEnabled=false;
     view.on('click',()=>{view.navigation.mouseWheelZoomEnabled=true;});
