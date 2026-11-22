@@ -1,0 +1,202 @@
+<!doctype html>
+<html lang="pt-BR" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Acidentes Ferroviários — protótipo interativo</title>
+<link rel="stylesheet" href="https://js.arcgis.com/4.30/esri/themes/light/main.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#F1F4F9;--card:#FFFFFF;--ink:#14213D;--muted:#5B6678;--line:#E2E7EF;--soft:#F5F7FB;--accent:#1C5FAD;--accent-soft:#DCE7F5;--gold:#F2B705;
+  --grave:#C2410C;--nao:#1C5FAD;--good:#1E8E4E;--bad:#C2410C;--shadow:0 1px 2px rgba(16,24,40,.06),0 4px 14px rgba(16,24,40,.06);--r:14px}
+:root[data-theme="dark"]{--bg:#0A1222;--card:#111B2E;--ink:#E8EDF5;--muted:#93A0B5;--line:#22304A;--soft:#17233A;--accent:#6AA5EA;--accent-soft:#1B2E4D;--gold:#F2C230;
+  --grave:#F47B45;--nao:#6AA5EA;--good:#4CC68A;--bad:#F47B45;--shadow:0 1px 2px rgba(0,0,0,.4),0 6px 18px rgba(0,0,0,.35)}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.45 Inter,system-ui,Segoe UI,Arial,sans-serif;transition:background .35s,color .35s}
+button,select{font:inherit;color:inherit}
+header{background:linear-gradient(90deg,#0A2A5E 0%,#1C5FAD 52%,#F2B705 100%);color:#fff;padding:14px 22px;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+header h1{margin:0;font-size:20px;font-weight:800;letter-spacing:-.01em}
+header .sub{font-size:12.5px;opacity:.88}
+.badge{background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.35);border-radius:999px;padding:2px 10px;font-size:11.5px;font-weight:600}
+.hbtns{margin-left:auto;display:flex;gap:8px;flex-wrap:wrap}
+.hb{background:rgba(10,42,94,.55);border:1px solid rgba(255,255,255,.35);color:#fff;border-radius:10px;padding:7px 12px;cursor:pointer;font-weight:600;display:flex;gap:6px;align-items:center;transition:background .2s,transform .15s}
+.hb:hover{background:rgba(10,42,94,.8);transform:translateY(-1px)}
+.hb.gold{background:#F2B705;color:#14213D;border-color:#F2B705}.hb.gold:hover{background:#FFC933}
+main{padding:16px 22px 40px;max-width:1600px;margin:0 auto}
+.fbar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:14px}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.chip{border:1px solid var(--line);background:var(--card);border-radius:999px;padding:5px 12px;cursor:pointer;font-weight:500;transition:all .2s}
+.chip:hover{border-color:var(--accent)}
+.chip.on{background:var(--accent);border-color:var(--accent);color:#fff}
+.sel{border:1px solid var(--line);background:var(--card);border-radius:10px;padding:6px 10px}
+.lbl{font-size:12px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.04em}
+.pills{display:flex;gap:6px;flex-wrap:wrap;min-height:30px;align-items:center;margin:-4px 0 10px}
+.pill{background:var(--accent-soft);color:var(--ink);border-radius:999px;padding:3px 6px 3px 11px;font-size:12.5px;display:flex;align-items:center;gap:6px;animation:pop .25s ease}
+.pill b{font-weight:700}.pill button{border:0;background:rgba(0,0,0,.08);border-radius:50%;width:18px;height:18px;cursor:pointer;line-height:18px;padding:0}
+.pill.clear{background:transparent;border:1px dashed var(--line);cursor:pointer;padding:3px 11px}
+@keyframes pop{from{transform:scale(.85);opacity:0}to{transform:none;opacity:1}}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:14px}
+.kpi{background:var(--card);border-radius:var(--r);box-shadow:var(--shadow);padding:14px 16px 10px;position:relative;overflow:hidden;transition:background .35s}
+.kpi .t{font-size:12.5px;color:var(--muted);font-weight:600}
+.kpi .v{font-size:30px;font-weight:800;letter-spacing:-.02em;margin-top:2px;font-variant-numeric:tabular-nums}
+.kpi .d{font-size:12px;color:var(--muted);display:flex;gap:6px;align-items:center}
+.kpi .d .up{color:var(--bad);font-weight:700}.kpi .d .dn{color:var(--good);font-weight:700}
+.kpi svg.spark{position:absolute;right:10px;top:14px;width:42%;height:48px;overflow:visible}
+.kpi::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--kc,var(--accent))}
+.grid{display:grid;grid-template-columns:repeat(12,1fr);grid-auto-rows:300px;grid-auto-flow:dense;gap:14px}
+.card{background:var(--card);border-radius:var(--r);box-shadow:var(--shadow);display:flex;flex-direction:column;min-width:0;min-height:0;position:relative;transition:background .35s,box-shadow .3s,opacity .3s,outline-color .3s;outline:3px solid transparent;outline-offset:2px}
+.card[data-span="8"]{grid-column:span 8}.card[data-span="6"]{grid-column:span 6}.card[data-span="4"]{grid-column:span 4}.card[data-span="12"]{grid-column:span 12}
+.card[data-rows="2"]{grid-row:span 2}
+.card.hidden{display:none}
+.card.dragging{opacity:.4}
+.card.drop-before{box-shadow:-4px 0 0 var(--gold),var(--shadow)}.card.drop-after{box-shadow:4px 0 0 var(--gold),var(--shadow)}
+.ch{display:flex;align-items:center;gap:8px;padding:11px 12px 4px 14px}
+.ch h3{margin:0;font-size:14px;font-weight:700;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ch .hint{font-size:11.5px;color:var(--muted);font-weight:500}
+.ic{border:0;background:transparent;cursor:pointer;color:var(--muted);border-radius:8px;width:28px;height:28px;display:grid;place-items:center;transition:background .2s,color .2s}
+.ic:hover{background:var(--soft);color:var(--ink)}
+.handle{cursor:grab}
+.cb{flex:1;min-height:0;position:relative}
+.chart{position:absolute;inset:0}
+.seg{display:flex;border:1px solid var(--line);border-radius:9px;overflow:hidden}
+.seg button{border:0;background:transparent;padding:4px 10px;cursor:pointer;font-size:12.5px;font-weight:600;color:var(--muted)}
+.seg button.on{background:var(--accent);color:#fff}
+.tgl{display:flex;align-items:center;gap:6px;font-size:12.5px;color:var(--muted);cursor:pointer;user-select:none;font-weight:500}
+.tgl input{accent-color:var(--accent)}
+#mapv{position:absolute;inset:0;border-radius:0 0 var(--r) var(--r);overflow:hidden}
+.esri-view .esri-view-surface--inset-outline:focus::after{outline:none!important}
+[data-theme="dark"] .esri-widget--button,[data-theme="dark"] .esri-widget{background:#111B2E;color:#E8EDF5}
+[data-theme="dark"] .esri-widget--button:hover{background:#17233A}
+[data-theme="dark"] .esri-attribution{background:rgba(10,18,34,.7);color:#93A0B5}
+.hov{position:absolute;pointer-events:none;background:var(--card);color:var(--ink);border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow);padding:10px 12px;font-size:12.5px;max-width:280px;z-index:5;opacity:0;transform:translateY(4px);transition:opacity .15s,transform .15s}
+.hov.on{opacity:1;transform:none}
+.hov .tt{font-weight:700;font-size:13px;margin-bottom:3px}
+.tag{display:inline-block;border-radius:6px;padding:1px 7px;font-size:11px;font-weight:700;color:#fff}
+.mlab{position:absolute;left:14px;bottom:14px;z-index:4;background:rgba(10,18,34,.78);color:#fff;border-radius:12px;padding:8px 14px;font-weight:800;font-size:26px;letter-spacing:-.01em;opacity:0;transition:opacity .3s;pointer-events:none}
+.mlab small{display:block;font-size:12px;font-weight:600;opacity:.8}
+.mlab.on{opacity:1}
+.drawer{position:fixed;top:0;right:0;bottom:0;width:min(380px,92vw);background:var(--card);box-shadow:-8px 0 30px rgba(0,0,0,.18);z-index:50;transform:translateX(105%);transition:transform .3s cubic-bezier(.2,.8,.2,1);display:flex;flex-direction:column}
+.drawer.on{transform:none}
+.drawer .dh{padding:18px 18px 10px;border-bottom:1px solid var(--line);display:flex;gap:10px;align-items:flex-start}
+.drawer .dh h3{margin:0;font-size:17px;flex:1}
+.drawer .db{padding:10px 18px 24px;overflow:auto}
+.drawer dl{display:grid;grid-template-columns:120px 1fr;gap:8px 10px;margin:0}
+.drawer dt{color:var(--muted);font-size:12.5px}.drawer dd{margin:0;font-weight:600}
+.pop{position:fixed;z-index:60;background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);padding:14px;width:300px;display:none}
+.pop.on{display:block;animation:pop .2s ease}
+.pop h4{margin:0 0 8px;font-size:14px}
+.pop label{display:flex;gap:8px;align-items:center;padding:5px 0;cursor:pointer}
+.pop .note{font-size:12px;color:var(--muted);margin-top:8px}
+.pop .row{display:flex;gap:8px;margin-top:10px}
+.btn{border:1px solid var(--line);background:var(--soft);border-radius:9px;padding:6px 12px;cursor:pointer;font-weight:600}
+.btn.pri{background:var(--accent);border-color:var(--accent);color:#fff}
+.tour{position:fixed;left:50%;bottom:22px;transform:translate(-50%,30px);opacity:0;pointer-events:none;z-index:70;background:var(--card);border-radius:16px;box-shadow:0 12px 40px rgba(0,0,0,.28);padding:16px 18px;width:min(520px,92vw);transition:all .35s cubic-bezier(.2,.8,.2,1);border-top:4px solid var(--gold)}
+.tour.on{transform:translate(-50%,0);opacity:1;pointer-events:auto}
+.tour .st{font-size:11.5px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+.tour h4{margin:2px 0 6px;font-size:17px}
+.tour p{margin:0 0 12px;color:var(--ink)}
+.tour .row{display:flex;gap:8px;justify-content:flex-end;align-items:center}
+.tour .dots{margin-right:auto;display:flex;gap:5px}.tour .dots i{width:7px;height:7px;border-radius:50%;background:var(--line)}.tour .dots i.on{background:var(--gold)}
+body.touring .card,body.touring .kpis{opacity:.45}
+body.touring .spot{opacity:1!important;outline-color:var(--gold)}
+.toast{position:fixed;left:50%;top:18px;transform:translate(-50%,-20px);opacity:0;background:#14213D;color:#fff;padding:9px 16px;border-radius:10px;z-index:90;transition:all .3s;font-weight:600}
+.toast.on{opacity:1;transform:translate(-50%,0)}
+.skel{position:absolute;inset:12px;border-radius:10px;background:linear-gradient(90deg,var(--soft) 0%,var(--line) 50%,var(--soft) 100%);background-size:200% 100%;animation:sh 1.2s infinite}
+@keyframes sh{from{background-position:200% 0}to{background-position:-200% 0}}
+.loaded .skel{display:none}
+.kpi .skel{inset:10px}
+.period{font-size:12.5px;color:var(--muted);font-weight:600}
+.playb{background:var(--gold);color:#14213D;border:0;border-radius:9px;padding:5px 12px;font-weight:700;cursor:pointer;display:flex;gap:6px;align-items:center}
+footer{color:var(--muted);font-size:12px;text-align:center;margin-top:20px}
+footer a{color:var(--accent)}
+@media (max-width:1000px){
+  .kpis{grid-template-columns:repeat(2,1fr)}
+  .grid{grid-template-columns:1fr;grid-auto-rows:300px}
+  .card[data-span]{grid-column:span 1!important}
+  main{padding:12px 16px 30px}
+  header{padding:12px 16px}
+}
+@media (max-width:560px){.kpis{grid-template-columns:1fr}.kpi svg.spark{width:38%}}
+</style>
+</head>
+<body>
+<header>
+  <div>
+    <h1>Acidentes Ferroviários</h1>
+    <div class="sub">Ocorrências comunicadas pelas concessionárias · <span class="badge">Protótipo para avaliação</span></div>
+  </div>
+  <div class="hbtns">
+    <button class="hb gold" id="bTour" title="Passeio guiado pelos dados">▶ Apresentar</button>
+    <button class="hb" id="bCustom" title="Escolher e organizar os blocos">⚙ Personalizar</button>
+    <button class="hb" id="bShare" title="Copiar link desta visão">🔗 Compartilhar visão</button>
+    <button class="hb" id="bTheme" title="Alternar modo claro/escuro">☾ Escuro</button>
+  </div>
+</header>
+<main>
+  <div class="fbar">
+    <span class="lbl">Região</span><div class="chips" id="fReg"></div>
+    <span class="lbl" style="margin-left:8px">UF</span><select class="sel" id="fUF"></select>
+    <span class="lbl" style="margin-left:8px">Ferrovia</span><select class="sel" id="fFer"></select>
+  </div>
+  <div class="pills" id="pills"></div>
+
+  <section class="kpis" id="kpis" data-card="kpis"></section>
+
+  <section class="grid" id="grid">
+    <div class="card" data-card="map" data-span="8" data-rows="2" data-def-span="8">
+      <div class="ch">
+        <span class="ic handle" title="Arraste para reorganizar">⠿</span>
+        <h3>Mapa das ocorrências <span class="hint">· passe o mouse nos pontos</span></h3>
+        <label class="tgl" title="Números e gráficos contam só o que aparece no mapa"><input type="checkbox" id="tExt"> Só a área visível</label>
+        <div class="seg" id="segMode"><button data-m="pts" class="on">Pontos</button><button data-m="heat">Calor</button></div>
+        <button class="ic wide" title="Largura total">↔</button>
+      </div>
+      <div class="cb"><div id="mapv"></div><div class="skel"></div><div class="hov" id="hov"></div><div class="mlab" id="mlab"></div></div>
+    </div>
+    <div class="card" data-card="ferrovia" data-span="4" data-def-span="4">
+      <div class="ch"><span class="ic handle" title="Arraste para reorganizar">⠿</span><h3>Por ferrovia</h3><span class="hint">clique para filtrar</span><button class="ic wide" title="Largura total">↔</button></div>
+      <div class="cb"><div class="chart" id="cFer"></div><div class="skel"></div></div>
+    </div>
+    <div class="card" data-card="gravidade" data-span="4" data-def-span="4">
+      <div class="ch"><span class="ic handle" title="Arraste para reorganizar">⠿</span><h3>Gravidade</h3><button class="ic wide" title="Largura total">↔</button></div>
+      <div class="cb"><div class="chart" id="cGrave"></div><div class="skel"></div></div>
+    </div>
+    <div class="card" data-card="timeline" data-span="12" data-def-span="12">
+      <div class="ch">
+        <span class="ic handle" title="Arraste para reorganizar">⠿</span>
+        <h3>Linha do tempo <span class="hint">· arraste as alças para escolher o período</span></h3>
+        <span class="period" id="period"></span>
+        <select class="sel" id="speed" title="Velocidade"><option value="700">0,5×</option><option value="350" selected>1×</option><option value="150">2×</option></select>
+        <button class="playb" id="bPlay">▶ Reproduzir</button>
+        <button class="ic wide" title="Largura total">↔</button>
+      </div>
+      <div class="cb"><div class="chart" id="cTime"></div><div class="skel"></div></div>
+    </div>
+    <div class="card" data-card="natureza" data-span="6" data-def-span="6">
+      <div class="ch"><span class="ic handle" title="Arraste para reorganizar">⠿</span><h3>Natureza do acidente</h3><span class="hint">clique para filtrar</span><button class="ic wide" title="Largura total">↔</button></div>
+      <div class="cb"><div class="chart" id="cNat"></div><div class="skel"></div></div>
+    </div>
+    <div class="card" data-card="causa" data-span="6" data-def-span="6">
+      <div class="ch"><span class="ic handle" title="Arraste para reorganizar">⠿</span><h3>Causa direta</h3><span class="hint">clique para filtrar</span><button class="ic wide" title="Largura total">↔</button></div>
+      <div class="cb"><div class="chart" id="cCausa"></div><div class="skel"></div></div>
+    </div>
+  </section>
+  <footer>Protótipo de interatividade — dados de demonstração da camada <i>Acidentes Ferroviários</i>. <a href="../../acidentes/" target="_blank" rel="noopener">Ver painel atual</a></footer>
+</main>
+
+<aside class="drawer" id="drawer"><div class="dh"><h3 id="dTitle"></h3><button class="ic" id="dClose" title="Fechar">✕</button></div><div class="db" id="dBody"></div></aside>
+<div class="pop" id="pCustom">
+  <h4>Personalizar painel</h4>
+  <div id="pList"></div>
+  <div class="note">Arraste os blocos pela alça ⠿ para mudar a ordem e use ↔ para alternar a largura. Suas escolhas ficam salvas neste navegador.</div>
+  <div class="row"><button class="btn" id="pReset">Restaurar padrão</button><button class="btn pri" id="pOk">Pronto</button></div>
+</div>
+<div class="tour" id="tour"><div class="st" id="tStep"></div><h4 id="tTitle"></h4><p id="tText"></p><div class="row"><div class="dots" id="tDots"></div><button class="btn" id="tExit">Sair</button><button class="btn pri" id="tNext">Próximo</button></div></div>
+<div class="toast" id="toast"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/5.5.0/echarts.min.js"></script>
+<script src="https://js.arcgis.com/4.30/"></script>
+<script src="app.js?v=1"></script>
+</body>
+</html>
