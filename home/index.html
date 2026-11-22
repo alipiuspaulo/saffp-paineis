@@ -120,6 +120,7 @@ a{color:var(--blue)}
 .pano-h{display:flex;align-items:center;gap:10px;padding:12px 14px 8px;flex-wrap:wrap}
 .pano-h h3{margin:0;font-size:14.5px;color:var(--navy);flex:1;min-width:180px}
 .pano-h .hint{font-size:12px;color:var(--muted)}
+.bsel{font:inherit;font-size:12px;padding:4px 24px 4px 8px;border:1px solid var(--line);border-radius:8px;background:#fff;color:var(--ink)}
 .lchips{display:flex;gap:6px;flex-wrap:wrap;padding:0 14px 10px}
 .lchip{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);background:#fff;border-radius:999px;padding:4px 10px 4px 8px;font:600 12px inherit;font-family:inherit;color:var(--ink);cursor:pointer;transition:all .18s}
 .lchip i{width:10px;height:10px;border-radius:50%;background:var(--c);box-shadow:0 0 0 2px #fff,0 0 0 3px var(--c)}
@@ -278,7 +279,8 @@ body{padding-bottom:84px}
     </div>
     <div class="show">
       <div class="pano">
-        <div class="pano-h"><h3>Onde os painéis atuam</h3><span class="hint">passe o mouse em um cartão ou em um ponto · clique para abrir</span></div>
+        <div class="pano-h"><h3>Onde os painéis atuam</h3><label class="hint" for="pBase">Mapa base</label><select id="pBase" class="bsel"><option value="gray-vector" selected>Cinza claro</option><option value="dark-gray-vector">Cinza escuro</option><option value="streets-vector">Ruas</option><option value="topo-vector">Topográfico</option><option value="hybrid">Imagem de satélite</option><option value="osm">OpenStreetMap</option></select>
+          <span class="hint" style="flex-basis:100%">passe o mouse em um cartão ou em um ponto · clique para abrir</span></div>
         <div class="lchips" id="lchips"></div>
         <div id="pmap"><button class="reset" id="reset" type="button">↺ Ver todos</button><div class="mtip" id="mtip"></div></div>
       </div>
@@ -327,6 +329,6 @@ body{padding-bottom:84px}
 </div>
 
 <script src="https://js.arcgis.com/4.30/"></script>
-<script src="app.js?v=1"></script>
+<script src="app.js?v=2"></script>
 </body>
 </html>

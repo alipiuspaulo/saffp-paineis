@@ -152,7 +152,7 @@ require(['esri/Map','esri/views/MapView','esri/layers/FeatureLayer'],(EMap,MapVi
     return new FeatureLayer({url:SVC+L.u,title:p.t,outFields:L.fields,minScale:0,maxScale:0,renderer:{type:'simple',symbol:sym},popupEnabled:true,
       popupTemplate:{title:f=>esc(L.title(f.graphic.attributes)),content:f=>`<div style="font-size:13px">${esc(L.sub(f.graphic.attributes))}</div><p style="margin:10px 0 0"><a href="${p.url}" target="_blank" rel="noopener" style="display:inline-block;background:#0A2A5E;color:#fff;padding:7px 12px;border-radius:7px;text-decoration:none;font-weight:600">Abrir ${esc(p.t)} ↗</a></p>`}}); };
   ord.map(id=>P.find(p=>p.id===id)).reverse().forEach(p=>{ LY[p.id]=make(p); });
-  const map=new EMap({basemap:'gray-vector',layers:ord.map(id=>LY[id])});
+  const bsel=$('#pBase'); const map=new EMap({basemap:bsel.value,layers:ord.map(id=>LY[id])}); bsel.onchange=e=>{ map.basemap=e.target.value; };
   VIEW=new MapView({container:'pmap',map,center:[-52,-15],zoom:3.6,constraints:{minZoom:3,snapToZoom:false},ui:{components:['zoom','attribution']},
     highlightOptions:{color:[242,183,5,1],haloOpacity:.6,fillOpacity:.1},popup:{dockEnabled:false,dockOptions:{buttonEnabled:false}}});
   VIEW.navigation.mouseWheelZoomEnabled=false;

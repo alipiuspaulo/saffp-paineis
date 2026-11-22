@@ -96,7 +96,8 @@ ${C.timelapse?`<div class="tabs" role="tablist" aria-label="Seções do painel">
   ${C.timelapse?`<section class="tlpane">
     <div class="tl-grid">
       <div class="card tl-mapcard">
-        <div class="card-h"><h2>${esc(C.timelapse.mapTitle||'Linha do tempo dos acidentes')}</h2><span class="sp"></span><span class="hint">${esc(C.timelapse.note||'')}</span></div>
+        <div class="card-h"><h2>${esc(C.timelapse.mapTitle||'Linha do tempo dos acidentes')}</h2><span class="sp"></span><span class="hint">${esc(C.timelapse.note||'')}</span>
+          <label class="hint" for="tlBase">Mapa base</label><select id="tlBase" class="mapsel"><option value="gray-vector">Cinza claro</option><option value="dark-gray-vector" selected>Cinza escuro</option><option value="streets-vector">Ruas</option><option value="topo-vector">Topográfico</option><option value="hybrid">Imagem de satélite</option><option value="osm">OpenStreetMap</option></select></div>
         <div class="tl-ctrl">
           <button id="tlPlay" class="tl-play" aria-label="Pausar">❚❚</button>
           <input type="range" id="tlRange" min="0" max="0" value="0" aria-label="Mês exibido">
@@ -469,7 +470,7 @@ function initTL(){ if(TL.ready||!window.__ESRI) return; TL.ready=true;
       orderBy:[{field:'_ord',order:'ascending'}],renderer:pointRenderer(.85),popupTemplate:popupTpl()});
     TL.alertLayer=new GraphicsLayer({title:'Alertas',listMode:'hide'});
     const extra=(C.map.extraLayers||[]).map(u=>new FeatureLayer(Object.assign({popupEnabled:false},u)));
-    const m=new EMap({basemap:'dark-gray-vector',layers:[...extra,TL.layer,TL.alertLayer]});
+    const tsel=document.getElementById('tlBase'); const m=new EMap({basemap:tsel.value,layers:[...extra,TL.layer,TL.alertLayer]}); tsel.onchange=e=>{ m.basemap=e.target.value; };
     TL.view=new MapView({container:'tlMap',map:m,center:[-50,-17],zoom:4,constraints:{snapToZoom:false},ui:{components:['zoom','attribution']},popup:{dockEnabled:false,dockOptions:{buttonEnabled:false}}});
     TL.view.navigation.mouseWheelZoomEnabled=false;
     TL.view.on('click',()=>{TL.view.navigation.mouseWheelZoomEnabled=true;});
