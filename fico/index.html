@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Fiscalização FICO</title>
 <link rel="stylesheet" href="https://js.arcgis.com/4.30/esri/themes/light/main.css">
-<link rel="stylesheet" href="../assets/painel.css?v=20261122a">
+<link rel="stylesheet" href="../assets/painel.css?v=20261122d">
 <link rel="stylesheet" href="../assets/interativo.css?v=6">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/5.5.0/echarts.min.js"></script>
 <script src="https://js.arcgis.com/4.30/"></script>
@@ -80,15 +80,14 @@ window.PAINEL={
     {slot:'right',type:'hbar',title:'Itens inspecionados',field:'ITEM',top:12,height:520,labelWidth:190},
     {slot:'bottom',type:'donut',title:'Levantamentos por fiscal',field:'FISCAL',centerLabel:'levantamentos'}
   ],
-  map:{title:'Mapa da fiscalização',colorBy:'ICONE',colors:ITEM_COR,icons:ITEM_ICON,legendTitle:'Item inspecionado',legendMax:11,size:11,basemap:'hybrid',bbox:[-53.8,-15.2,-48.6,-12.2], // enquadra a obra (ignora pontos fora do traçado)
+  map:{title:'Mapa da fiscalização',photoBubble:true,colorBy:'ICONE',colors:ITEM_COR,icons:ITEM_ICON,legendTitle:'Item inspecionado',legendMax:11,size:11,basemap:'hybrid',bbox:[-53.8,-15.2,-48.6,-12.2], // enquadra a obra (ignora pontos fora do traçado)
    
     layerTitle:'Levantamentos de fiscalização',heatmap:true,extraLayers:FICO_LAYERS,
     popupTitle:r=>`${r.PACOTE} — ${r.ITEM}`,
     popup:(r,att)=>`<b>Data da visita:</b> ${r.DATA} às ${r.hora_de_in_cio_da_fiscaliza_o||'—'}<br><b>Fiscal:</b> ${r.FISCAL}<br><b>Empresa:</b> ${r.empresa_respons_vel_pela_obra}<br><b>Conforme o projeto:</b> ${r.a_obra_est_conforme_o_projeto}<br><b>Riscos a trabalhadores:</b> ${r.h_riscos_para_trabalhadores_ou}<br><b>Passivo ambiental:</b> ${r.h_algum_passivo_ambiental}${r.qual_passivo?' ('+r.qual_passivo+')':''}`
       +(r.recomenda_es_ou_medidas_a_serem?`<br><b>Recomendações:</b> ${r.recomenda_es_ou_medidas_a_serem}`:'')
-      +att.slice(0,3).map(a=>`<a href="${a.url}" target="_blank" rel="noopener"><img src="${a.url}" style="width:100%;border-radius:6px;margin-top:8px" alt="Foto do levantamento"></a>`).join('')
-      +(att.length>3?`<br><i>+ ${att.length-3} fotos na galeria abaixo</i>`:'')},
-  gallery:{title:'Registros fotográficos das fiscalizações',kicker:'Fiscalização FICO',
+      +(att.length?`<br><span style="color:#6A7486">📷 ${att.length===1?'1 foto':att.length+' fotos'} no balão acima do ponto</span>`:'')},
+  gallery:{title:'Registros fotográficos das fiscalizações',collapsed:true,clickZoom:true,kicker:'Fiscalização FICO',
     tags:[{label:'Com risco',test:r=>r.h_riscos_para_trabalhadores_ou==='Sim'},{label:'Passivo ambiental',test:r=>r.h_algum_passivo_ambiental==='Sim'},{label:'Não conforme ao projeto',test:r=>r.a_obra_est_conforme_o_projeto==='Não'}],
     info:r=>[['Data da visita',`${r.DATA}${r.hora_de_in_cio_da_fiscaliza_o?' às '+r.hora_de_in_cio_da_fiscaliza_o:''}`],['Pacote',r.PACOTE],['Item inspecionado',r.ITEM],['Fiscal',r.FISCAL],
       ['Empresa',r.empresa_respons_vel_pela_obra],['Obra conforme o projeto',r.a_obra_est_conforme_o_projeto],['Riscos a trabalhadores',r.h_riscos_para_trabalhadores_ou],
@@ -108,7 +107,7 @@ window.PAINEL={
 };
 </script>
 <script src="../assets/legenda.js?v=1"></script>
-<script src="../assets/painel.js?v=20261122c"></script>
+<script src="../assets/painel.js?v=20261122d"></script>
 <script src="../assets/interativo.js?v=6"></script>
 <script src="../assets/aviso.js?v=1"></script>
 </body>

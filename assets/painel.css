@@ -230,3 +230,48 @@ tr:hover td{background:#F7F9FC}
 .ah .pv:hover{background:var(--btnh,var(--ps))}
 .newdata button{background:var(--btn,#C2410C);color:var(--btnt,#fff)}
 .top .pill.btn-home{background:var(--btn,transparent);border-color:var(--btn,rgba(255,255,255,.35));color:var(--btnt,#E4EAF4);font-weight:600}
+
+/* caixa que abre os registros fotográficos */
+.gal-col{overflow:hidden}
+.galbox{display:flex;align-items:center;gap:16px;width:100%;border:0;cursor:pointer;text-align:left;padding:16px 20px;color:#fff;font:inherit;
+  background:linear-gradient(100deg,var(--pd) 0%,var(--p) 70%,#2BAF6A 100%);position:relative;transition:filter .2s}
+.galbox:hover{filter:brightness(1.08)}
+.galbox:focus-visible{outline:3px solid var(--yellow);outline-offset:-3px}
+.galbox::after{content:"";position:absolute;left:0;right:0;bottom:0;height:4px;background:var(--yellow)}
+.gb-ic{width:52px;height:52px;border-radius:14px;background:rgba(255,255,255,.16);display:grid;place-items:center;flex:none;box-shadow:inset 0 0 0 2px rgba(255,255,255,.35)}
+.gb-ic svg{width:28px;height:28px}
+.gb-tx{display:flex;flex-direction:column;gap:2px;min-width:0}
+.gb-tx b{font-size:17px}
+.gb-tx span{font-size:13px;opacity:.9}
+.gb-strip{display:flex;margin-left:auto;flex:none;padding-left:14px}
+.gb-strip img{width:64px;height:48px;object-fit:cover;border-radius:8px;border:2px solid #fff;margin-left:-14px;box-shadow:0 3px 10px rgba(0,0,0,.3);transition:transform .2s}
+.galbox:hover .gb-strip img:nth-child(2){transform:translateY(-3px) rotate(-3deg)}
+.galbox:hover .gb-strip img:nth-child(3){transform:translateY(-5px) rotate(2deg)}
+.gb-cta{flex:none;background:var(--yellow);color:#14213D;font-weight:800;font-size:14px;border-radius:10px;padding:10px 16px;box-shadow:0 3px 10px rgba(0,0,0,.2)}
+.galbox.open .gb-cta{background:#fff}
+@media (max-width:760px){.gb-strip{display:none}.galbox{flex-wrap:wrap}.gb-cta{margin-left:auto}}
+.phz{position:absolute;right:8px;bottom:8px;z-index:2;width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,.92);display:grid;place-items:center;font-size:16px;box-shadow:0 2px 8px rgba(0,0,0,.3);cursor:zoom-in;transition:transform .15s}
+.phz:hover{transform:scale(1.1)}
+.gallery .ph{cursor:pointer}
+.gallery .ph .cap{padding-right:50px}
+/* balão suspenso com a foto sobre o ponto do mapa */
+.pbub{position:absolute;z-index:30;width:270px;opacity:0;transform:translateY(8px) scale(.96);transform-origin:var(--tail,50%) 100%;transition:opacity .18s,transform .18s;pointer-events:none}
+.pbub.on{opacity:1;transform:none;pointer-events:auto}
+.pb-in{position:relative;background:var(--card);border-radius:12px;box-shadow:0 12px 34px rgba(10,20,40,.35);overflow:hidden;border:1px solid var(--line)}
+.pb-img{position:relative;aspect-ratio:4/3;background:#0b1a33}
+.pb-img img{width:100%;height:100%;object-fit:cover;display:block;cursor:zoom-in}
+.pb-nav{position:absolute;top:50%;transform:translateY(-50%);border:0;background:rgba(0,0,0,.45);color:#fff;width:30px;height:42px;font-size:22px;border-radius:8px;cursor:pointer}
+.pb-nav:hover{background:rgba(242,183,5,.9);color:#14213D}
+.pb-nav.pv{left:6px}.pb-nav.nx{right:6px}
+.pb-n{position:absolute;left:8px;top:8px;background:rgba(0,0,0,.55);color:#fff;font-size:11px;font-weight:700;border-radius:999px;padding:2px 8px}
+.pb-x{position:absolute;right:6px;top:6px;z-index:2;border:0;width:28px;height:28px;border-radius:50%;background:rgba(255,255,255,.92);color:#14213D;font-size:18px;line-height:1;cursor:pointer;box-shadow:0 2px 6px rgba(0,0,0,.3)}
+.pb-cap{padding:8px 12px 2px;display:flex;flex-direction:column;gap:1px}
+.pb-cap b{font-size:13px;color:var(--ink)}
+.pb-cap span{font-size:11.5px;color:var(--muted)}
+.pb-acts{display:flex;align-items:center;gap:8px;padding:6px 12px 10px}
+.pb-zoom{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:8px;padding:5px 10px;font-size:12px;font-weight:600;cursor:pointer}
+.pb-zoom:hover{border-color:var(--p);color:var(--p)}
+.pb-dots{display:flex;gap:5px;margin-left:auto}
+.pb-dots i{width:8px;height:8px;border-radius:50%;background:var(--line);cursor:pointer}
+.pb-dots i.on{background:var(--yellow)}
+.pb-tail{position:absolute;left:var(--tail,50%);bottom:-9px;width:18px;height:18px;margin-left:-9px;background:var(--card);transform:rotate(45deg);border-right:1px solid var(--line);border-bottom:1px solid var(--line);box-shadow:4px 4px 8px rgba(10,20,40,.12)}

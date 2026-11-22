@@ -89,10 +89,16 @@ ${C.timelapse?`<div class="tabs" role="tablist" aria-label="Seções do painel">
     </div>
     <div class="col" style="grid-template-rows:${(slots.right||[]).length>1?'auto 1fr':'1fr'}">${(slots.right||[]).map(cardChart).join('')}</div>
   </section>
-  ${C.gallery?`<section class="card ov" id="galCard"><div class="card-h gal-h"><h2>${esc(C.gallery.title)}</h2><span class="hint" id="galCount"></span><span class="sp"></span>
+  ${C.gallery?`<section class="card ov ${C.gallery.collapsed?'gal-col':''}" id="galCard">
+    ${C.gallery.collapsed?`<button class="galbox" id="galToggle" type="button" aria-expanded="false" aria-controls="galBody">
+      <span class="gb-ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg></span>
+      <span class="gb-tx"><b>${esc(C.gallery.title)}</b><span id="galBoxSub">Carregando fotos…</span></span>
+      <span class="gb-strip" id="galStrip" aria-hidden="true"></span><span class="gb-cta" id="galCta">Ver fotos ▾</span></button>`:''}
+    <div id="galBody" ${C.gallery.collapsed?'hidden':''}>
+    <div class="card-h gal-h">${C.gallery.collapsed?'':`<h2>${esc(C.gallery.title)}</h2>`}<span class="hint" id="galCount"></span><span class="sp"></span>
     ${(C.gallery.tags||[]).length?`<div class="seg" id="galTags"></div>`:''}
     <div class="gsize" id="galSize" role="group" aria-label="Tamanho das fotos"><button data-s="200">Compacto</button><button data-s="280" class="on">Médio</button><button data-s="400">Grande</button></div></div>
-    <div class="hint" style="padding:0 16px 6px">Clique na foto para abrir o visualizador, com navegação, ampliação e localização no mapa.</div><div class="gallery" id="gallery"></div></section>`:''}
+    <div class="hint" style="padding:0 16px 6px">${C.gallery.clickZoom?'Clique na foto para ver o local no mapa (a foto abre no balão sobre o ponto). Use 🔍 para ampliar no visualizador.':'Clique na foto para abrir o visualizador, com navegação, ampliação e localização no mapa.'}</div><div class="gallery" id="gallery"></div></div></section>`:''}
   ${C.timelapse?`<section class="tlpane">
     <div class="tl-grid">
       <div class="card tl-mapcard">
@@ -320,10 +326,21 @@ function renderGallery(f){
   const g=document.getElementById('gallery');
   g.innerHTML=GAL.length?GAL.map((x,i)=>{ const b=C.gallery.badge&&C.gallery.badge(x.r,x.a);
     return `<button class="ph" data-i="${i}" aria-label="Abrir foto ${i+1}"><img loading="lazy" decoding="async" src="${x.a.url}" alt="${esc(C.gallery.caption(x.r))}">
-      ${b?`<span class="badge">${esc(b)}</span>`:''}${x.n>1?`<span class="multi">${x.k}/${x.n}</span>`:''}<span class="cap"><b>${esc(C.gallery.caption(x.r))}</b>${esc(C.gallery.sub(x.r))}</span></button>`; }).join('')
+      ${b?`<span class="badge">${esc(b)}</span>`:''}${x.n>1?`<span class="multi">${x.k}/${x.n}</span>`:''}${C.gallery.clickZoom?`<span class="phz" role="button" tabindex="0" title="Ampliar no visualizador" data-z="${i}">🔍</span>`:''}<span class="cap"><b>${esc(C.gallery.caption(x.r))}</b>${esc(C.gallery.sub(x.r))}</span></button>`; }).join('')
     :'<div class="hint" style="padding:12px">Nenhuma foto para os filtros atuais.</div>';
-  g.querySelectorAll('.ph').forEach(b=>b.onclick=()=>openLB(+b.dataset.i));
+  g.querySelectorAll('.ph').forEach(b=>b.onclick=e=>{ const z=e.target.closest('.phz'); if(z){ e.stopPropagation(); openLB(+z.dataset.z); return; } if(C.gallery.clickZoom) photoToMap(+b.dataset.i); else openLB(+b.dataset.i); });
+  if(C.gallery.collapsed){ const nl=new Set(GALALL.map(x=>x.r._oid)).size;
+    document.getElementById('galBoxSub').textContent=GALALL.length?`${nf(GALALL.length)} fotos de ${nf(nl)} levantamentos · clique para ${document.getElementById('galBody').hidden?'abrir':'ocultar'}`:'Nenhuma foto para os filtros atuais';
+    document.getElementById('galStrip').innerHTML=GALALL.slice(0,4).map(x=>`<img loading="lazy" src="${x.a.url}" alt="">`).join(''); }
 }
+/* clicar numa foto da galeria aproxima o mapa no levantamento e mostra a foto no balão */
+function photoToMap(i){ const x=GAL[i]; if(!x) return; BUB.want={oid:x.r._oid,k:x.k-1}; focusOnMap(x.r._oid); }
+if(C.gallery&&C.gallery.collapsed) document.getElementById('galToggle').onclick=()=>{
+  const body=document.getElementById('galBody'), open=body.hidden; body.hidden=!open;
+  const t=document.getElementById('galToggle'); t.setAttribute('aria-expanded',open); t.classList.toggle('open',open);
+  document.getElementById('galCta').textContent=open?'Ocultar fotos ▴':'Ver fotos ▾';
+  const sub=document.getElementById('galBoxSub'); sub.textContent=sub.textContent.replace(/clique para (abrir|ocultar)/,'clique para '+(open?'ocultar':'abrir'));
+  if(open) setTimeout(()=>t.scrollIntoView({behavior:'smooth',block:'start'}),50); };
 document.querySelectorAll('#galSize button').forEach(b=>b.onclick=()=>{ document.querySelectorAll('#galSize button').forEach(x=>x.classList.toggle('on',x===b)); document.getElementById('gallery').style.setProperty('--ph',b.dataset.s+'px'); });
 const lb=document.getElementById('lb'), lbImg=document.getElementById('lbImg'), lbStage=document.getElementById('lbStage');
 const closeLB=()=>{ lb.classList.remove('on'); lbStage.classList.remove('zoom'); document.body.style.overflow=''; };
@@ -351,12 +368,38 @@ lb.onclick=e=>{ if(e.target===lb) closeLB(); };
 document.getElementById('lbMap').onclick=()=>{ const x=GAL[gi]; closeLB(); focusOnMap(x.r._oid); };
 document.addEventListener('keydown',e=>{ if(!lb.classList.contains('on')) return; if(e.key==='Escape') closeLB(); if(e.key==='ArrowLeft') openLB(gi-1); if(e.key==='ArrowRight') openLB(gi+1); });
 window.PAINEL_OPEN_PHOTO=(oid)=>{ const i=GAL.findIndex(x=>x.r._oid===oid); if(i>=0) openLB(i); };
+/* balão suspenso com as fotos do levantamento, preso ao ponto clicado no mapa */
+const BUB={el:null,oid:null,k:0,geom:null,want:null};
+function bubbleEl(){ if(BUB.el) return BUB.el; const d=document.createElement('div'); d.className='pbub'; d.setAttribute('role','dialog'); d.setAttribute('aria-label','Fotos do levantamento');
+  document.querySelector('.mapcard').appendChild(d); BUB.el=d; return d; }
+function showBubble(oid,geom){
+  const list=ATT[oid]||[]; if(!C.map.photoBubble||!list.length){ hideBubble(); return; }
+  BUB.k=BUB.want&&BUB.want.oid===oid?Math.min(BUB.want.k,list.length-1):(BUB.oid===oid?BUB.k:0); BUB.want=null; BUB.oid=oid; BUB.geom=geom;
+  drawBubble(); placeBubble(); requestAnimationFrame(()=>BUB.el.classList.add('on')); }
+function drawBubble(){
+  const d=bubbleEl(), list=ATT[BUB.oid]||[], a=list[BUB.k], r=BYOID[BUB.oid]; if(!a) return;
+  d.innerHTML=`<div class="pb-in"><button class="pb-x" type="button" aria-label="Fechar fotos">×</button>
+    <div class="pb-img"><img src="${a.url}" alt="${esc(C.gallery?C.gallery.caption(r):'Foto')}">${list.length>1?`<button class="pb-nav pv" type="button" aria-label="Foto anterior">‹</button><button class="pb-nav nx" type="button" aria-label="Próxima foto">›</button><span class="pb-n">${BUB.k+1} / ${list.length}</span>`:''}</div>
+    <div class="pb-cap"><b>${esc(C.gallery?C.gallery.caption(r):'')}</b><span>${esc(C.gallery?C.gallery.sub(r):'')}</span></div>
+    <div class="pb-acts"><button class="pb-zoom" type="button">🔍 Ampliar</button>${list.length>1?`<span class="pb-dots">${list.map((x,i)=>`<i class="${i===BUB.k?'on':''}" data-k="${i}"></i>`).join('')}</span>`:''}</div></div><i class="pb-tail"></i>`;
+  const img=d.querySelector('img'); img.onload=()=>placeBubble();
+  d.querySelector('.pb-x').onclick=()=>hideBubble(true);
+  d.querySelectorAll('.pb-nav').forEach(b=>b.onclick=()=>{ BUB.k=(BUB.k+(b.classList.contains('nx')?1:-1)+list.length)%list.length; drawBubble(); placeBubble(); });
+  d.querySelectorAll('.pb-dots i').forEach(i=>i.onclick=()=>{ BUB.k=+i.dataset.k; drawBubble(); placeBubble(); });
+  const zoom=()=>{ let i=GAL.findIndex(x=>x.r._oid===BUB.oid&&x.k===BUB.k+1); if(i<0){ galTag=null; renderGallery(rows()); i=GAL.findIndex(x=>x.r._oid===BUB.oid&&x.k===BUB.k+1); } if(i>=0) openLB(i); };
+  d.querySelector('.pb-zoom').onclick=zoom; img.onclick=zoom; }
+function placeBubble(){
+  const d=BUB.el; if(!d||!BUB.geom||!view) return; const p=view.toScreen(BUB.geom); const m=document.getElementById('map');
+  if(!p||p.x<0||p.y<0||p.x>view.width||p.y>view.height){ d.style.visibility='hidden'; return; } d.style.visibility='';
+  const w=d.offsetWidth, h=d.offsetHeight; const x=m.offsetLeft+p.x-w/2; const minX=m.offsetLeft+6, maxX=m.offsetLeft+view.width-w-6; const cx=Math.max(minX,Math.min(maxX,x));
+  d.style.left=cx+'px'; d.style.top=(m.offsetTop+p.y-h-16)+'px'; d.style.setProperty('--tail',(x-cx+w/2)+'px'); }
+function hideBubble(closePopup){ if(BUB.el) BUB.el.classList.remove('on'); BUB.oid=null; BUB.geom=null; if(closePopup&&view&&view.popup) view.closePopup(); }
 /* leva o mapa até o registro e abre o popup */
 function focusOnMap(oid){
   const r=BYOID[oid]; if(!r||r._x==null||!view) return;
   document.querySelector('.mapcard').scrollIntoView({behavior:'smooth',block:'center'});
   view.goTo({center:[r._x,r._y],zoom:16},{duration:900}).then(()=>ptLayer.queryFeatures({objectIds:[oid],returnGeometry:true,outFields:['*']}))
-    .then(fs=>{ if(fs.features.length) view.openPopup({features:fs.features,location:fs.features[0].geometry}); }).catch(()=>{});
+    .then(fs=>{ if(fs.features.length){ view.openPopup({features:fs.features,location:fs.features[0].geometry}); if(C.map.photoBubble) showBubble(oid,fs.features[0].geometry); } }).catch(()=>{});
 }
 
 /* ---------- mapa ---------- */
@@ -409,7 +452,10 @@ function initMap(){ return new Promise(res=>{
     layers.push(ptLayer);
     const sel=document.getElementById('baseSel');
     const m=new EMap({basemap:sel.value,layers});
-    view=new MapView({container:'map',map:m,center:[-52,-14.5],zoom:4,constraints:{snapToZoom:false},ui:{components:['zoom','attribution']},popup:{dockEnabled:false,dockOptions:{buttonEnabled:false}}});
+    view=new MapView({container:'map',map:m,center:[-52,-14.5],zoom:4,constraints:{snapToZoom:false},ui:{components:['zoom','attribution']},popup:Object.assign({dockEnabled:false,dockOptions:{buttonEnabled:false}},C.map.photoBubble?{alignment:'bottom-center'}:{})});
+    if(C.map.photoBubble) require(['esri/core/reactiveUtils'],ru=>{
+      ru.watch(()=>view.popup&&view.popup.visible?view.popup.selectedFeature:null,f=>{ if(f&&f.layer===ptLayer) showBubble(f.attributes._oid,f.geometry); else hideBubble(); });
+      ru.watch(()=>[view.extent,view.width,view.height],()=>placeBubble()); });
     view.navigation.mouseWheelZoomEnabled=false;
     view.on('click',()=>{view.navigation.mouseWheelZoomEnabled=true;});
     view.on('pointer-leave',()=>{view.navigation.mouseWheelZoomEnabled=false;});
