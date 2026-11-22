@@ -369,7 +369,7 @@ document.getElementById('lbMap').onclick=()=>{ const x=GAL[gi]; closeLB(); focus
 document.addEventListener('keydown',e=>{ if(!lb.classList.contains('on')) return; if(e.key==='Escape') closeLB(); if(e.key==='ArrowLeft') openLB(gi-1); if(e.key==='ArrowRight') openLB(gi+1); });
 window.PAINEL_OPEN_PHOTO=(oid)=>{ const i=GAL.findIndex(x=>x.r._oid===oid); if(i>=0) openLB(i); };
 /* balão suspenso com as fotos do levantamento, preso ao ponto clicado no mapa */
-const BUB={el:null,oid:null,k:0,geom:null,want:null};
+const BUB={el:null,oid:null,k:0,geom:null,want:null,free:null}; // free = posição solta, quando o balão é arrastado
 function bubbleEl(){ if(BUB.el) return BUB.el; const d=document.createElement('div'); d.className='pbub'; d.setAttribute('role','dialog'); d.setAttribute('aria-label','Fotos do levantamento');
   document.querySelector('.mapcard').appendChild(d); BUB.el=d; return d; }
 function showBubble(oid,geom){
@@ -378,22 +378,33 @@ function showBubble(oid,geom){
   drawBubble(); placeBubble(); requestAnimationFrame(()=>BUB.el.classList.add('on')); }
 function drawBubble(){
   const d=bubbleEl(), list=ATT[BUB.oid]||[], a=list[BUB.k], r=BYOID[BUB.oid]; if(!a) return;
-  d.innerHTML=`<div class="pb-in"><button class="pb-x" type="button" aria-label="Fechar fotos">×</button>
+  d.innerHTML=`<div class="pb-in"><div class="pb-grip" title="Arraste para mover o balão"><span>⠿ Fotos do levantamento</span>${BUB.free?'<button class="pb-pin" type="button" title="Voltar a prender o balão ao ponto">📌 Prender ao ponto</button>':''}<button class="pb-x" type="button" aria-label="Fechar fotos">×</button></div>
     <div class="pb-img"><img src="${a.url}" alt="${esc(C.gallery?C.gallery.caption(r):'Foto')}">${list.length>1?`<button class="pb-nav pv" type="button" aria-label="Foto anterior">‹</button><button class="pb-nav nx" type="button" aria-label="Próxima foto">›</button><span class="pb-n">${BUB.k+1} / ${list.length}</span>`:''}</div>
     <div class="pb-cap"><b>${esc(C.gallery?C.gallery.caption(r):'')}</b><span>${esc(C.gallery?C.gallery.sub(r):'')}</span></div>
     <div class="pb-acts"><button class="pb-zoom" type="button">🔍 Ampliar</button>${list.length>1?`<span class="pb-dots">${list.map((x,i)=>`<i class="${i===BUB.k?'on':''}" data-k="${i}"></i>`).join('')}</span>`:''}</div></div><i class="pb-tail"></i>`;
   const img=d.querySelector('img'); img.onload=()=>placeBubble();
-  d.querySelector('.pb-x').onclick=()=>hideBubble(true);
+  d.querySelector('.pb-x').onclick=()=>hideBubble();
+  const pin=d.querySelector('.pb-pin'); if(pin) pin.onclick=()=>{ BUB.free=null; drawBubble(); placeBubble(); };
+  // arrastar pelo cabeçalho solta o balão do ponto (fica onde for largado)
+  const grip=d.querySelector('.pb-grip');
+  grip.onpointerdown=e=>{ if(e.target.closest('button')) return; e.preventDefault(); grip.setPointerCapture(e.pointerId);
+    const host=document.querySelector('.mapcard'), sx=e.clientX, sy=e.clientY, ox=d.offsetLeft, oy=d.offsetTop; let moved=false;
+    grip.onpointermove=ev=>{ const dx=ev.clientX-sx, dy=ev.clientY-sy; if(!moved&&Math.hypot(dx,dy)<4) return; moved=true;
+      const l=Math.max(0,Math.min(host.clientWidth-d.offsetWidth,ox+dx)), t=Math.max(0,Math.min(host.clientHeight-d.offsetHeight,oy+dy));
+      BUB.free={left:l,top:t}; d.classList.add('free'); d.style.left=l+'px'; d.style.top=t+'px'; };
+    grip.onpointerup=()=>{ grip.onpointermove=null; grip.onpointerup=null; if(moved) drawBubble(); }; };
   d.querySelectorAll('.pb-nav').forEach(b=>b.onclick=()=>{ BUB.k=(BUB.k+(b.classList.contains('nx')?1:-1)+list.length)%list.length; drawBubble(); placeBubble(); });
   d.querySelectorAll('.pb-dots i').forEach(i=>i.onclick=()=>{ BUB.k=+i.dataset.k; drawBubble(); placeBubble(); });
   const zoom=()=>{ let i=GAL.findIndex(x=>x.r._oid===BUB.oid&&x.k===BUB.k+1); if(i<0){ galTag=null; renderGallery(rows()); i=GAL.findIndex(x=>x.r._oid===BUB.oid&&x.k===BUB.k+1); } if(i>=0) openLB(i); };
   d.querySelector('.pb-zoom').onclick=zoom; img.onclick=zoom; }
 function placeBubble(){
-  const d=BUB.el; if(!d||!BUB.geom||!view) return; const p=view.toScreen(BUB.geom); const m=document.getElementById('map');
+  const d=BUB.el; if(!d||!BUB.oid) return;
+  if(BUB.free){ d.classList.add('free'); d.style.visibility=''; d.style.left=BUB.free.left+'px'; d.style.top=BUB.free.top+'px'; return; }
+  d.classList.remove('free'); if(!BUB.geom||!view) return; const p=view.toScreen(BUB.geom); const m=document.getElementById('map');
   if(!p||p.x<0||p.y<0||p.x>view.width||p.y>view.height){ d.style.visibility='hidden'; return; } d.style.visibility='';
   const w=d.offsetWidth, h=d.offsetHeight; const x=m.offsetLeft+p.x-w/2; const minX=m.offsetLeft+6, maxX=m.offsetLeft+view.width-w-6; const cx=Math.max(minX,Math.min(maxX,x));
   d.style.left=cx+'px'; d.style.top=(m.offsetTop+p.y-h-16)+'px'; d.style.setProperty('--tail',(x-cx+w/2)+'px'); }
-function hideBubble(closePopup){ if(BUB.el) BUB.el.classList.remove('on'); BUB.oid=null; BUB.geom=null; if(closePopup&&view&&view.popup) view.closePopup(); }
+function hideBubble(){ if(BUB.el) BUB.el.classList.remove('on'); BUB.oid=null; BUB.geom=null; }
 /* leva o mapa até o registro e abre o popup */
 function focusOnMap(oid){
   const r=BYOID[oid]; if(!r||r._x==null||!view) return;
@@ -454,7 +465,7 @@ function initMap(){ return new Promise(res=>{
     const m=new EMap({basemap:sel.value,layers});
     view=new MapView({container:'map',map:m,center:[-52,-14.5],zoom:4,constraints:{snapToZoom:false},ui:{components:['zoom','attribution']},popup:Object.assign({dockEnabled:false,dockOptions:{buttonEnabled:false}},C.map.photoBubble?{alignment:'bottom-center'}:{})});
     if(C.map.photoBubble) require(['esri/core/reactiveUtils'],ru=>{
-      ru.watch(()=>view.popup&&view.popup.visible?view.popup.selectedFeature:null,f=>{ if(f&&f.layer===ptLayer) showBubble(f.attributes._oid,f.geometry); else hideBubble(); });
+      ru.watch(()=>view.popup&&view.popup.visible?view.popup.selectedFeature:null,f=>{ if(f&&f.layer===ptLayer) showBubble(f.attributes._oid,f.geometry); });
       ru.watch(()=>[view.extent,view.width,view.height],()=>placeBubble()); });
     view.navigation.mouseWheelZoomEnabled=false;
     view.on('click',()=>{view.navigation.mouseWheelZoomEnabled=true;});

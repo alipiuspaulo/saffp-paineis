@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Fiscalização FICO</title>
 <link rel="stylesheet" href="https://js.arcgis.com/4.30/esri/themes/light/main.css">
-<link rel="stylesheet" href="../assets/painel.css?v=20261122d">
+<link rel="stylesheet" href="../assets/painel.css?v=20261122e">
 <link rel="stylesheet" href="../assets/interativo.css?v=6">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/5.5.0/echarts.min.js"></script>
 <script src="https://js.arcgis.com/4.30/"></script>
@@ -86,7 +86,7 @@ window.PAINEL={
     popupTitle:r=>`${r.PACOTE} — ${r.ITEM}`,
     popup:(r,att)=>`<b>Data da visita:</b> ${r.DATA} às ${r.hora_de_in_cio_da_fiscaliza_o||'—'}<br><b>Fiscal:</b> ${r.FISCAL}<br><b>Empresa:</b> ${r.empresa_respons_vel_pela_obra}<br><b>Conforme o projeto:</b> ${r.a_obra_est_conforme_o_projeto}<br><b>Riscos a trabalhadores:</b> ${r.h_riscos_para_trabalhadores_ou}<br><b>Passivo ambiental:</b> ${r.h_algum_passivo_ambiental}${r.qual_passivo?' ('+r.qual_passivo+')':''}`
       +(r.recomenda_es_ou_medidas_a_serem?`<br><b>Recomendações:</b> ${r.recomenda_es_ou_medidas_a_serem}`:'')
-      +(att.length?`<br><span style="color:#6A7486">📷 ${att.length===1?'1 foto':att.length+' fotos'} no balão acima do ponto</span>`:'')},
+      +(att.length?`<br><span style="color:#6A7486">📷 ${att.length===1?'1 foto':att.length+' fotos'} no balão de fotos</span>`:'')},
   gallery:{title:'Registros fotográficos das fiscalizações',collapsed:true,clickZoom:true,kicker:'Fiscalização FICO',
     tags:[{label:'Com risco',test:r=>r.h_riscos_para_trabalhadores_ou==='Sim'},{label:'Passivo ambiental',test:r=>r.h_algum_passivo_ambiental==='Sim'},{label:'Não conforme ao projeto',test:r=>r.a_obra_est_conforme_o_projeto==='Não'}],
     info:r=>[['Data da visita',`${r.DATA}${r.hora_de_in_cio_da_fiscaliza_o?' às '+r.hora_de_in_cio_da_fiscaliza_o:''}`],['Pacote',r.PACOTE],['Item inspecionado',r.ITEM],['Fiscal',r.FISCAL],
@@ -107,7 +107,7 @@ window.PAINEL={
 };
 </script>
 <script src="../assets/legenda.js?v=1"></script>
-<script src="../assets/painel.js?v=20261122d"></script>
+<script src="../assets/painel.js?v=20261122e"></script>
 <script src="../assets/interativo.js?v=6"></script>
 <script src="../assets/aviso.js?v=1"></script>
 </body>
