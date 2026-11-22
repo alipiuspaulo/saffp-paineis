@@ -5,7 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Acidentes Ferroviários</title>
 <link rel="stylesheet" href="https://js.arcgis.com/4.30/esri/themes/light/main.css">
-<link rel="stylesheet" href="../assets/painel.css?v=20261115l">
+<link rel="stylesheet" href="../assets/painel.css?v=20261122a">
+<link rel="stylesheet" href="../assets/interativo.css?v=5">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/5.5.0/echarts.min.js"></script>
 <script src="https://js.arcgis.com/4.30/"></script>
 </head>
@@ -30,6 +31,7 @@ const MALHA={title:'Malha ferroviária federal',url:'https://services.arcgis.com
       {value:'Em Obra',label:'Em obra',symbol:{type:'simple-line',color:[242,183,5,.95],width:1.6,style:'dash'}}]}};
 window.PAINEL={
   unitLabel:'acidentes',
+  trendUpIsBad:true, // na tendência dos indicadores, alta = vermelho
   title:'Acidentes Ferroviários',
   subtitle:'Ocorrências comunicadas pelas concessionárias ferroviárias',
   home:'https://experience.arcgis.com/experience/26c68a6e20144b5199923c22b1722c3e',
@@ -85,7 +87,8 @@ window.PAINEL={
 };
 </script>
 <script src="../assets/legenda.js?v=1"></script>
-<script src="../assets/painel.js?v=20261115l"></script>
+<script src="../assets/painel.js?v=20261122a"></script>
+<script src="../assets/interativo.js?v=5"></script>
 <script src="../assets/aviso.js?v=1"></script>
 </body>
 </html>

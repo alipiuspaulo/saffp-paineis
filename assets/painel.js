@@ -168,7 +168,8 @@ async function loadAttachments(){
 }
 
 /* ---------- filtros ---------- */
-const pass=(r,skip)=>Object.entries(S).every(([k,v])=>k===skip||v==null||r[k]===v);
+const X={preds:[],afterRender:[],mapReady:[],chartHover:null}; // ganchos usados por interativo.js
+const pass=(r,skip)=>Object.entries(S).every(([k,v])=>k===skip||v==null||r[k]===v)&&X.preds.every(p=>p(r,skip));
 const rows=skip=>D.filter(r=>pass(r,skip));
 function set(k,v){ S[k]=(S[k]===v?null:v); if(k==='REGIAO'&&S.UF&&S.REGIAO&&UFREG[S.UF]!==S.REGIAO) S.UF=null; render(); }
 const count=(rs,f)=>{const m=new Map(); rs.forEach(r=>m.set(r[f],(m.get(r[f])||0)+1)); return m;};
@@ -212,6 +213,9 @@ function renderKPIs(f){
 }
 
 /* ---------- gráficos ---------- */
+const tc=()=>document.documentElement.dataset.theme==='dark'
+  ?{ink:'#E8EDF5',ink2:'#B8C2D3',muted:'#93A0B5',grid:'#22304A',axis:'#2C3B57',card:'#111B2E'}
+  :{ink:'#14213D',ink2:'#4A5568',muted:'#6A7486',grid:'#EDF0F4',axis:'#DDE3EB',card:'#fff'};
 const EC={};
 const catColor=(field,v,fixed)=>{ if(fixed&&fixed[v]) return fixed[v]; if(v===NI) return '#C9D2DE'; const i=(ORDER[field]||[]).indexOf(v); return i>=0&&i<PALETTE.length?PALETTE[i]:OTHER; };
 /* cor das barras: fixa por categoria (colors), paleta categórica (palette:'cat'), rampa sequencial (palette:'seq') ou cor do tema */
@@ -223,7 +227,8 @@ function barColor(c,v,list){
   if(c.palette==='seq'){ const ks=list.map(x=>x[0]).sort(natural); const i=ks.indexOf(v); return mix(SEQ[0],SEQ[1],ks.length>1?i/(ks.length-1):1); }
   return S[c.field]===v?C.theme.dark:C.theme.primary;
 }
-function ec(id,c){ if(!EC[id]){ EC[id]=echarts.init(document.getElementById(id)); if(c) EC[id].on('click',p=>{ if(p.componentType==='series'&&p.name!=null&&p.name!=='') set(c.field,p.name); }); } return EC[id]; }
+function ec(id,c){ if(!EC[id]){ EC[id]=echarts.init(document.getElementById(id)); if(c){ EC[id].on('click',p=>{ if(p.componentType==='series'&&p.name!=null&&p.name!=='') set(c.field,p.name); });
+  EC[id].on('mouseover',p=>{ if(X.chartHover&&p.componentType==='series'&&p.name) X.chartHover(c.field,p.name); }); EC[id].on('mouseout',()=>{ if(X.chartHover) X.chartHover(null); }); } } return EC[id]; }
 const fullName=(c,v)=>(c.names&&c.names[v]?`${esc(v)} · ${esc(c.names[v])}`:esc(v))+(c.groups&&c.groups[v]?`<br><span style="color:#6A7486">Grupo: ${esc(c.groups[v])}</span>`:'');
 function renderChart(c){
   const base=rows(c.field);
@@ -234,9 +239,9 @@ function renderChart(c){
     list.sort((a,b)=>b[1]-a[1]);
     const data=list.map(([v,n])=>({name:v,value:n,itemStyle:{color:catColor(c.field,v,c.colors),opacity:S[c.field]==null||S[c.field]===v?1:.25}}));
     ec(c._id,c).setOption({tooltip:{trigger:'item',formatter:p=>`<b>${esc(p.name)}</b><br>${nf(p.value)} · ${nf(p.percent,1)}%`},
-      series:[{type:'pie',radius:['58%','84%'],center:['50%','52%'],padAngle:1.5,itemStyle:{borderColor:'#fff',borderWidth:2,borderRadius:3},
+      series:[{type:'pie',radius:['58%','84%'],center:['50%','52%'],padAngle:1.5,itemStyle:{borderColor:tc().card,borderWidth:2,borderRadius:3},
         label:{show:true,position:'center',formatter:()=>`{v|${nf(S[c.field]!=null?(m.get(S[c.field])||0):tot)}}\n{l|${esc(c.centerLabel||'registros')}}`,
-          rich:{v:{fontSize:26,fontWeight:700,color:'#14213D',lineHeight:30},l:{fontSize:12,color:'#6A7486'}}},
+          rich:{v:{fontSize:26,fontWeight:700,color:tc().ink,lineHeight:30},l:{fontSize:12,color:tc().muted}}},
         emphasis:{scale:true,scaleSize:4,label:{show:true}},labelLine:{show:false},data}]},true);
     const lg=document.getElementById(c._id+'_lg');
     lg.innerHTML=data.slice(0,c.legendMax||8).map(d=>`<button class="lg ${S[c.field]!=null&&S[c.field]!==d.name?'off':''}" data-v="${esc(d.name)}">${C.map&&C.map.colorBy===c.field?legendMark(d.name,d.itemStyle.color):`<i class="dot" style="background:${d.itemStyle.color}"></i>`}<span>${esc(c.labels&&c.labels[d.name]||d.name)}</span><span class="c">${nf(d.value)}</span><span class="pc">${tot?nf(d.value/tot*100,1):0}%</span></button>`).join('');
@@ -252,10 +257,10 @@ function renderChart(c){
     document.getElementById(c._id).style.height=h+'px'; ec(c._id,c).resize();
     ec(c._id,c).setOption({grid:{left:8,right:40,top:6,bottom:6,containLabel:true},
       tooltip:{trigger:'item',formatter:p=>`<b>${fullName(c,p.name)}</b><br>${nf(p.value)} ${esc(C.unitLabel||'registros')} · ${tot?nf(p.value/tot*100,1):0}%<br><span style="color:#6A7486">clique para filtrar</span>`},
-      xAxis:{type:'value',splitLine:{lineStyle:{color:'#EDF0F4'}},axisLabel:{color:'#6A7486',fontSize:11}},
-      yAxis:{type:'category',data:list.map(x=>x[0]),axisTick:{show:false},axisLine:{lineStyle:{color:'#DDE3EB'}},axisLabel:{color:'#14213D',fontSize:12,width:c.labelWidth||170,overflow:'truncate'}},
+      xAxis:{type:'value',splitLine:{lineStyle:{color:tc().grid}},axisLabel:{color:tc().muted,fontSize:11}},
+      yAxis:{type:'category',data:list.map(x=>x[0]),axisTick:{show:false},axisLine:{lineStyle:{color:tc().axis}},axisLabel:{color:tc().ink,fontSize:12,width:c.labelWidth||170,overflow:'truncate'}},
       series:[{type:'bar',barMaxWidth:16,data:list.map(([v,n])=>({value:n,itemStyle:{color:barColor(c,v,list),opacity:S[c.field]==null||S[c.field]===v?1:.3,borderRadius:[0,4,4,0]}})),
-        label:{show:true,position:'right',color:'#4A5568',fontSize:11,formatter:p=>nf(p.value)}}]},true);
+        label:{show:true,position:'right',color:tc().ink2,fontSize:11,formatter:p=>nf(p.value)}}]},true);
     const more=document.getElementById(c._id+'_more');
     more.hidden=total<=N; more.textContent=c._all?`Mostrar apenas os ${N} maiores`:`+ ${rest.length} categorias (${nf(rest.reduce((s,x)=>s+x[1],0))} registros) · ver todas →`;
     more.onclick=()=>{c._all=!c._all; renderChart(c);};
@@ -265,10 +270,10 @@ function renderChart(c){
   if(c.order) list.sort((a,b)=>c.order.indexOf(a[0])-c.order.indexOf(b[0])); else if(c.sort==='label') list.sort((a,b)=>natural(a[0],b[0])); else list.sort((a,b)=>b[1]-a[1]);
   ec(c._id,c).setOption({grid:{left:8,right:12,top:22,bottom:4,containLabel:true},
     tooltip:{trigger:'item',formatter:p=>`<b>${esc(p.name)}</b><br>${nf(p.value)}`},
-    xAxis:{type:'category',data:list.map(x=>x[0]),axisTick:{show:false},axisLine:{lineStyle:{color:'#DDE3EB'}},axisLabel:{color:'#14213D',fontSize:12,interval:0,rotate:list.length>8?30:0,width:90,overflow:'truncate'}},
-    yAxis:{type:'value',splitLine:{lineStyle:{color:'#EDF0F4'}},axisLabel:{color:'#6A7486',fontSize:11}},
+    xAxis:{type:'category',data:list.map(x=>x[0]),axisTick:{show:false},axisLine:{lineStyle:{color:tc().axis}},axisLabel:{color:tc().ink,fontSize:12,interval:0,rotate:list.length>8?30:0,width:90,overflow:'truncate'}},
+    yAxis:{type:'value',splitLine:{lineStyle:{color:tc().grid}},axisLabel:{color:tc().muted,fontSize:11}},
     series:[{type:'bar',barMaxWidth:30,data:list.map(([v,n])=>({value:n,itemStyle:{color:barColor(c,v,list),opacity:S[c.field]==null||S[c.field]===v?1:.3,borderRadius:[4,4,0,0]}})),
-      label:{show:true,position:'top',color:'#4A5568',fontSize:11,formatter:p=>nf(p.value)}}]},true);
+      label:{show:true,position:'top',color:tc().ink2,fontSize:11,formatter:p=>nf(p.value)}}]},true);
 }
 function renderYN(c){
   const el=document.getElementById(c._id);
@@ -413,7 +418,7 @@ function initMap(){ return new Promise(res=>{
     }
     sel.onchange=e=>{ m.basemap=e.target.value; };
     if(heatLayer) view.whenLayerView(heatLayer).then(lv=>{ heatView=lv; if(ptView) renderMap(rows(),true); });
-    view.whenLayerView(ptLayer).then(lv=>{ ptView=lv; res(); });
+    view.whenLayerView(ptLayer).then(lv=>{ ptView=lv; res(); X.mapReady.forEach(h=>{ try{h();}catch(e){console.error(e);} }); });
   });
 }); }
 let BYOID={};
@@ -481,10 +486,10 @@ function tlChart(){
   if(!TL.chart) return;
   const {cats,per}=tlSeries(tlRows());
   TL.chart.setOption({grid:{left:8,right:16,top:30,bottom:4,containLabel:true},
-    legend:{top:0,right:8,itemWidth:12,itemHeight:12,textStyle:{color:'#4A5568'}},
+    legend:{top:0,right:8,itemWidth:12,itemHeight:12,textStyle:{color:tc().ink2}},
     tooltip:{trigger:'axis',axisPointer:{type:'shadow'},formatter:ps=>`<b>${mLabel(ps[0].dataIndex,true)}</b><br>`+ps.map(p=>`${p.marker} ${esc(p.seriesName)}: <b>${nf(p.value)}</b>`).join('<br>')},
-    xAxis:{type:'category',data:Array.from({length:TL.n},(_,i)=>mLabel(i)),axisTick:{show:false},axisLine:{lineStyle:{color:'#DDE3EB'}},axisLabel:{color:'#6A7486',fontSize:11}},
-    yAxis:{type:'value',splitLine:{lineStyle:{color:'#EDF0F4'}},axisLabel:{color:'#6A7486',fontSize:11}},
+    xAxis:{type:'category',data:Array.from({length:TL.n},(_,i)=>mLabel(i)),axisTick:{show:false},axisLine:{lineStyle:{color:tc().axis}},axisLabel:{color:tc().muted,fontSize:11}},
+    yAxis:{type:'value',splitLine:{lineStyle:{color:tc().grid}},axisLabel:{color:tc().muted,fontSize:11}},
     series:cats.map((v,i)=>({id:'s'+i,name:C.map.labels&&C.map.labels[v]||v,type:'bar',stack:'t',barCategoryGap:'25%',data:per[i],
       itemStyle:{color:catColor(C.map.colorBy,v,C.map.colors)}}))},true);
   tlMark();
@@ -599,10 +604,18 @@ function initTabs(){
 }
 function renderTL(){ if(!TL.ready) return; tlChart(); tlFrame(); }
 
+/* ---------- API para interativo.js ---------- */
+window.PAINEL_API={C,X,S,EC,rows,set,nf,esc,fold,natural,NI,UFREG,icon,tc,
+  render:()=>render(), catColor:(f,v,fx)=>catColor(f,v,fx), legendMark:(v,c)=>legendMark(v,c), markerURL:v=>markerURL(v),
+  get D(){return D;}, get BYOID(){return BYOID;}, get ORDER(){return ORDER;},
+  get view(){return view;}, get ptView(){return ptView;}, get ptLayer(){return ptLayer;}, get heatView(){return heatView;}, get Extent(){return Extent;},
+  rezoom:()=>{ lastKey=null; renderMap(rows('_map')); }, renderTL:()=>{ if(TLC) renderTL(); }, tlChart:()=>{ if(TLC) tlChart(); }};
+
 /* ---------- render ---------- */
 function render(){
   const f=rows();
-  renderFilters(); renderKPIs(f); (C.charts||[]).forEach(renderChart); renderTable(f); renderGallery(f); renderMap(f); if(TLC) renderTL();
+  renderFilters(); renderKPIs(f); (C.charts||[]).forEach(renderChart); renderTable(f); renderGallery(f); renderMap(rows('_map')); if(TLC) renderTL();
+  X.afterRender.forEach(h=>{ try{h(f);}catch(e){console.error(e);} });
 }
 (async()=>{
   try{
@@ -621,7 +634,7 @@ function render(){
   document.getElementById('upd').textContent=new Date().toLocaleString('pt-BR');
   if(TLC) initTabs();
   render();
-  await initMap(); lastKey=null; renderMap(rows());
+  await initMap(); lastKey=null; renderMap(rows('_map'));
   if(TLC&&/historico/.test(location.hash)) showTab('tl'); // link direto para a aba
   const fm=/#foto(?:\/(\d+))?/.exec(location.hash); if(fm&&C.gallery) openLB(+(fm[1]||0));
 })();
