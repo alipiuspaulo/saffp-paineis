@@ -6,13 +6,14 @@
 <title>SAFF-P · SUFER · ANTT</title>
 <link rel="stylesheet" href="https://cdngovbr-ds.estaleiro.serpro.gov.br/design-system/fonts/rawline/css/rawline.css">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Raleway:wght@400;500;600;700;800&display=swap">
+<link rel="stylesheet" href="https://js.arcgis.com/4.30/esri/themes/light/main.css">
 <style>
 :root{--navy:#0A2A5E;--navy2:#123B7A;--blue:#1C5FAD;--yellow:#F2B705;--green:#1E9E5A;--ink:#14213D;--ink2:#4A5568;--muted:#6A7486;--line:#DDE3EB;--bg:#F3F5F9}
 *{box-sizing:border-box}
 html,body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.45 Rawline,Raleway,"Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif}
 a{color:var(--blue)}
 /* faixa-título: logo e nome à esquerda; os botões de navegação da experiência ficam sobre a área da direita */
-.band{height:96px;background:linear-gradient(100deg,#071F47 0%,#0A2A5E 45%,#1C5FAD 100%);color:#fff;position:relative;overflow:hidden}
+.band{height:96px;background:linear-gradient(100deg,#071F47 0%,#0A2A5E 45%,#1C5FAD 100%);color:#fff;position:sticky;top:0;z-index:30;overflow:hidden}
 .band-in{height:100%;padding:0 2%;display:flex;align-items:center;gap:20px;position:relative;z-index:1}
 .band .logo{height:42px;display:block}
 .band .vsep{width:1px;height:52px;background:rgba(255,255,255,.3)}
@@ -21,15 +22,12 @@ a{color:var(--blue)}
 .band .name b{color:var(--yellow);font-weight:800;margin-right:6px}
 .band .sp{flex:1}
 .rails{position:absolute;right:32%;top:-40px;width:420px;height:200px;opacity:.07}
-/* os botões da experiência ocupam 680 px à direita: o título encolhe para não encostar neles */
 .band-in>div{max-width:calc(100vw - 680px - 4vw - 250px);min-width:0}
 @media (max-width:1560px){.band .org{display:none}.band .name{font-size:21px}}
 @media (max-width:1400px){.band .name{font-size:18px}}
 @media (max-width:1340px){.band .name .t{display:none}.band .name{font-size:24px}}
 @media (max-width:1100px){.band .vsep,.band-in>div{display:none}}
-.band{position:sticky;top:0;z-index:30}
 .stripe{position:sticky;top:96px;z-index:30;height:5px;background:linear-gradient(90deg,var(--yellow) 0 72%,var(--green) 72% 100%)}
-/* simulação dos botões da experiência (só na prévia) */
 .mocknav{display:flex;align-items:center;width:680px;justify-content:space-around}
 .mocknav a{display:inline-flex;align-items:center;gap:8px;color:#fff;font:600 15px "Avenir Next","Segoe UI",sans-serif;text-decoration:none;padding:10px 16px;border-radius:6px}
 .mocknav a:hover{background:rgba(255,255,255,.12);color:var(--yellow)}
@@ -37,76 +35,13 @@ a{color:var(--blue)}
 .mocknav[hidden]{display:none}
 .mocknav i{width:1px;height:20px;background:rgba(255,255,255,.4)}
 .mocknav svg{width:16px;height:16px}
-.intro{background:#fff;border-bottom:1px solid var(--line)}
-.intro-in{max-width:1480px;margin:0 auto;padding:14px 28px;display:flex;align-items:center;gap:18px}
-.intro p{margin:0;color:var(--ink2);font-size:14.5px;flex:1}
-.intro p b{color:var(--navy)}
 .demo-tag{display:inline-flex;align-items:center;gap:8px;background:#FFF4D1;border:1px solid #F2C94C;color:#7A5A00;border-radius:8px;padding:7px 12px;font-size:13px;font-weight:700;white-space:nowrap}
 .demo-tag svg{width:18px;height:18px}
-.wrap{max-width:1480px;margin:0 auto;padding:18px 28px 22px;display:grid;gap:16px}
-.kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}
-.kpi{background:#fff;border:1px solid var(--line);border-radius:10px;padding:14px 16px;display:flex;gap:14px;align-items:center;border-left:5px solid var(--c)}
-.kpi .ic{width:44px;height:44px;border-radius:10px;display:grid;place-items:center;background:color-mix(in srgb,var(--c) 14%,#fff);color:var(--c);flex:none}
-.kpi .ic svg{width:24px;height:24px}
-.kpi .v{font-size:26px;font-weight:700;line-height:1.1;font-variant-numeric:tabular-nums;color:var(--ink)}
-.kpi .v small{font-size:13px;font-weight:600;color:var(--ink2);margin-left:4px}
-.kpi .l{font-size:12.5px;color:var(--ink2)}
-.main{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:16px;align-items:start}
-.sec-h{display:flex;align-items:center;gap:10px;margin:0 0 10px}
-.sec-h h2{margin:0;font-size:17px;color:var(--navy);display:flex;align-items:center;gap:10px}
-.sec-h h2::before{content:"";width:5px;height:20px;border-radius:3px;background:var(--yellow)}
-.sec-h .sp{flex:1}
-.sec-h .hint{font-size:12px;color:var(--muted)}
-.cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
-.card{background:#fff;border:1px solid var(--line);border-radius:10px;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 1px 2px rgba(10,42,94,.05);transition:box-shadow .18s,transform .18s}
-.card:hover{box-shadow:0 8px 22px rgba(10,42,94,.13);transform:translateY(-2px)}
-.card .img{height:112px;background:#0b1a33 center/cover no-repeat;position:relative}
-.card .img::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(10,42,94,.05),rgba(10,42,94,.55))}
-.card .ic{position:absolute;left:14px;bottom:-18px;z-index:1;width:42px;height:42px;border-radius:10px;background:#fff;color:var(--c);display:grid;place-items:center;box-shadow:0 3px 10px rgba(0,0,0,.18);border:2px solid var(--c)}
-.card .ic svg{width:22px;height:22px}
-.card .st{position:absolute;right:10px;top:10px;z-index:1;font-size:11px;font-weight:700;border-radius:999px;padding:3px 9px;background:#fff;color:var(--navy)}
-.card .st.dev{background:var(--yellow);color:var(--ink)}
-.card .body{padding:24px 16px 14px;display:flex;flex-direction:column;gap:6px;flex:1}
-.card h3{margin:0;font-size:15px;line-height:1.3;color:var(--ink)}
-.card p{margin:0;color:var(--ink2);font-size:12.5px;flex:1}
-.card .acts{display:flex;align-items:center;gap:12px;margin-top:6px;flex-wrap:wrap}
-.btn{display:inline-flex;align-items:center;gap:6px;background:var(--navy);color:#fff;text-decoration:none;font-weight:600;font-size:13px;padding:8px 14px;border-radius:7px;border:0;cursor:pointer}
-.btn:hover{background:var(--blue)}
-.btn.yel{background:var(--yellow);color:var(--ink)}
-.btn.yel:hover{background:#FFC933}
-.btn[aria-disabled="true"]{background:#D5DCE6;color:#4A5568;pointer-events:none}
-.old{font-size:12px;color:var(--muted)}
-.old:hover{color:var(--navy)}
-.side{display:grid;gap:14px}
-.box{background:#fff;border:1px solid var(--line);border-radius:10px;padding:14px 16px}
-.box h3{margin:0 0 8px;font-size:14px;color:var(--navy)}
-.box p{margin:0 0 6px;color:var(--ink2);font-size:13px}
-.box ul{list-style:none;margin:0;padding:0;display:grid;gap:2px}
-.box li a{display:flex;align-items:center;gap:10px;padding:8px 8px;border-radius:7px;text-decoration:none;color:var(--ink);font-size:13px}
-.box li a:hover{background:#F1F4F9;color:var(--navy)}
-.box li a svg{width:18px;height:18px;color:var(--blue);flex:none}
-.box li a .ext{margin-left:auto;color:var(--muted);font-size:12px}
-.box.warn{background:#FFF8E1;border-color:#F2D27A}
-.box.warn h3{color:#7A5A00;display:flex;align-items:center;gap:8px}
-.box.warn h3 svg{width:18px;height:18px}
-.upd{font-size:11.5px;color:var(--muted);text-align:right}
-/* aviso inicial */
-.modal{position:fixed;inset:0;background:rgba(6,18,42,.72);backdrop-filter:blur(3px);display:none;align-items:center;justify-content:center;z-index:50;padding:20px}
-.modal.on{display:flex}
-.dlg{width:min(560px,100%);background:#fff;border-radius:14px;overflow:hidden;box-shadow:0 24px 60px rgba(0,0,0,.4);animation:pop .25s ease-out}
-.dlg .top{background:linear-gradient(100deg,#0A2A5E,#1C5FAD);padding:22px 26px;display:flex;align-items:center;gap:16px;border-bottom:5px solid var(--yellow)}
-.dlg .top img{height:46px}
-.dlg .top .t{color:#fff;font-size:12px;letter-spacing:.08em;text-transform:uppercase;font-weight:600;opacity:.85}
-.dlg .bd{padding:22px 26px 8px}
-.dlg h2{margin:0 0 10px;font-size:20px;color:var(--navy);display:flex;align-items:center;gap:10px}
-.dlg h2 svg{width:24px;height:24px;color:#C77C00}
-.dlg p{margin:0 0 10px;color:var(--ink2);font-size:14px}
-.dlg .ft{padding:12px 26px 22px;display:flex;justify-content:flex-end}
-@keyframes pop{from{transform:translateY(10px) scale(.98);opacity:0}to{transform:none;opacity:1}}
+.wrap{max-width:1560px;margin:0 auto;padding:18px 28px 22px;display:grid;gap:16px}
 
-/* ===== faixa animada: símbolo ANTT + ferrovia com trens ===== */
+/* ===== faixa animada: símbolo ANTT + trem de carga ===== */
 .hero{background:#fff;border-bottom:1px solid var(--line);position:relative;overflow:hidden}
-.hero-in{max-width:1480px;margin:0 auto;padding:16px 28px 6px;display:flex;align-items:center;gap:26px;position:relative;z-index:2}
+.hero-in{max-width:1560px;margin:0 auto;padding:16px 28px 4px;display:flex;align-items:center;gap:26px;position:relative;z-index:2}
 .brand{display:flex;align-items:center;gap:16px;flex:none}
 .sym{position:relative;width:92px;height:83px;flex:none}
 .tri{position:absolute;transform-origin:50% 50%;will-change:transform,opacity;animation:tri-in 1.9s cubic-bezier(.2,.7,.2,1) both}
@@ -128,56 +63,167 @@ a{color:var(--blue)}
 .hero-txt{flex:1;display:flex;align-items:center;gap:18px;min-width:0}
 .hero-txt p{margin:0;color:var(--ink2);font-size:14.5px;flex:1}
 .hero-txt p b{color:var(--navy)}
-/* cena ferroviária */
-.scene{position:relative;height:74px;container-type:inline-size;overflow:hidden;background:linear-gradient(180deg,#fff 0%,#F3F6FA 46%,#E9EEF5 100%)}
-.trk{position:absolute;left:0;right:0}
-.trk::before{content:"";position:absolute;left:0;right:0;top:0;height:2px;background:#7F8EA6;border-radius:1px}
-.trk::after{content:"";position:absolute;left:0;right:0;top:2px;height:4px;background:repeating-linear-gradient(90deg,#B4BFCF 0 4px,transparent 4px 13px)}
-.trk.far{bottom:40px;opacity:.72}
-.trk.far::before{height:1.5px;background:#A3AFC2}
-.trk.far::after{height:3px;background:repeating-linear-gradient(90deg,#CBD3DF 0 3px,transparent 3px 10px)}
-.trk.near{bottom:10px}
-.ballast{position:absolute;left:0;right:0;bottom:0;height:10px;background:linear-gradient(180deg,#DCE2EB,#E9EEF5)}
-.train{position:absolute;bottom:2px;left:0;will-change:transform}
-.train svg{display:block;height:100%;width:auto}
-.train.frt{height:46px;animation:run-r 30s linear infinite;animation-delay:-6s}
-.train.pax{height:25px;bottom:1.5px;animation:run-l 15s linear infinite;animation-delay:-2s}
+/* cena: céu, morros ao fundo, postes em paralaxe, via e trem de carga */
+.scene{position:relative;height:96px;container-type:inline-size;overflow:hidden;background:linear-gradient(180deg,#FFFFFF 0%,#F2F6FB 55%,#E6ECF4 100%)}
+.layer{position:absolute;left:0;bottom:0;height:100%;width:200%;display:flex;will-change:transform}
+.layer svg{flex:none;width:50%;height:100%;display:block}
+.hills{animation:pan 120s linear infinite}
+.hills2{animation:pan 70s linear infinite}
+.poles{animation:pan 26s linear infinite}
+@keyframes pan{to{transform:translateX(-50%)}}
+.track{position:absolute;left:0;right:0;bottom:8px;height:10px}
+.track::before{content:"";position:absolute;left:0;right:0;top:0;height:2.5px;background:linear-gradient(180deg,#9AA8BD,#6E7E97);border-radius:2px}
+.track::after{content:"";position:absolute;left:0;right:0;top:3px;height:5px;background:repeating-linear-gradient(90deg,#8B6A4E 0 5px,transparent 5px 15px);opacity:.55}
+.ballast{position:absolute;left:0;right:0;bottom:0;height:9px;background:radial-gradient(circle at 20% 40%,#C7CFDB 1px,transparent 1.5px) 0 0/7px 5px,linear-gradient(180deg,#D5DCE6,#E3E8F0)}
+.frt{position:absolute;left:0;bottom:14px;height:52px;animation:run-r 34s linear infinite;animation-delay:-8s;will-change:transform}
+.frt>svg{height:100%;width:auto;display:block;overflow:visible}
+.frt .body{animation:bob .5s ease-in-out infinite alternate}
+@keyframes bob{to{transform:translateY(.5px)}}
 @keyframes run-r{from{transform:translateX(-100%)}to{transform:translateX(100cqw)}}
-@keyframes run-l{from{transform:translateX(100cqw)}to{transform:translateX(-100%)}}
-.sig{position:absolute;bottom:16px;width:8px;height:40px}
+.whl{transform-box:fill-box;transform-origin:center;animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.exh{position:absolute;width:12px;height:12px;border-radius:50%;background:radial-gradient(circle,rgba(120,132,150,.45),rgba(120,132,150,0) 70%);opacity:0;animation:exh 1.8s ease-out infinite}
+@keyframes exh{0%{opacity:0;transform:translate(0,0) scale(.4)}15%{opacity:.8}100%{opacity:0;transform:translate(-60px,-26px) scale(2.6)}}
+.sig{position:absolute;bottom:17px;width:9px;height:44px;z-index:1}
 .sig svg{width:100%;height:100%;display:block}
 .sig .lamp{animation:lamp 6s steps(1) infinite}
 @keyframes lamp{0%{fill:#1E9E5A}70%{fill:#F2B705}85%{fill:#1E9E5A}}
 .hero .demo-tag{flex:none}
 @media (max-width:1100px){.hero-in{flex-wrap:wrap}.hsep{display:none}}
 @media (max-width:600px){.hero-in{padding:14px 16px 4px;gap:14px}.hero-txt{flex-wrap:wrap}.wm1{font-size:30px}.sym{transform:scale(.8);transform-origin:left center;margin-right:-18px}}
-@media (prefers-reduced-motion:reduce){.tri,.wm,.train,.sig .lamp{animation:none!important}.train.frt{transform:translateX(30cqw)}.train.pax{transform:translateX(60cqw)}}
 
-/* ===== maria-fumaça: faixa fixa no pé da página, logo acima do rodapé da experiência ===== */
-body{padding-bottom:78px}
-.mfz{position:fixed;left:0;right:0;bottom:0;height:78px;z-index:20;pointer-events:none;container-type:inline-size;
-  background:linear-gradient(180deg,rgba(243,245,249,0) 0%,rgba(243,245,249,.92) 34%,#E6EBF2 100%)}
-.mfz .rail{position:absolute;left:0;right:0;bottom:9px;height:2px;background:#6F7F98}
-.mfz .slp{position:absolute;left:0;right:0;bottom:3px;height:6px;background:repeating-linear-gradient(90deg,#9AA7BA 0 6px,transparent 6px 16px)}
-.mfz .gnd{position:absolute;left:0;right:0;bottom:0;height:3px;background:#C9D2DE}
-.mf{position:absolute;left:0;bottom:9px;height:66px;width:auto;animation:mf-run 32s linear infinite;animation-delay:-3s;will-change:transform}
+/* ===== indicadores ===== */
+.kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}
+.kpi{background:#fff;border:1px solid var(--line);border-radius:12px;padding:14px 16px;display:flex;gap:14px;align-items:center;border-left:5px solid var(--c);cursor:pointer;transition:box-shadow .2s,transform .2s}
+.kpi:hover{box-shadow:0 8px 20px rgba(10,42,94,.12);transform:translateY(-2px)}
+.kpi .ic{width:44px;height:44px;border-radius:10px;display:grid;place-items:center;background:color-mix(in srgb,var(--c) 14%,#fff);color:var(--c);flex:none}
+.kpi .ic svg{width:24px;height:24px}
+.kpi .v{font-size:26px;font-weight:700;line-height:1.1;font-variant-numeric:tabular-nums;color:var(--ink)}
+.kpi .v small{font-size:13px;font-weight:600;color:var(--ink2);margin-left:4px}
+.kpi .l{font-size:12.5px;color:var(--ink2)}
+
+/* ===== vitrine dos painéis ===== */
+.sec-h{display:flex;align-items:center;gap:12px;margin:0 0 12px;flex-wrap:wrap}
+.sec-h h2{margin:0;font-size:18px;color:var(--navy);display:flex;align-items:center;gap:10px}
+.sec-h h2::before{content:"";width:5px;height:20px;border-radius:3px;background:var(--yellow)}
+.sec-h .sp{flex:1}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.chip{border:1px solid var(--line);background:#fff;color:var(--ink);border-radius:999px;padding:6px 12px;font:600 12.5px inherit;font-family:inherit;cursor:pointer;display:inline-flex;gap:6px;align-items:center;transition:all .18s}
+.chip:hover{border-color:var(--blue)}
+.chip.on{background:var(--navy);border-color:var(--navy);color:#fff}
+.chip .n{font-size:11px;background:rgba(20,33,61,.08);border-radius:999px;padding:0 6px}
+.chip.on .n{background:rgba(255,255,255,.18)}
+.srch{font:inherit;border:1px solid var(--line);border-radius:999px;padding:7px 14px;width:220px;background:#fff}
+.show{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);gap:16px;align-items:start}
+/* mapa panorâmico */
+.pano{position:sticky;top:115px;background:#fff;border:1px solid var(--line);border-radius:14px;overflow:hidden;box-shadow:0 1px 2px rgba(10,42,94,.05)}
+.pano-h{display:flex;align-items:center;gap:10px;padding:12px 14px 8px;flex-wrap:wrap}
+.pano-h h3{margin:0;font-size:14.5px;color:var(--navy);flex:1;min-width:180px}
+.pano-h .hint{font-size:12px;color:var(--muted)}
+.lchips{display:flex;gap:6px;flex-wrap:wrap;padding:0 14px 10px}
+.lchip{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);background:#fff;border-radius:999px;padding:4px 10px 4px 8px;font:600 12px inherit;font-family:inherit;color:var(--ink);cursor:pointer;transition:all .18s}
+.lchip i{width:10px;height:10px;border-radius:50%;background:var(--c);box-shadow:0 0 0 2px #fff,0 0 0 3px var(--c)}
+.lchip.off{opacity:.45}.lchip.off i{background:transparent}
+.lchip.lit{border-color:var(--c);background:color-mix(in srgb,var(--c) 10%,#fff)}
+#pmap{height:clamp(420px,60vh,640px);position:relative}
+.pano .reset{position:absolute;right:12px;top:12px;z-index:5;border:0;background:#fff;color:var(--navy);font:600 12px inherit;font-family:inherit;padding:6px 10px;border-radius:8px;box-shadow:0 2px 8px rgba(0,0,0,.18);cursor:pointer;display:none}
+.pano .reset.on{display:block}
+.mtip{position:absolute;z-index:6;pointer-events:none;background:#fff;border:1px solid var(--line);border-left:4px solid var(--c);border-radius:10px;box-shadow:0 8px 24px rgba(10,20,40,.2);padding:8px 11px;font-size:12.5px;max-width:280px;opacity:0;transition:opacity .12s}
+.mtip.on{opacity:1}
+.mtip b{display:block;font-size:13px;color:var(--ink)}
+.mtip span{color:var(--muted)}
+/* cartões */
+.cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;perspective:1000px}
+.card{--rx:0deg;--ry:0deg;background:#fff;border:1px solid var(--line);border-radius:14px;overflow:hidden;display:flex;flex-direction:column;position:relative;
+  box-shadow:0 1px 2px rgba(10,42,94,.05);transform:rotateX(var(--rx)) rotateY(var(--ry));transition:box-shadow .25s,transform .25s,opacity .3s,border-color .25s}
+.card:hover,.card.lit{box-shadow:0 14px 34px rgba(10,42,94,.16);border-color:color-mix(in srgb,var(--c) 45%,var(--line))}
+.card.dim{opacity:.5}
+.card.hide{display:none}
+.card .img{height:118px;background:#0b1a33 center/cover no-repeat;position:relative;overflow:hidden}
+.card .img .ph{position:absolute;inset:0;background:inherit;background-size:cover;background-position:center;transition:transform 6s ease}
+.card:hover .img .ph{transform:scale(1.12)}
+.card .img::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(10,42,94,0) 20%,rgba(10,42,94,.75))}
+.card .img .ttl{position:absolute;left:68px;right:12px;bottom:10px;z-index:1;color:#fff;font-weight:800;font-size:15.5px;line-height:1.2;text-shadow:0 1px 6px rgba(0,0,0,.35)}
+.card .ic{position:absolute;left:14px;bottom:10px;z-index:2;width:44px;height:44px;border-radius:12px;background:var(--c);color:#fff;display:grid;place-items:center;box-shadow:0 4px 12px rgba(0,0,0,.25);border:2px solid rgba(255,255,255,.85)}
+.card .ic svg{width:22px;height:22px}
+.card .st{position:absolute;right:10px;top:10px;z-index:2;font-size:11px;font-weight:700;border-radius:999px;padding:3px 9px;background:rgba(255,255,255,.95);color:var(--navy);display:inline-flex;gap:5px;align-items:center}
+.card .st.dev{background:var(--yellow);color:var(--ink)}
+.card .st.lock{background:#14213D;color:#FFE08A}
+.card .st i{width:7px;height:7px;border-radius:50%;background:#1E9E5A;box-shadow:0 0 0 0 rgba(30,158,90,.6);animation:live 1.8s infinite}
+@keyframes live{70%{box-shadow:0 0 0 6px rgba(30,158,90,0)}100%{box-shadow:0 0 0 0 rgba(30,158,90,0)}}
+.card .body{padding:12px 14px 14px;display:flex;flex-direction:column;gap:8px;flex:1}
+.card p{margin:0;color:var(--ink2);font-size:12.5px}
+.metric{display:flex;align-items:baseline;gap:8px}
+.metric .num{font-size:24px;font-weight:800;color:var(--ink);line-height:1;font-variant-numeric:tabular-nums}
+.metric .num small{font-size:12px;font-weight:700;color:var(--ink2);margin-left:3px}
+.metric .lab{font-size:12px;color:var(--muted);line-height:1.25;flex:1}
+.trend{display:flex;align-items:flex-end;gap:10px;min-height:30px}
+.trend svg{width:46%;max-width:150px;height:30px;flex:none;overflow:visible}
+.trend span{font-size:11px;color:var(--muted);line-height:1.3}
+.mods{display:flex;gap:5px;flex-wrap:wrap}
+.mods span{font-size:11px;font-weight:600;border-radius:6px;padding:3px 8px;background:color-mix(in srgb,var(--c) 12%,#fff);color:color-mix(in srgb,var(--c) 80%,#000)}
+.acts{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:auto}
+.btn{display:inline-flex;align-items:center;gap:6px;background:var(--navy);color:#fff;text-decoration:none;font-weight:600;font-size:13px;padding:8px 14px;border-radius:8px;border:0;cursor:pointer;font-family:inherit}
+.btn:hover{background:var(--blue)}
+.btn.ghost{background:#fff;color:var(--navy);border:1px solid var(--line)}
+.btn.ghost:hover{border-color:var(--c);color:var(--c)}
+.btn.yel{background:var(--yellow);color:var(--ink)}
+.btn.yel:hover{background:#FFC933}
+.btn[aria-disabled="true"]{background:#D5DCE6;color:#4A5568;pointer-events:none}
+.old{font-size:12px;color:var(--muted);margin-left:auto}
+.old:hover{color:var(--navy)}
+.note{font-size:11.5px;color:#7A5A00;background:#FFF8E1;border:1px solid #F2D27A;border-radius:8px;padding:6px 9px}
+/* rodapé de informações */
+.info{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.box{background:#fff;border:1px solid var(--line);border-radius:12px;padding:14px 16px}
+.box h3{margin:0 0 8px;font-size:14px;color:var(--navy)}
+.box p{margin:0 0 6px;color:var(--ink2);font-size:13px}
+.box ul{list-style:none;margin:0;padding:0;display:grid;gap:2px}
+.box li a{display:flex;align-items:center;gap:10px;padding:7px 8px;border-radius:7px;text-decoration:none;color:var(--ink);font-size:13px}
+.box li a:hover{background:#F1F4F9;color:var(--navy)}
+.box li a svg{width:18px;height:18px;color:var(--blue);flex:none}
+.box li a .ext{margin-left:auto;color:var(--muted);font-size:12px}
+.box.warn{background:#FFF8E1;border-color:#F2D27A}
+.box.warn h3{color:#7A5A00;display:flex;align-items:center;gap:8px}
+.box.warn h3 svg{width:18px;height:18px}
+.upd{font-size:11.5px;color:var(--muted);text-align:right}
+/* aviso inicial */
+.modal{position:fixed;inset:0;background:rgba(6,18,42,.72);backdrop-filter:blur(3px);display:none;align-items:center;justify-content:center;z-index:50;padding:20px}
+.modal.on{display:flex}
+.dlg{width:min(560px,100%);background:#fff;border-radius:14px;overflow:hidden;box-shadow:0 24px 60px rgba(0,0,0,.4);animation:pop .25s ease-out}
+.dlg .top{background:linear-gradient(100deg,#0A2A5E,#1C5FAD);padding:22px 26px;display:flex;align-items:center;gap:16px;border-bottom:5px solid var(--yellow)}
+.dlg .top img{height:46px}
+.dlg .top .t{color:#fff;font-size:12px;letter-spacing:.08em;text-transform:uppercase;font-weight:600;opacity:.85}
+.dlg .bd{padding:22px 26px 8px}
+.dlg h2{margin:0 0 10px;font-size:20px;color:var(--navy);display:flex;align-items:center;gap:10px}
+.dlg h2 svg{width:24px;height:24px;color:#C77C00}
+.dlg p{margin:0 0 10px;color:var(--ink2);font-size:14px}
+.dlg .ft{padding:12px 26px 22px;display:flex;justify-content:flex-end}
+@keyframes pop{from{transform:translateY(10px) scale(.98);opacity:0}to{transform:none;opacity:1}}
+
+/* ===== maria-fumaça: faixa fixa no pé da página ===== */
+body{padding-bottom:84px}
+.mfz{position:fixed;left:0;right:0;bottom:0;height:84px;z-index:20;pointer-events:none;container-type:inline-size;
+  background:linear-gradient(180deg,rgba(243,245,249,0) 0%,rgba(243,245,249,.94) 36%,#E4EAF2 100%)}
+.mfz .grass{position:absolute;left:0;right:0;bottom:12px;height:7px;background:repeating-linear-gradient(90deg,rgba(30,158,90,.22) 0 2px,transparent 2px 5px);opacity:.7}
+.mfz .rail{position:absolute;left:0;right:0;bottom:10px;height:2.5px;background:linear-gradient(180deg,#9AA8BD,#5F6F88)}
+.mfz .slp{position:absolute;left:0;right:0;bottom:4px;height:6px;background:repeating-linear-gradient(90deg,#8B6A4E 0 6px,transparent 6px 17px);opacity:.6}
+.mfz .gnd{position:absolute;left:0;right:0;bottom:0;height:4px;background:#C9D2DE}
+.mf{position:absolute;left:0;bottom:10px;height:70px;width:auto;animation:mf-run 36s linear infinite;animation-delay:-4s;will-change:transform}
 .mf>svg{height:100%;width:auto;display:block;overflow:visible}
-@keyframes mf-run{0%{transform:translateX(-100%)}82%{transform:translateX(100cqw)}100%{transform:translateX(100cqw)}}
-.mf .whl{transform-box:fill-box;transform-origin:center;animation:mf-spin .9s linear infinite}
-.mf .whl.s{animation-duration:.55s}
-@keyframes mf-spin{to{transform:rotate(360deg)}}
-.mf .rod{animation:mf-rod .9s linear infinite}
-@keyframes mf-rod{0%{transform:translate(4px,0)}25%{transform:translate(0,4px)}50%{transform:translate(-4px,0)}75%{transform:translate(0,-4px)}100%{transform:translate(4px,0)}}
-.mf .bob{animation:mf-bob .45s ease-in-out infinite alternate}
-@keyframes mf-bob{to{transform:translateY(.6px)}}
-.puff{position:absolute;width:16px;height:16px;border-radius:50%;background:radial-gradient(circle at 40% 40%,rgba(255,255,255,.95),rgba(176,186,201,.75) 60%,rgba(150,161,178,0) 72%);
-  opacity:0;animation:puff 2.6s ease-out infinite}
-@keyframes puff{0%{opacity:0;transform:translate(0,0) scale(.35)}12%{opacity:.95}100%{opacity:0;transform:translate(-90px,-46px) scale(3.2)}}
-.mfz .lbl{position:absolute;right:16px;bottom:16px;font:700 10.5px Rawline,Raleway,sans-serif;letter-spacing:.16em;text-transform:uppercase;color:#7A8597;opacity:.85}
-@media (prefers-reduced-motion:reduce){.mf,.mf .whl,.mf .rod,.mf .bob,.puff{animation:none!important}.mf{transform:translateX(40cqw)}}
-@media (max-width:1200px){.cards{grid-template-columns:repeat(2,minmax(0,1fr))}.kpis{grid-template-columns:repeat(2,minmax(0,1fr))}}
-@media (max-width:900px){.main{grid-template-columns:1fr}.intro-in{flex-wrap:wrap}}
-@media (max-width:600px){.cards,.kpis{grid-template-columns:1fr}.wrap,.intro-in{padding-left:16px;padding-right:16px}.hero h1{font-size:22px}}
+@keyframes mf-run{0%{transform:translateX(-100%)}84%{transform:translateX(100cqw)}100%{transform:translateX(100cqw)}}
+.mf .whl{animation-duration:.95s}.mf .whl.s{animation-duration:.6s}
+.mf .rod{animation:mf-rod .95s linear infinite}
+@keyframes mf-rod{0%{transform:translate(4.5px,0)}25%{transform:translate(0,4.5px)}50%{transform:translate(-4.5px,0)}75%{transform:translate(0,-4.5px)}100%{transform:translate(4.5px,0)}}
+.mf .body{animation:bob .45s ease-in-out infinite alternate}
+.puff{position:absolute;width:18px;height:18px;border-radius:50%;filter:blur(1px);background:radial-gradient(circle at 40% 38%,rgba(255,255,255,.98),rgba(196,204,216,.8) 55%,rgba(160,170,186,0) 72%);opacity:0;animation:puff 2.8s ease-out infinite}
+@keyframes puff{0%{opacity:0;transform:translate(0,0) scale(.35)}10%{opacity:.95}100%{opacity:0;transform:translate(-110px,-40px) scale(3.6)}}
+.steam{position:absolute;width:12px;height:8px;border-radius:50%;background:radial-gradient(circle,rgba(255,255,255,.9),rgba(255,255,255,0) 70%);opacity:0;animation:steam 1s ease-out infinite}
+@keyframes steam{0%{opacity:0;transform:translate(0,0) scale(.5)}20%{opacity:.85}100%{opacity:0;transform:translate(-26px,2px) scale(2.4)}}
+.mfz .lbl{position:absolute;right:16px;bottom:20px;font:700 10.5px Rawline,Raleway,sans-serif;letter-spacing:.16em;text-transform:uppercase;color:#7A8597;opacity:.85}
+@media (prefers-reduced-motion:reduce){.tri,.wm,.frt,.mf,.whl,.rod,.body,.puff,.steam,.exh,.layer,.sig .lamp{animation:none!important}.frt{transform:translateX(30cqw)}.mf{transform:translateX(40cqw)}}
+@media (max-width:1200px){.show{grid-template-columns:1fr}.pano{position:relative;top:0}.kpis{grid-template-columns:repeat(2,minmax(0,1fr))}.info{grid-template-columns:1fr 1fr}}
+@media (max-width:700px){.cards,.kpis,.info{grid-template-columns:1fr}.wrap{padding-left:16px;padding-right:16px}.srch{width:100%}}
 </style>
 </head>
 <body>
@@ -191,7 +237,7 @@ body{padding-bottom:78px}
     <nav class="mocknav" id="mocknav" hidden aria-hidden="true">
       <a class="on" href="#"><svg viewBox="0 0 16 16" fill="currentColor"><path d="M13.6 6.188V1.824h-2.4v2.14L8 1 0 8.412h2.4V13H1v2h14v-2h-1.4V8.412H16zM10 9v3H6V9z"/></svg>Página Inicial</a><i></i>
       <a href="#"><svg viewBox="0 0 16 16" fill="currentColor"><path d="M11.8 5.3c.4-.4 1-.4 1.4 0l1.5 1.5c.4.4.4 1 0 1.4l-6.3 6.3-2.7.5a.6.6 0 0 1-.7-.7l.5-2.7zM4 11H1v-1h3zM7 8H1V7h6zM10 5H1V4h9zM12 2H1V1h11z"/></svg>Envie seu formulário</a><i></i>
-      <a href="#"><svg viewBox="0 0 16 16" fill="currentColor"><path d="M7.5 1.5a.5.5 0 0 1 1 0v2.8a.5.5 0 0 1-1 0zM.8 9.8h5c.2 0 .4.2.4.4a1.8 1.8 0 0 0 3.6 0c0-.2.2-.4.4-.4h5V14a.8.8 0 0 1-.8.8H1.6a.8.8 0 0 1-.8-.8z"/></svg>Download de dados</a>
+      <a href="#"><svg viewBox="0 0 16 16" fill="currentColor"><path d="M7.5 1.5a.5.5 0 0 1 1 0v2.8a.5.5 0 0 1-1 0zM.8 9.8h5c.2 0 .4.2.4.4a1.8 1.8 0 0 0 3.6 0c0-.2.2-.4.4-.4h5V14a.8.8 0 0 1-.8.8H1.6a.8.8 0 0 1-.8-.8z"/></svg>Dados Abertos</a>
     </nav>
   </div>
 </header>
@@ -209,49 +255,62 @@ body{padding-bottom:78px}
     </div>
     <span class="hsep" aria-hidden="true"></span>
     <div class="hero-txt">
-  <p>Painéis da <b>Superintendência de Transporte Ferroviário</b> com informações geográficas sobre autorizações, projetos de terceiros, fiscalização de obras, acidentes e meio ambiente.</p>
-  <span class="demo-tag"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 2 20h20z"/><path d="M12 10v4M12 17v.5"/></svg>Ambiente de demonstração · dados não oficiais</span>
+      <p>Painéis da <b>Superintendência de Transporte Ferroviário</b> com informações geográficas sobre autorizações, projetos de terceiros, faixa de domínio, fiscalização de obras, acidentes e meio ambiente.</p>
+      <span class="demo-tag"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 2 20h20z"/><path d="M12 10v4M12 17v.5"/></svg>Ambiente de demonstração · dados não oficiais</span>
     </div>
   </div>
   <div class="scene" id="scene" aria-hidden="true">
-    <div class="trk far"><div class="train pax" id="pax"></div></div>
-    <div class="ballast"></div>
-    <div class="trk near"><div class="train frt" id="frt"></div></div>
+    <div class="layer hills" id="hills"></div>
+    <div class="layer hills2" id="hills2"></div>
+    <div class="layer poles" id="poles"></div>
+    <div class="ballast"></div><div class="track"></div>
+    <div class="frt" id="frt"></div>
   </div>
 </section>
+
 <main class="wrap">
   <section class="kpis" id="kpis" aria-label="Indicadores"></section>
-  <div class="main">
-    <section>
-      <div class="sec-h"><h2>Painéis disponíveis</h2><span class="sp"></span><span class="hint">Os painéis abrem em uma nova aba</span></div>
+
+  <section aria-label="Painéis">
+    <div class="sec-h"><h2>Painéis</h2>
+      <div class="chips" id="cats"></div><span class="sp"></span>
+      <input class="srch" id="srch" type="search" placeholder="Buscar painel…" aria-label="Buscar painel">
+    </div>
+    <div class="show">
+      <div class="pano">
+        <div class="pano-h"><h3>Onde os painéis atuam</h3><span class="hint">passe o mouse em um cartão ou em um ponto · clique para abrir</span></div>
+        <div class="lchips" id="lchips"></div>
+        <div id="pmap"><button class="reset" id="reset" type="button">↺ Ver todos</button><div class="mtip" id="mtip"></div></div>
+      </div>
       <div class="cards" id="cards"></div>
-    </section>
-    <aside class="side">
-      <div class="box">
-        <h3>Sobre o SAFF-P</h3>
-        <p>Conjunto de painéis da SUFER que reúne, em mapas e indicadores, as informações acompanhadas pela área ferroviária da ANTT.</p>
-        <p>Os dados são lidos diretamente das camadas publicadas no ArcGIS, e os filtros de cada painel permitem recortes por região, UF, ferrovia e período.</p>
-      </div>
-      <div class="box">
-        <h3>Acesso rápido</h3>
-        <ul>
-          <li><a href="https://www.gov.br/antt/pt-br" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10 12 4l9 6M5 10v9h14v-9M10 19v-5h4v5"/></svg>Portal da ANTT<span class="ext">↗</span></a></li>
-          <li><a href="https://dados.antt.gov.br/" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="6" rx="7" ry="3"/><path d="M5 6v12c0 1.7 3.1 3 7 3s7-1.3 7-3V6M5 12c0 1.7 3.1 3 7 3s7-1.3 7-3"/></svg>Dados abertos da ANTT<span class="ext">↗</span></a></li>
-          <li><a href="https://www.gov.br/antt/pt-br/assuntos/ferrovias" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="3" width="12" height="12" rx="3"/><path d="M6 9h12M9 15l-3 6M15 15l3 6M8 19h8"/></svg>Transporte ferroviário na ANTT<span class="ext">↗</span></a></li>
-        </ul>
-      </div>
-      <div class="box warn">
-        <h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 2 20h20z"/><path d="M12 10v4M12 17v.5"/></svg>Aviso</h3>
-        <p>As informações contidas neste sistema são meramente demonstrativas e, portanto, não correspondem a dados oficiais.</p>
-        <button class="btn yel" id="reopen" type="button">Ver aviso completo</button>
-      </div>
-      <div class="upd" id="upd"></div>
-    </aside>
-  </div>
+    </div>
+  </section>
+
+  <section class="info">
+    <div class="box">
+      <h3>Sobre o SAFF-P</h3>
+      <p>Conjunto de painéis da SUFER que reúne, em mapas e indicadores, as informações acompanhadas pela área ferroviária da ANTT.</p>
+      <p>Os dados são lidos diretamente das camadas publicadas no ArcGIS, e os filtros de cada painel permitem recortes por região, UF, ferrovia e período.</p>
+    </div>
+    <div class="box">
+      <h3>Acesso rápido</h3>
+      <ul>
+        <li><a href="https://www.gov.br/antt/pt-br" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10 12 4l9 6M5 10v9h14v-9M10 19v-5h4v5"/></svg>Portal da ANTT<span class="ext">↗</span></a></li>
+        <li><a href="https://dados.antt.gov.br/" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="6" rx="7" ry="3"/><path d="M5 6v12c0 1.7 3.1 3 7 3s7-1.3 7-3V6M5 12c0 1.7 3.1 3 7 3s7-1.3 7-3"/></svg>Dados abertos da ANTT<span class="ext">↗</span></a></li>
+        <li><a href="https://www.gov.br/antt/pt-br/assuntos/ferrovias" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="3" width="12" height="12" rx="3"/><path d="M6 9h12M9 15l-3 6M15 15l3 6M8 19h8"/></svg>Transporte ferroviário na ANTT<span class="ext">↗</span></a></li>
+      </ul>
+    </div>
+    <div class="box warn">
+      <h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 2 20h20z"/><path d="M12 10v4M12 17v.5"/></svg>Aviso</h3>
+      <p>As informações contidas neste sistema são meramente demonstrativas e, portanto, não correspondem a dados oficiais.</p>
+      <button class="btn yel" id="reopen" type="button">Ver aviso completo</button>
+      <div class="upd" id="upd" style="margin-top:10px"></div>
+    </div>
+  </section>
 </main>
 
 <div class="mfz" aria-hidden="true">
-  <div class="gnd"></div><div class="slp"></div><div class="rail"></div>
+  <div class="gnd"></div><div class="slp"></div><div class="grass"></div><div class="rail"></div>
   <div class="mf" id="mf"></div>
 </div>
 
@@ -267,147 +326,7 @@ body{padding-bottom:78px}
   </div>
 </div>
 
-<script>
-const R='https://imagem-govfed.maps.arcgis.com/sharing/rest/content/items/26c68a6e20144b5199923c22b1722c3e/resources/images/';
-const EXP='https://experience.arcgis.com/experience/', DSH='https://imagem-govfed.maps.arcgis.com/apps/dashboards/';
-const SVC='https://services.arcgis.com/4CZwpdWHGNPLU7QQ/arcgis/rest/services/';
-const I={
-  train:'<rect x="6" y="2.5" width="12" height="13" rx="3"/><path d="M6 9.5h12M9.5 5.5h5"/><path d="M9 15.5 6.5 21.5M15 15.5l2.5 6M7.6 19h8.8"/>',
-  pit:'<path d="M3 17h18M5 17V9l7-4 7 4v8"/><path d="M9 17v-4h6v4"/>',
-  fico:'<path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/>',
-  acid:'<path d="M12 3 2 20h20z"/><path d="M12 10v4M12 17v.5"/>',
-  route:'<circle cx="6" cy="18" r="2.5"/><circle cx="18" cy="6" r="2.5"/><path d="M8.5 18H15a3 3 0 0 0 0-6H9a3 3 0 0 1 0-6h6.5"/>',
-  leaf:'<path d="M5 19c0-8 5-13 15-14-1 10-6 15-14 15"/><path d="M5 19l7-7"/>',
-  doc:'<path d="M7 3h7l4 4v14H7z"/><path d="M14 3v4h4M10 12h6M10 16h6"/>'
-};
-const svg=k=>`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${I[k]}</svg>`;
-const P=[
-  {t:'Autorizações Ferroviárias',d:'Contratos de adesão e requerimentos de autorização de novas ferrovias.',c:'#1C5FAD',i:'train',img:'widget_460/1776101652744.png',url:EXP+'99652a1a4f7a4ee89a8e3c1d6af5d9bb',old:DSH+'b9b84e3d709e4bd9af5e652588ace76e'},
-  {t:'Projetos de Interesse de Terceiros (PIT)',d:'Travessias, paralelismos e interferências de terceiros na faixa ferroviária.',c:'#0F7C80',i:'pit',img:'widget_3/1776101665127.png',url:EXP+'f554b9b22f8e4cfe9470046ad6b45a4a',old:DSH+'8d834b7aae7d4b549e3348f8d133bf55'},
-  {t:'Fiscalização FICO',d:'Obras da Ferrovia de Integração Centro-Oeste, com registros fotográficos.',c:'#1F8A4C',i:'fico',img:'widget_4/1776101680715.png',url:EXP+'20d9b3d0ec0c4383b7834ee8c11c7068',old:DSH+'df0398e7fcea4d9c9919e67bdca24cdd'},
-  {t:'Acidentes Ferroviários',d:'Ocorrências por ferrovia, causa e gravidade, com linha do tempo e alertas.',c:'#B4372B',i:'acid',img:'widget_5/1776101691414.png',url:EXP+'8dcb0c4121d643b6ae0b9e2e304288e8',old:DSH+'56dc12a1126c49acb3bf70559ab33477'},
-  {t:'Painel Ambiental',d:'Demonstrativo de dados ambientais relacionados às concessões ferroviárias.',c:'#7B3FA0',i:'leaf',img:'widget_637/1776173961556.jpg',url:DSH+'7cb56f035ee845f59900881a756dfaa6'},
-  {t:'Malha Sul (RMS)',d:'Acompanhamento da ferrovia concedida à Rumo Malha Sul.',c:'#6A7486',i:'train',img:'background_setting/1783278204299.jpg',url:null,dev:true}
-];
-document.getElementById('cards').innerHTML=P.map(p=>`
-  <article class="card" style="--c:${p.c}">
-    <div class="img" style="background-image:url('${R+p.img}')"><span class="ic">${svg(p.i)}</span><span class="st ${p.dev?'dev':''}">${p.dev?'Em desenvolvimento':'Disponível'}</span></div>
-    <div class="body"><h3>${p.t}</h3><p>${p.d}</p>
-      <div class="acts">${p.url?`<a class="btn" href="${p.url}" target="_blank" rel="noopener">Acessar painel ↗</a>`:`<span class="btn" aria-disabled="true">Em breve</span>`}
-      ${p.old?`<a class="old" href="${p.old}" target="_blank" rel="noopener">versão anterior</a>`:''}</div></div>
-  </article>`).join('');
-
-/* indicadores lidos das camadas */
-const K=[
-  {c:'#1C5FAD',i:'route',l:'Extensão em autorizações ferroviárias',q:{u:'AUT___AP___20_02_26/FeatureServer/0',stat:'EXTENSÃO'},unit:'km'},
-  {c:'#0F7C80',i:'pit',l:'Processos de interesse de terceiros',q:{u:'Projeto_de_Interesse_de_Terceiros_(PIT)/FeatureServer/0'}},
-  {c:'#1F8A4C',i:'fico',l:'Levantamentos de fiscalização na FICO',q:{u:'survey123_f534c787ea064a64b119e9984448af56_results/FeatureServer/0'}},
-  {c:'#B4372B',i:'acid',l:'Acidentes ferroviários registrados',q:{u:'Acidentes_Ferrovi%C3%A1rios/FeatureServer/0'}}
-];
-const nf=v=>Math.round(v).toLocaleString('pt-BR');
-const kb=document.getElementById('kpis');
-kb.innerHTML=K.map((k,i)=>`<div class="kpi" style="--c:${k.c}"><div class="ic">${svg(k.i)}</div><div><div class="v" id="k${i}">—</div><div class="l">${k.l}</div></div></div>`).join('');
-K.forEach(async(k,i)=>{ try{
-  const p=new URLSearchParams({where:'1=1',f:'json'});
-  if(k.q.stat) p.set('outStatistics',JSON.stringify([{statisticType:'sum',onStatisticField:k.q.stat,outStatisticFieldName:'v'}])); else p.set('returnCountOnly','true');
-  const j=await (await fetch(SVC+k.q.u+'/query?'+p)).json();
-  const v=k.q.stat?j.features[0].attributes.v:j.count;
-  document.getElementById('k'+i).innerHTML=nf(v)+(k.unit?`<small>${k.unit}</small>`:'');
-}catch(e){} });
-document.getElementById('upd').textContent='Dados em tempo real · consultados em '+new Date().toLocaleString('pt-BR');
-
-/* trens da faixa animada (silhuetas laterais) */
-(function(){
-  const N='#0A2A5E',N2='#16407F',B='#1C5FAD',Y='#F2B705',W='#D6E4F5';
-  const wheel=(x,y,r)=>`<circle cx="${x}" cy="${y}" r="${r}" fill="${N}"/><circle cx="${x}" cy="${y}" r="${r*.35}" fill="#9FB3D1"/>`;
-  // composição de carga: vagões hopper + locomotiva na frente (sentido para a direita)
-  const hopper=(x,t)=>`<g transform="translate(${x} 0)"><path d="M3 9q30-6 58 0z" fill="#5B4A3E"/><path d="M1 9h62v8l-7 7H8l-7-7z" fill="#3A64A0"/>`+
-    [6,58].map(v=>`<path d="M${v} 9v10" stroke="#2C4F86" stroke-width="1.2"/>`).join('')+
-    `<rect x="11" y="10.5" width="42" height="10.5" rx="1.5" fill="#0A2A5E"/><text x="32" y="18.6" font-size="8" letter-spacing=".4" fill="#fff" font-family="Rawline,Raleway,'Segoe UI',sans-serif" font-weight="800" text-anchor="middle">${t}</text>`+
-    `<rect x="0" y="24" width="64" height="2.6" fill="${N}"/>`+wheel(10,29,3.1)+wheel(18,29,3.1)+wheel(46,29,3.1)+wheel(54,29,3.1)+
-    `<rect x="-3" y="22.6" width="4" height="1.6" fill="${N}"/></g>`;
-  const GER=['GECOF','GEFEF','GEPEF','GEREF','GIFER'];
-  const NW=GER.length, WW=66, fw=NW*WW+102;
-  let f=`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${fw} 34">`;
-  for(let i=0;i<NW;i++) f+=hopper(3+i*WW,GER[i]);
-  const lx=NW*WW+4;
-  f+=`<g transform="translate(${lx} 0)">
-    <path d="M4 9h64v15H4z" fill="${N2}"/><path d="M68 3h16l9 9v12H68z" fill="${N}"/>
-    <path d="M72 6h11l6 6H72z" fill="${W}"/><rect x="4" y="18" width="89" height="2.2" fill="${Y}"/>
-    <rect x="10" y="5.5" width="14" height="3.5" rx="1" fill="${N}"/><rect x="30" y="5.5" width="20" height="3.5" rx="1" fill="${N}"/>
-    <text x="36" y="16.8" font-size="7.6" letter-spacing="1" fill="#fff" font-family="Rawline,Raleway,'Segoe UI',sans-serif" font-weight="800" text-anchor="middle">SUFER</text>
-    <rect x="0" y="24" width="96" height="3" fill="${N}"/>`+wheel(14,29.4,3.4)+wheel(23,29.4,3.4)+wheel(32,29.4,3.4)+wheel(64,29.4,3.4)+wheel(73,29.4,3.4)+wheel(82,29.4,3.4)+
-    `<circle cx="92.6" cy="16" r="1.4" fill="#FFE27A"/></g></svg>`;
-  document.getElementById('frt').innerHTML=f;
-  // trem de passageiros: 3 carros (sentido para a esquerda)
-  const win=(x0,x1)=>{let o='';for(let x=x0;x<x1;x+=11)o+=`<rect x="${x}" y="8" width="7.5" height="6" rx="1.2" fill="${W}"/>`;return o;};
-  const car=(x,kind)=>{
-    const body = kind==='lead' ? 'M18 4h96v20H2v-8q2-10 16-12z' : kind==='tail' ? 'M2 4h96q14 2 16 12v8H2z' : 'M2 4h112v20H2z';
-    const w = kind==='lead' ? `<path d="M5 15q2-7 11-8v7H5z" fill="${W}"/>`+win(22,110) : kind==='tail' ? win(6,94)+`<path d="M111 15q-2-7-11-8v7h11z" fill="${W}"/>` : win(6,112);
-    return `<g transform="translate(${x} 0)"><path d="${body}" fill="${B}"/>${w}<rect x="${kind==='lead'?3:2}" y="17" width="${kind==='mid'?112:110}" height="2" fill="${Y}"/>
-      <rect x="10" y="24" width="20" height="2.5" fill="${N}"/><rect x="86" y="24" width="20" height="2.5" fill="${N}"/>`+wheel(15,28.5,2.6)+wheel(25,28.5,2.6)+wheel(91,28.5,2.6)+wheel(101,28.5,2.6)+
-      (kind==='lead'?`<circle cx="4" cy="19.5" r="1.3" fill="#FFE27A"/>`:'')+`</g>`;
-  };
-  document.getElementById('pax').innerHTML=`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 354 32">${car(0,'lead')}<rect x="116" y="12" width="4" height="10" fill="${N2}"/>${car(120,'mid')}<rect x="236" y="12" width="4" height="10" fill="${N2}"/>${car(240,'tail')}</svg>`;
-  // sinaleiros ao longo da via
-  const sc=document.getElementById('scene');
-  ['18%','63%'].forEach((l,i)=>{ const d=document.createElement('div'); d.className='sig'; d.style.left=l;
-    d.innerHTML=`<svg viewBox="0 0 8 40"><rect x="3.2" y="12" width="1.6" height="28" fill="#8C99AE"/><rect x=".5" y="0" width="7" height="14" rx="2" fill="${N}"/><circle class="lamp" cx="4" cy="4" r="1.9" fill="#1E9E5A" style="animation-delay:${-i*3}s"/><circle cx="4" cy="9.6" r="1.9" fill="#2A3A55"/></svg>`;
-    sc.insertBefore(d,sc.querySelector('.trk.near')); });
-  // depois de montado, o símbolo "respira" a cada 14 s
-  const sym=document.getElementById('sym');
-  if(!matchMedia('(prefers-reduced-motion: reduce)').matches) setInterval(()=>{ sym.classList.remove('pulse'); void sym.offsetWidth; sym.classList.add('pulse'); },14000);
-})();
-
-/* maria-fumaça (locomotiva a vapor, tênder e dois carros de passageiros) */
-(function(){
-  const K='#14213D',K2='#22314F',R='#B4372B',G='#F2B705',WD='#7A3B22',WD2='#5E2C18',GL='#D6E4F5';
-  const spokes=(cx,cy,r,col)=>{ let o=`<g class="whl${r<8?' s':''}"><circle cx="${cx}" cy="${cy}" r="${r}" fill="${col}"/><circle cx="${cx}" cy="${cy}" r="${r-1.6}" fill="none" stroke="${K}" stroke-width="1"/>`;
-    for(let a=0;a<180;a+=(r<8?60:30)){ const t=a*Math.PI/180, dx=Math.cos(t)*(r-1.8), dy=Math.sin(t)*(r-1.8); o+=`<path d="M${(cx-dx).toFixed(2)} ${(cy-dy).toFixed(2)}L${(cx+dx).toFixed(2)} ${(cy+dy).toFixed(2)}" stroke="${K}" stroke-width="${r<8?1:1.2}"/>`; }
-    return o+`<circle cx="${cx}" cy="${cy}" r="${r*.28}" fill="${K}"/></g>`; };
-  const coach=x=>`<g transform="translate(${x} 0)"><g class="bob"><path d="M2 14q44-7 88 0v3H2z" fill="${K2}"/><rect x="3" y="17" width="86" height="32" rx="2" fill="${WD}"/>
-    ${[9,23,37,51,65].map(v=>`<rect x="${v}" y="22" width="9" height="11" rx="1.5" fill="${GL}"/>`).join('')}<rect x="80" y="22" width="5" height="22" rx="1" fill="${WD2}"/>
-    <rect x="3" y="38" width="86" height="2" fill="${G}"/><rect x="3" y="44" width="86" height="5" fill="${WD2}"/></g>
-    <rect x="0" y="49" width="92" height="3" fill="${K}"/>${spokes(16,59,6.5,R)}${spokes(30,59,6.5,R)}${spokes(62,59,6.5,R)}${spokes(76,59,6.5,R)}<rect x="90" y="46" width="8" height="2" fill="${K}"/></g>`;
-  const tender=x=>`<g transform="translate(${x} 0)"><g class="bob"><path d="M6 20q24-9 48 0z" fill="#2B2B2B"/><rect x="4" y="20" width="52" height="29" rx="2" fill="${K}"/>
-    <rect x="8" y="26" width="44" height="2" fill="${G}"/><rect x="8" y="42" width="44" height="2" fill="${G}"/></g>
-    <rect x="2" y="49" width="56" height="3" fill="${K}"/>${spokes(16,59,7,R)}${spokes(44,59,7,R)}<rect x="56" y="46" width="8" height="2" fill="${K}"/></g>`;
-  const loco=x=>`<g transform="translate(${x} 0)">
-    <path d="M140 49h10l6 15h-16z" fill="${R}"/><path d="M143 53h8M144 57h9M145 61h9" stroke="${K}" stroke-width="1"/>
-    <g class="bob">
-      <rect x="8" y="9" width="46" height="5" rx="1.5" fill="${K2}"/><rect x="12" y="14" width="38" height="35" fill="${K}"/>
-      <rect x="18" y="19" width="12" height="12" rx="1.5" fill="${GL}"/><rect x="34" y="19" width="10" height="12" rx="1.5" fill="${GL}"/><text x="31" y="43.5" font-size="9.5" letter-spacing=".6" fill="${G}" font-family="Rawline,Raleway,'Segoe UI',sans-serif" font-weight="800" text-anchor="middle">ANTT</text>
-      <rect x="48" y="25" width="88" height="23" rx="3" fill="${K}"/><rect x="128" y="22" width="12" height="27" rx="3" fill="${K2}"/>
-      <path d="M62 25v23M82 25v23M104 25v23" stroke="${G}" stroke-width="1.6"/>
-      <path d="M85 25a8 8 0 0 1 16 0z" fill="${K2}"/><rect x="91" y="15" width="4" height="4" rx="1" fill="${G}"/>
-      <path d="M64 25a6 6 0 0 1 12 0z" fill="${K2}"/>
-      <path d="M126 22l2-11-6-6h20l-6 6 2 11z" fill="${K}"/><rect x="121" y="4" width="22" height="2.4" rx="1" fill="${G}"/>
-      <rect x="136" y="14" width="8" height="7" rx="1.5" fill="${G}"/><circle cx="144" cy="17.5" r="2.4" fill="#FFF2B0"/>
-      <rect x="10" y="48" width="134" height="3" fill="${R}"/>
-    </g>
-    ${spokes(62,54,11,R)}${spokes(88,54,11,R)}${spokes(114,54,11,R)}${spokes(134,59,6,R)}${spokes(30,59,6,R)}
-    <g class="rod"><rect x="60" y="53" width="56" height="2.6" rx="1.3" fill="#C9CED6"/><circle cx="62" cy="54.3" r="1.6" fill="${G}"/><circle cx="88" cy="54.3" r="1.6" fill="${G}"/><circle cx="114" cy="54.3" r="1.6" fill="${G}"/></g>
-  </g>`;
-  const W=262+160;
-  document.getElementById('mf').innerHTML=`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} 66">${coach(0)}${coach(98)}${tender(196)}${loco(262)}</svg>`;
-  // fumaça saindo da chaminé
-  const mf=document.getElementById('mf');
-  const chx=(262+132)/W, chy=4/66;
-  for(let i=0;i<7;i++){ const d=document.createElement('span'); d.className='puff';
-    d.style.left=`calc(${(chx*100).toFixed(2)}% - 8px)`; d.style.top=`calc(${(chy*100).toFixed(2)}% - 10px)`; d.style.animationDelay=`${-i*0.37}s`; mf.appendChild(d); }
-})();
-
-/* aviso inicial: aparece a cada nova sessão do navegador */
-const modal=document.getElementById('modal');
-const open=()=>{ modal.classList.add('on'); document.getElementById('ok').focus(); };
-const close=()=>{ modal.classList.remove('on'); try{ sessionStorage.setItem('saffp_aviso','1'); }catch(e){} };
-document.getElementById('ok').onclick=close;
-document.getElementById('reopen').onclick=open;
-modal.onclick=e=>{ if(e.target===modal) close(); };
-document.addEventListener('keydown',e=>{ if(e.key==='Escape'&&modal.classList.contains('on')) close(); });
-if(/mock/.test(location.search)) document.getElementById('mocknav').hidden=false;
-let seen=false; try{ seen=sessionStorage.getItem('saffp_aviso')==='1'; }catch(e){}
-if(!seen && !/semaviso/.test(location.hash)) open();
-</script>
+<script src="https://js.arcgis.com/4.30/"></script>
+<script src="app.js?v=1"></script>
 </body>
 </html>

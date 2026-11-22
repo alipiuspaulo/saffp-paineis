@@ -296,7 +296,7 @@ function renderTable(f){
   let t=f.filter(r=>!q||fold(C.table.columns.map(c=>c.get?c.get(r):r[c.f]).join(' ')).includes(q));
   if(sortK){ const col=C.table.columns.find(c=>c.f===sortK)||{}; const g=r=>col.sortGet?col.sortGet(r):(col.get?col.get(r):r[sortK]); t.sort((a,b)=>{const x=g(a),y=g(b); return (typeof x==='number'&&typeof y==='number'?x-y:natural(x??'',y??''))*sortDir;}); }
   const max=C.table.max||400;
-  document.querySelector('#tbl tbody').innerHTML=t.slice(0,max).map(r=>`<tr>${C.table.columns.map(c=>`<td class="${c.num?'num':''}">${cell(c,r)}</td>`).join('')}</tr>`).join('');
+  document.querySelector('#tbl tbody').innerHTML=t.slice(0,max).map(r=>`<tr data-oid="${esc(r._oid)}" title="Clique para ver no mapa" style="cursor:pointer">${C.table.columns.map(c=>`<td class="${c.num?'num':''}">${cell(c,r)}</td>`).join('')}</tr>`).join('');
   document.getElementById('tblCount').textContent=`${nf(t.length)} de ${nf(D.length)}`;
   const note=document.getElementById('tblNote'); note.hidden=t.length<=max; note.textContent=`Mostrando os primeiros ${nf(max)} registros. Use os filtros ou a busca para refinar.`;
   document.querySelectorAll('#tbl th').forEach(th=>th.setAttribute('aria-sort',th.dataset.k===sortK?(sortDir>0?'ascending':'descending'):'none'));
@@ -509,7 +509,7 @@ function tlFrame(){
     const pvOn=TL.preview&&TL.preview.until>Date.now();
     TL.lv.filter=pvOn?{where:'1=0'}:(ids?{where,objectIds:ids}:{where}); // na pré-visualização só o alerta fica visível
     if(pvOn){ TL.lv.featureEffect=null; const st=document.getElementById('tlStamp'); if(st) st.innerHTML='<div class="m">Alerta</div><div class="c">pré-visualização · só os alertas visíveis</div>'; return; }
-    TL.lv.featureEffect=acc?{filter:{where:`_t = ${TL.cur}`},includedEffect:'drop-shadow(0px 0px 6px #F2B705) brightness(1.2)',excludedEffect:'opacity(40%)'}:null;
+    TL.lv.featureEffect=acc?{filter:{where:`_t = ${TL.cur}`},includedEffect:'drop-shadow(0px 0px 3px rgba(242,183,5,.6)) brightness(1.08)',excludedEffect:'opacity(50%)'}:null;
   }
   const firstCat=C.map.icons?Object.keys(C.map.icons)[0]:null, gl=firstCat&&C.map.labels?C.map.labels[firstCat]:'';
   const g=firstCat?inM.filter(r=>String(r[C.map.colorBy])===firstCat).length:0;
@@ -609,7 +609,7 @@ window.PAINEL_API={C,X,S,EC,rows,set,nf,esc,fold,natural,NI,UFREG,icon,tc,
   render:()=>render(), catColor:(f,v,fx)=>catColor(f,v,fx), legendMark:(v,c)=>legendMark(v,c), markerURL:v=>markerURL(v),
   get D(){return D;}, get BYOID(){return BYOID;}, get ORDER(){return ORDER;},
   get view(){return view;}, get ptView(){return ptView;}, get ptLayer(){return ptLayer;}, get heatView(){return heatView;}, get Extent(){return Extent;},
-  rezoom:()=>{ lastKey=null; renderMap(rows('_map')); }, renderTL:()=>{ if(TLC) renderTL(); }, tlChart:()=>{ if(TLC) tlChart(); }};
+  focus:oid=>focusOnMap(oid), rezoom:()=>{ lastKey=null; renderMap(rows('_map')); }, renderTL:()=>{ if(TLC) renderTL(); }, tlChart:()=>{ if(TLC) tlChart(); }};
 
 /* ---------- render ---------- */
 function render(){

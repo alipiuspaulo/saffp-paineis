@@ -185,13 +185,15 @@ function stopPlay(done){ clearTimeout(playT); if(!P.play) return; P.play=false; 
 if(HASP) $('#ixPlay').onclick=play;
 
 /* ---------- ligação gráfico ↔ mapa ---------- */
-function hoverIds(ids){ P.hover=ids; applyEffect(); }
+// limpar com um pequeno atraso evita o "pisca" ao passar de uma barra para a vizinha
+function hoverIds(ids){ clearTimeout(P.ht); if(ids==null){ P.ht=setTimeout(()=>{ P.hover=null; applyEffect(); },140); return; } P.hover=ids; applyEffect(); }
+const FX={hoverIn:'brightness(1.08) drop-shadow(0px 0px 2px rgba(242,183,5,.55))',hoverOut:'grayscale(65%) opacity(35%)',playIn:'brightness(1.12) drop-shadow(0px 0px 3px rgba(242,183,5,.6))',playOut:'opacity(55%)'};
 X.chartHover=(field,name)=>{ if(P.play) return; hoverIds(field?A.D.filter(r=>String(r[field])===String(name)).map(r=>r._oid):null); };
 function applyEffect(){
   const lv=A.ptView; if(!lv) return;
   const fx=(ids,inc,exc)=>({filter:ids.length?{objectIds:ids}:{where:'1=0'},includedEffect:inc,excludedEffect:exc});
-  if(P.play&&P.cur!=null){ lv.featureEffect=fx(A.D.filter(r=>r._p===P.cur).map(r=>r._oid),'bloom(1.4, 0.5px, 0) drop-shadow(0px, 0px, 6px, #F2B705)','opacity(45%)'); return; }
-  if(P.hover){ lv.featureEffect=fx(P.hover,'bloom(0.9, 0.4px, 0.1)','grayscale(100%) opacity(18%)'); return; }
+  if(P.play&&P.cur!=null){ lv.featureEffect=fx(A.D.filter(r=>r._p===P.cur).map(r=>r._oid),FX.playIn,FX.playOut); return; }
+  if(P.hover){ lv.featureEffect=fx(P.hover,FX.hoverIn,FX.hoverOut); return; }
   lv.featureEffect=null;
 }
 function chartsHighlight(r){
@@ -212,6 +214,7 @@ function moveHov(ev){ const h=$('#ixHov'),m=$('#map'),v=A.view; if(!h||!m||!v) r
 const hideHov=()=>{ const h=$('#ixHov'); if(h) h.classList.remove('on'); };
 X.mapReady.push(()=>{
   const view=A.view, layer=A.ptLayer; let last=null,pend=false,hl=null;
+  view.highlightOptions={color:[242,183,5,1],haloOpacity:.6,fillOpacity:.1}; // seleção mais suave
   view.on('pointer-move',ev=>{ if(pend) return; pend=true; requestAnimationFrame(()=>{ pend=false;
     view.hitTest(ev,{include:[layer]}).then(h=>{ const g=h.results.find(x=>x.graphic&&(!P.vis||P.vis.has(x.graphic.attributes._oid))); const id=g?g.graphic.attributes._oid:null;
       if(id!==last){ last=id; if(hl){hl.remove();hl=null;} const r=id!=null?A.BYOID[id]:null;
@@ -226,6 +229,18 @@ X.mapReady.push(()=>{
   });
   applyEffect(); applyThemeMap();
 });
+(C.charts||[]).forEach(c=>{
+  if(c.type==='donut'){ const lg=document.getElementById(c._id+'_lg'); if(!lg) return;
+    lg.addEventListener('mouseover',e=>{ const b=e.target.closest('.lg'); if(b&&!P.play){ X.chartHover(c.field,b.dataset.v); chartsHighlight({[c.field]:b.dataset.v}); } });
+    lg.addEventListener('mouseleave',()=>{ X.chartHover(null); chartsHighlight(null); }); }
+  if(c.type==='yn'){ const el=document.getElementById(c._id); if(!el) return;
+    el.addEventListener('mouseover',e=>{ const i=e.target.closest('.yn-bar i'); if(i&&!P.play) X.chartHover(i.dataset.f,i.dataset.v); });
+    el.addEventListener('mouseleave',()=>X.chartHover(null)); }
+});
+{ const tb=document.querySelector('#tbl tbody');
+  if(tb){ tb.addEventListener('mouseover',e=>{ const tr=e.target.closest('tr[data-oid]'); if(!tr||P.play) return; const r=A.BYOID[tr.dataset.oid]; if(!r) return; hoverIds([r._oid]); chartsHighlight(r); });
+    tb.addEventListener('mouseleave',()=>{ hoverIds(null); chartsHighlight(null); });
+    tb.addEventListener('click',e=>{ const tr=e.target.closest('tr[data-oid]'); if(tr&&A.focus) A.focus(+tr.dataset.oid||tr.dataset.oid); }); } }
 const ext=$('#ixExt'); if(ext) ext.onchange=()=>{ P.ext=ext.checked; P.extGeo=P.ext&&A.view&&P.wmu?P.wmu.webMercatorToGeographic(A.view.extent):null; A.render(); };
 
 /* ---------- etiquetas de período/área e "Limpar filtros" ---------- */

@@ -57,8 +57,8 @@
 .ix-tour .dots{margin-right:auto;display:flex;gap:5px}
 .ix-tour .dots i{width:7px;height:7px;border-radius:50%;background:var(--line)}
 .ix-tour .dots i.on{background:#F2B705}
-body.ix-touring .wrap .card,body.ix-touring .wrap .kpis{opacity:.4}
-body.ix-touring .wrap .ix-spot{opacity:1!important;outline:3px solid #F2B705;outline-offset:2px}
+body.ix-touring .wrap .card,body.ix-touring .wrap .kpis{opacity:.55}
+body.ix-touring .wrap .ix-spot{opacity:1!important;outline:2px solid rgba(242,183,5,.75);outline-offset:2px}
 body.ix-touring .wrap .kpis.ix-spot .card{opacity:1}
 
 /* ---------- botões, janelas e avisos ---------- */
@@ -111,3 +111,5 @@ body.ix-touring .wrap .kpis.ix-spot .card{opacity:1}
 [data-theme="dark"] .esri-popup .esri-widget,[data-theme="dark"] .esri-popup__main-container{background:#111B2E;color:#E8EDF5}
 
 @media (max-width:760px){ .ix-tools .ix-b span{display:none} .ix-b{padding:6px 9px} }
+
+#tbl tbody tr[data-oid]:hover td{background:rgba(242,183,5,.12)}
